@@ -125,7 +125,7 @@ class NightFury:
 
 # __init__(self, x, y, h, w, color, speed, jumpHeight, gravity, ATK, DEF, 
 # health, magic, physicalStrength)
-nightFury1 = NightFury(0, 600 - 30, 30, 70, 'black', 10, 12, 0.6, 20, 10, 
+nightFury1 = NightFury(0, 600 - 30, 30, 70, 'black', 16, 12, 0.6, 20, 10, 
                        100, 100, 100)
 
 def appStarted(app):
