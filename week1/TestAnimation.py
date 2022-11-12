@@ -13,9 +13,9 @@ def appStarted(app):
     # timerDelay
     app.timerDelay = 10
     app.nightFury = nightFury1
-    app.jumpYs = []
-    app.dashRXs = []
-    app.dashLXs = []
+    # app.jumpYs = []
+    # app.dashRXs = []
+    # app.dashLXs = []
 
 # helper functions for timerFired
 def doJump(app):
@@ -34,11 +34,11 @@ def timerFired(app):
     app.nightFury.isKilled()
     app.nightFury.regainPS()
 
-    if app.jumpYs:
+    if app.nightFury.jumpYs:
         doJump(app)
-    if app.dashLXs:
+    if app.nightFury.dashLXs:
         doDashLeft(app)
-    elif app.dashRXs:
+    elif app.nightFury.dashRXs:
         doDashRight(app)
 
 # helper functions for keyPressed
@@ -54,14 +54,14 @@ def keyPressed(app, event):
     # jump
     if event.key == 'x':
         if app.jumpYs == []:
-            app.jumpYs = app.nightFury.jump(600)
+            app.nightFury.jump(600)
     # dash
     if event.key == 'z':
         # print(app.nightFury.getDirection())
         if app.nightFury.getDirection() == 'Left':
-            app.dashLXs = app.nightFury.dashL()
+            app.nightFury.dashL()
         elif app.nightFury.getDirection() == 'Right':
-            app.dashRXs = app.nightFury.dashR()
+            app.nightFury.dashR()
     # attack
     if event.key == 'c':
         if app.nightFury.getDirection() == 'Left':

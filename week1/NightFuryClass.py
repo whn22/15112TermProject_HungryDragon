@@ -1,30 +1,35 @@
 class NightFury():
-    def __init__(self, x, y, h, w, color, speed, jumpHeight, gravity, ATK, DEF,
+    def __init__(self, x, y, w, h, color, speed, jumpHeight, gravity, ATK, DEF,
                  health, magic, physicalStrength):
-        # image (Collision box drawing)
+        # self.location = (x, y)
         self.x = x
         self.y = y
-        # self.location = (x, y)
-        self.height = h
+        # image (Collision box drawing)
         self.width = w
-        self.color = color
+        self.height = h
         # properties
+        self.color = color
         self.speed = speed
         self.jumpHeight = jumpHeight
         self.gravity = gravity
         self.ATK = ATK
         self.DEF = DEF
-        # status
-        self.isDead = False
-        self.direction = 'Right'
-        self.eaten = []
+        # changable data
         self.HP = health
         self.MP = magic
         self.PS = physicalStrength
+        # default data
+        self.isDead = False
+        self.direction = 'Right'
+        self.eaten = []
+        self.jumpYs = []
+        self.fallYs = []
+        self.dashRXs = []
+        self.dashLXs = []
     
     # set methods
-    def resetLocation(self, x, y):
-        self.x, self.y = x, y
+    def resetLocation(self, tuple):
+        self.x, self.y = tuple
     
     def resetX(self, x):
         self.x = x
@@ -43,7 +48,7 @@ class NightFury():
         return self.x, self.y
     
     def getSize(self):
-        return self.height, self.width
+        return self.width, self.height
     
     def getColor(self):
         return self.color
@@ -62,60 +67,120 @@ class NightFury():
 
     def getPS(self):
         return self.PS
+    
+    # methods with terrain (collision methods)
+    def getMyRoof(self, terrain):
+        return terrain.getRoof(self)
+    
+    def getMyFloor(self, terrain):
+        return terrain.getFloor(self)
 
     # move methods
-    def goLeft(self):
+    def goLeft(self, terrain):
         self.x -= self.speed
+        if terrain.isLegalLocation(self):
+            pass
+        else:
+            self.x += self.speed
 
-    def goRight(self):
+    def goRight(self, terrain):
         self.x += self.speed
+        print(terrain.isLegalLocation(self))
+        if terrain.isLegalLocation(self):
+            pass
+        else:
+            self.x -= self.speed
 
-    def jump(self, ground):
-        g = self.gravity # acceleration/gravity
+    # def jump(self, terrain):
+    #     if self.jumpYs:
+    #         return
+    #     g = self.gravity
+    #     u = self.jumpHeight # initial speed
+    #     y = self.y
+    #     while True:
+    #         if y > terrain - self.height:
+    #             self.jumpYs.pop()
+    #             break
+    #         y -= u
+    #         if u > -self.jumpHeight:
+    #             u -= g
+    #         self.jumpYs.append(y)
+    #     self.jumpYs.append(terrain - self.height)
+    #     # print (jumpYs, 'jump')
+
+    def jump(self, terrain):
+        if self.jumpYs or self.fallYs:
+            return
+        roof = terrain.getRoof(self)
+        # print(roof)
+        g = self.gravity
         u = self.jumpHeight # initial speed
         y = self.y
-        jumpYs = []
-        jumping = True
-        while jumping:
-            if y > ground - self.height:
-                jumping = False
+        while u > 0:
+            if y < roof:
+                self.jumpYs.pop()
                 break
             y -= u
-            u -= g
-            jumpYs.append(y)
-        jumpYs.append(ground - self.height)
-        # print (jumpYs, 'jump')
-        return jumpYs
+            if u > 0:
+                u -= g
+            self.jumpYs.append(y)
+        if roof != 0:
+            self.jumpYs.append(roof)
+        # print(self.jumpYs, 'jump')
+
+    def falling(self, terrain, HEIGHT):
+        floor = terrain.getFloor(self, HEIGHT)
+        # print(self.y + self.height, floor)
+        # print(self.fallYs, self.y == floor - self.height)
+        if self.fallYs or self.y == floor - self.height:
+            return
+        u = 0 # initial falling speed
+        v = self.jumpHeight # Maximum falling speed
+        g = self.gravity
+        y = self.y
+        while True:
+            # print(y + self.height, floor)
+            if y + self.height > floor:
+                self.fallYs.pop()
+                break
+            y += u
+            print(u, v)
+            if u < v:
+                u += g
+            self.fallYs.append(y)
+        if floor != HEIGHT:
+            self.fallYs.append(floor - self.height)
+        print(self.fallYs)
 
     def dashL(self):
+        if self.dashLXs:
+            return
         if self.PS - 30 <= 0:
-            return []
+            return
         self.PS -= 30
-        dashXs = []
         x = self.x
         for i in range(7):
             x -= self.speed
-            dashXs.append(x)
+            self.dashLXs.append(x)
         for i in range(7):
             x -= self.speed/2
-            dashXs.append(x)
+            self.dashLXs.append(x)
         # print (dashXs, 'dashL')
-        return dashXs
 
     def dashR(self):
+        if self.dashRXs:
+            return
         if self.PS - 30 <= 0:
-            return []
+            return
         self.PS -= 30
-        dashXs = []
         x = self.x
         for i in range(7):
             x += self.speed
-            dashXs.append(x)
+            self.dashRXs.append(x)
         for i in range(7):
             x += self.speed/2
-            dashXs.append(x)
+            self.dashRXs.append(x)
         # print (dashXs, 'dashR')
-        return dashXs
 
     # attack methods
     def leftSlash(self):
@@ -139,3 +204,42 @@ class NightFury():
         # max PS is 100, regain 0.5 per period
         if self.PS < 100:
             self.PS += 0.5
+
+    def doJump(self):
+        # print(self.fallYs, self.jumpYs)
+        # if self.fallYs == [] and self.jumpYs:
+        if self.jumpYs:
+            jumpY = self.jumpYs.pop(0)
+            self.y = jumpY
+    
+    def doFalling(self):
+        # print(self.fallYs, self.jumpYs)
+        if self.jumpYs == [] and self.fallYs:
+            fallY = self.fallYs.pop(0)
+            self.y = fallY
+
+    def doDashLeft(self):
+        if self.dashLXs:
+            dashLX = self.dashLXs.pop(0)
+            self.x = dashLX
+
+    def doDashRight(self):
+        if self.dashRXs:
+            dashRX = self.dashRXs.pop(0)
+            self.x = dashRX
+    
+    # def isLegalLocation(self, terrain):
+    #     blocks = terrain.getBlocks()
+    #     blocksLocations = terrain.getBlocksLocation()
+    #     # nfx, nfy = self.getLocation()
+    #     # nfw, nfh = self.getSize()
+    #     for loc in blocksLocations:
+    #         tx, ty = loc
+    #         tw, th = blocks[loc]
+    #         if self.x + self.width > tx and self.y + self.height > ty and \
+    #             self.x < tx + tw and self.y < ty + th:
+    #             self.jumpYs = []
+    #             self.dashRXs = []
+    #             self.dashLXs = []
+    #             return False
+    #     return True
