@@ -10,6 +10,7 @@ nightFury1 = NightFury(0, 590 - 60, 30, 60, 'black', 16, 12, 0.6, 20, 10,
                        100, 100, 100)
 # __init__(self)
 terrain1 = Terrain('grey')
+# create a temporary map
 terrain1.addBlock(0, 500, 100, 10)
 terrain1.addBlock(100, 400, 100, 10)
 terrain1.addBlock(200, 300, 100, 10)
@@ -23,8 +24,6 @@ def appStarted(app):
     app.nightFury = nightFury1
     # terrain
     app.terrain = terrain1
-
-    # temporary test values
 
 # Helper functions for timerFired.
 def withinCanvasRange(app, object):
@@ -43,9 +42,10 @@ def timerFired(app):
     app.nightFury.doFalling()
     # test keypressed
     app.nightFury.doJump()
-    app.nightFury.doDashLeft()
-    app.nightFury.doDashRight()
-    # print(app.terrain.isLegalLocation(app.nightFury))
+    app.nightFury.doLeftDash()
+    app.nightFury.doRightDash()
+    app.nightFury.doSlash()
+    # test legal, avoid error
     if app.terrain.isLegalLocation(app.nightFury) == True \
         and withinCanvasRange(app, app.nightFury):
         pass
@@ -73,27 +73,15 @@ def keyPressed(app, event):
         app.nightFury.jump(app.terrain)
     # dash
     if event.key == 'z':
-        # print(app.nightFury.getDirection())
         if app.nightFury.getDirection() == 'Left':
             app.dashLXs = app.nightFury.dashL()
         elif app.nightFury.getDirection() == 'Right':
             app.dashRXs = app.nightFury.dashR()
     # attack
     if event.key == 'c':
-        if app.nightFury.getDirection() == 'Left':
-            app.nightFury.leftSlash()
-        elif app.nightFury.getDirection() == 'Right':
-            app.nightFury.rightSlash()
+        app.nightFury.slash()
 
 # helper functions for redraw All
-# def drawBaseTerrain(app, canvas):
-#     tX, tY = app.terrain.getBaseLocation()
-#     tH, tW = app.terrain.getBase()[tX, tY]
-#     tColor = app.terrain.getColor()
-#     # this rectangle is collision box
-#     canvas.create_rectangle(tX, tY, tX + tW, tY + tH, 
-#                             fill = None, outline = tColor)
-
 def drawBlocks(app, canvas):
     blocks = app.terrain.getBlocks()
     blocksLocations = app.terrain.getBlocksLocation()
@@ -119,10 +107,42 @@ def drawPSbar(app, canvas):
     canvas.create_rectangle(nfX, nfY - 10, nfX + lenPS/100 * nfW, 
                             nfY - 7, fill = 'red')
 
+def drawLeftSlash(app, canvas):
+    nfX, nfY = app.nightFury.getLocation()
+    nfW, nfH = app.nightFury.getSize()
+    nfX += nfW/2
+    canvas.create_polygon(nfX, nfY - 20, 
+                            nfX - 60, nfY - 15, 
+                            nfX - 100, nfY, 
+                            nfX - 120, nfY + 15, 
+                            nfX - 120, nfY + nfH - 15, 
+                            nfX - 100, nfY + nfH, 
+                            nfX - 60, nfY + nfH + 15, 
+                            nfX, nfH + nfY + 20, 
+                            fill = None, outline = 'blue')
+                            
+def drawRightSlash(app, canvas):
+    nfX, nfY = app.nightFury.getLocation()
+    nfW, nfH = app.nightFury.getSize()
+    nfX += nfW/2
+    canvas.create_polygon(nfX, nfY - 20, 
+                            nfX + 60, nfY - 15, 
+                            nfX + 100, nfY, 
+                            nfX + 120, nfY + 15, 
+                            nfX + 120, nfY + nfH - 15, 
+                            nfX + 100, nfY + nfH, 
+                            nfX + 60, nfY + nfH + 15, 
+                            nfX, nfH + nfY + 20, 
+                            fill = None, outline = 'blue')
+
 def redrawAll(app,canvas):
-    # drawBaseTerrain(app, canvas)
     drawBlocks(app, canvas)
     drawNightFury(app, canvas)
     drawPSbar(app, canvas)
+    if app.nightFury.getSlashAttack():
+        if app.nightFury.getDirection() == 'Left':
+            drawLeftSlash(app, canvas)
+        elif app.nightFury.getDirection() == 'Right':
+            drawRightSlash(app, canvas)
 
 runApp(width = 600, height = 600)

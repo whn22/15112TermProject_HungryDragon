@@ -26,6 +26,7 @@ class NightFury():
         self.fallYs = []
         self.dashRXs = []
         self.dashLXs = []
+        self.slashAttack = [] # how long the attack will last [1, 2, 3, 4, 5, 6]
     
     # set methods
     def resetLocation(self, tuple):
@@ -74,12 +75,8 @@ class NightFury():
     def getPS(self):
         return self.PS
     
-    # # methods with terrain (collision methods)
-    # def getMyRoof(self, terrain):
-    #     return terrain.getRoof(self)
-    
-    # def getMyFloor(self, terrain):
-    #     return terrain.getFloor(self)
+    def getSlashAttack(self):
+        return self.slashAttack
 
     # move methods
     def goLeft(self, terrain):
@@ -97,23 +94,6 @@ class NightFury():
         else:
             self.x -= self.speed
 
-    # def jump(self, terrain):
-    #     if self.jumpYs:
-    #         return
-    #     g = self.gravity
-    #     u = self.jumpHeight # initial speed
-    #     y = self.y
-    #     while True:
-    #         if y > terrain - self.height:
-    #             self.jumpYs.pop()
-    #             break
-    #         y -= u
-    #         if u > -self.jumpHeight:
-    #             u -= g
-    #         self.jumpYs.append(y)
-    #     self.jumpYs.append(terrain - self.height)
-    #     # print (jumpYs, 'jump')
-
     def jump(self, terrain):
         if self.jumpYs or self.fallYs:
             return
@@ -126,7 +106,6 @@ class NightFury():
             u -= g
             self.jumpYs.append(y)
             test = terrain.isLegalLocation2(self.x, y, self.width, self.height)
-            print(test)
             if test != True:
                 self.jumpYs.pop()
                 tx, ty = test # location of colliding box
@@ -134,53 +113,6 @@ class NightFury():
                 self.jumpYs.append(ty + th)
                 break
         # print(self.jumpYs, 'jump')
-
-    # def falling(self, terrain, HEIGHT):
-    #     floor = terrain.getFloor(self, HEIGHT)
-    #     # print(self.y + self.height, floor)
-    #     # print(self.fallYs, self.y == floor - self.height)
-    #     if self.fallYs or self.y == floor - self.height:
-    #         return
-    #     u = 0 # initial falling speed
-    #     v = self.jumpHeight # Maximum falling speed
-    #     g = self.gravity
-    #     y = self.y
-    #     while True:
-    #         # print(y + self.height, floor)
-    #         if y + self.height > floor:
-    #             self.fallYs.pop()
-    #             break
-    #         y += u
-    #         print(u, v)
-    #         if u < v:
-    #             u += g
-    #         self.fallYs.append(y)
-    #     if floor != HEIGHT:
-    #         self.fallYs.append(floor - self.height)
-    #     print(self.fallYs)
-
-    def falling(self, terrain):
-        if self.jumpYs or self.fallYs:
-            return
-        u = 1 # initial falling speed
-        v = self.jumpHeight # Maximum falling speed
-        g = self.gravity
-        y = self.y
-        while True:
-            # print(y + self.height, floor)
-            y += u
-            # print(u, v)
-            if u < v:
-                u += g
-            self.fallYs.append(y)
-            # print(self.fallYs)
-            test = terrain.isLegalLocation2(self.x, y, self.width, self.height)
-            if test != True:
-                self.fallYs.pop()
-                tx, ty = test # location of colliding box
-                # self.fallYs.append(ty)
-                break
-        print(self.fallYs)
 
     def dashL(self):
         if self.dashLXs:
@@ -213,11 +145,17 @@ class NightFury():
         # print (dashXs, 'dashR')
 
     # attack methods
-    def leftSlash(self):
-        pass
+    # def leftSlash(self):
+    #     if self.slashAttack == []:
+    #         self.slashAttack = [1, 2, 3, 4, 5, 6]
 
-    def rightSlash(self):
-        pass
+    # def rightSlash(self):
+    #     if self.slashAttack == []:
+    #         self.slashAttack = [1, 2, 3, 4, 5, 6]
+
+    def slash(self):
+        if self.slashAttack == []:
+            self.slashAttack = [1, 2, 3, 4, 5, 6]
 
     def quickFarAttack(self):
         pass
@@ -236,40 +174,45 @@ class NightFury():
             self.PS += 0.5
 
     def doJump(self):
-        # print(self.fallYs, self.jumpYs)
-        # if self.fallYs == [] and self.jumpYs:
         if self.jumpYs:
             jumpY = self.jumpYs.pop(0)
             self.y = jumpY
     
+    def falling(self, terrain):
+        if self.jumpYs or self.fallYs:
+            return
+        u = 1 # initial falling speed
+        v = self.jumpHeight # Maximum falling speed
+        g = self.gravity
+        y = self.y
+        while True:
+            y += u
+            if u < v:
+                u += g
+            self.fallYs.append(y)
+            test = terrain.isLegalLocation2(self.x, y, self.width, self.height)
+            if test != True:
+                self.fallYs.pop()
+                # tx, ty = test # location of colliding box
+                # self.fallYs.append(ty)
+                break
+        # print(self.fallYs)
+
     def doFalling(self):
-        # print(self.fallYs, self.jumpYs)
         if self.jumpYs == [] and self.fallYs:
             fallY = self.fallYs.pop(0)
             self.y = fallY
 
-    def doDashLeft(self):
+    def doLeftDash(self):
         if self.dashLXs:
             dashLX = self.dashLXs.pop(0)
             self.x = dashLX
 
-    def doDashRight(self):
+    def doRightDash(self):
         if self.dashRXs:
             dashRX = self.dashRXs.pop(0)
             self.x = dashRX
     
-    # def isLegalLocation(self, terrain):
-    #     blocks = terrain.getBlocks()
-    #     blocksLocations = terrain.getBlocksLocation()
-    #     # nfx, nfy = self.getLocation()
-    #     # nfw, nfh = self.getSize()
-    #     for loc in blocksLocations:
-    #         tx, ty = loc
-    #         tw, th = blocks[loc]
-    #         if self.x + self.width > tx and self.y + self.height > ty and \
-    #             self.x < tx + tw and self.y < ty + th:
-    #             self.jumpYs = []
-    #             self.dashRXs = []
-    #             self.dashLXs = []
-    #             return False
-    #     return True
+    def doSlash(self):
+        if self.slashAttack:
+            self.slashAttack.pop(0)
