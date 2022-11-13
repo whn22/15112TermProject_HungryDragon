@@ -58,8 +58,9 @@ class Terrain():
             tx, ty = loc
             tw, th = self.terrainBlocks[loc]
             # print(oX + oW > tx, oY + oH > ty, oX < tx + tw, oH < ty + th)
-            if oX + oW > tx and oY + oH < ty and \
-                oX < tx + tw and oH > ty + th:
+            # if oX + oW > tx and oY + oH < ty and \
+            #     oX < tx + tw and oH > ty + th:
+            if oX + oW > tx and oX < tx + tw and oY + oH > ty and oY < ty + th:
                 return (tx, ty)
         return True
 
@@ -68,9 +69,11 @@ class Terrain():
         for loc in blocksLocations:
             tx, ty = loc
             tw, th = self.terrainBlocks[loc]
-            # print(oX + oW > tx, oY + oH > ty, oX < tx + tw, oH < ty + th)
-            if oX + oW > tx and oY + oH < ty and \
-                oX < tx + tw and oH > ty + th:
+            # if oX + oW > tx and oY + oH > ty and \
+            #     oX < tx + tw and oH < ty + th:
+            print(oX + oW > tx, oX < tx + tw, oY + oH > ty, oY < ty + th)
+            if oX + oW > tx and oX < tx + tw and oY + oH > ty and oY < ty + th:
+                print('illegal')
                 return (tx, ty)
         return True
     

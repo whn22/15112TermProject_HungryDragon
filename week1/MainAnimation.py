@@ -11,6 +11,10 @@ nightFury1 = NightFury(0, 590 - 60, 30, 60, 'black', 16, 12, 0.6, 20, 10,
 # __init__(self)
 terrain1 = Terrain('grey')
 terrain1.addBlock(0, 500, 100, 10)
+terrain1.addBlock(100, 400, 100, 10)
+terrain1.addBlock(200, 300, 100, 10)
+terrain1.addBlock(300, 200, 100, 10)
+terrain1.addBlock(400, 100, 100, 10)
 
 def appStarted(app):
     # timerDelay
@@ -19,39 +23,35 @@ def appStarted(app):
     app.nightFury = nightFury1
     # terrain
     app.terrain = terrain1
+
     # temporary test values
 
-    # tempx, app.groundH = app.terrain.getBaseLocation()
-    # print(app.groundH)
-
-# helper functions for timerFired
-# def isLegalLocation(app):
-#     blocks = app.terrain.getBlocks()
-#     blocksLocations = app.terrain.getBlocksLocation()
-#     nfx, nfy = app.nightFury.getLocation()
-#     nfw, nfh = app.nightFury.getSize()
-#     for loc in blocksLocations:
-#         tx, ty = loc
-#         tw, th = blocks[loc]
-#         if nfx + nfw > tx and nfy + nfh > ty and nfx < tx + tw and nfy < ty+th:
-#             return False
-#     return True
+# Helper functions for timerFired.
+def withinCanvasRange(app, object):
+    oX, oY = object.getLocation()
+    oW, oH = object.getSize()
+    if oX < 0 or oY < 0 or oX + oW > app.width or oY + oH > app.height:
+        return False
+    return True
 
 def timerFired(app):
     backupPosition = app.nightFury.getLocation()
     # test default
     app.nightFury.isKilled()
     app.nightFury.regainPS()
-    # app.nightFury.falling(app.terrain)
-    # app.nightFury.doFalling()
+    app.nightFury.falling(app.terrain)
+    app.nightFury.doFalling()
     # test keypressed
     app.nightFury.doJump()
     app.nightFury.doDashLeft()
     app.nightFury.doDashRight()
     # print(app.terrain.isLegalLocation(app.nightFury))
-    if app.terrain.isLegalLocation(app.nightFury) == True:
+    if app.terrain.isLegalLocation(app.nightFury) == True \
+        and withinCanvasRange(app, app.nightFury):
         pass
     else:
+        # print('here')
+        app.nightFury.resetDefaultMove()
         app.nightFury.resetLocation(backupPosition)
 
 # helper functions for keyPressed
@@ -61,9 +61,13 @@ def keyPressed(app, event):
     if event.key == 'Left':
         app.nightFury.resetDirection('Left')
         app.nightFury.goLeft(app.terrain)
+        if not withinCanvasRange(app, app.nightFury):
+            app.nightFury.goRight(app.terrain)
     elif event.key == 'Right':
         app.nightFury.resetDirection('Right')
         app.nightFury.goRight(app.terrain)
+        if not withinCanvasRange(app, app.nightFury):
+            app.nightFury.goLeft(app.terrain)
     # jump
     if event.key == 'x':
         app.nightFury.jump(app.terrain)

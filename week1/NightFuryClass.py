@@ -39,6 +39,12 @@ class NightFury():
     
     def resetDirection(self, str): # Left or Right
         self.direction = str
+    
+    def resetDefaultMove(self):
+        self.jumpYs = []
+        self.fallYs = []
+        self.dashRXs = []
+        self.dashLXs = []
 
     # get methods
     def getDirection(self):
@@ -116,16 +122,17 @@ class NightFury():
         g = self.gravity
         y = self.y
         while u > 0:
-            test = terrain.isLegalLocation2(self.x, y, self.width, self.height)
-            if test != True:
-                self.fallYs.pop()
-                tx, ty = test # location of colliding box
-                tw, th = terrain.getSpecificBlockSize(self, tx, ty)
-                self.fallYs.append(ty + th)
-                break
             y -= u
             u -= g
             self.jumpYs.append(y)
+            test = terrain.isLegalLocation2(self.x, y, self.width, self.height)
+            print(test)
+            if test != True:
+                self.jumpYs.pop()
+                tx, ty = test # location of colliding box
+                tw, th = terrain.getSpecificBlockSize(tx, ty)
+                self.jumpYs.append(ty + th)
+                break
         # print(self.jumpYs, 'jump')
 
     # def falling(self, terrain, HEIGHT):
@@ -155,23 +162,24 @@ class NightFury():
     def falling(self, terrain):
         if self.jumpYs or self.fallYs:
             return
-        u = 0 # initial falling speed
+        u = 1 # initial falling speed
         v = self.jumpHeight # Maximum falling speed
         g = self.gravity
         y = self.y
         while True:
             # print(y + self.height, floor)
+            y += u
+            # print(u, v)
+            if u < v:
+                u += g
+            self.fallYs.append(y)
+            # print(self.fallYs)
             test = terrain.isLegalLocation2(self.x, y, self.width, self.height)
             if test != True:
                 self.fallYs.pop()
                 tx, ty = test # location of colliding box
-                self.fallYs.append(ty)
+                # self.fallYs.append(ty)
                 break
-            y += u
-            print(u, v)
-            if u < v:
-                u += g
-            self.fallYs.append(y)
         print(self.fallYs)
 
     def dashL(self):
