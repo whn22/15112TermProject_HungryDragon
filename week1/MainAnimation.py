@@ -42,14 +42,14 @@ def timerFired(app):
     # test default
     app.nightFury.isKilled()
     app.nightFury.regainPS()
-    app.nightFury.falling(app.terrain, app.height)
-    app.nightFury.doFalling()
+    # app.nightFury.falling(app.terrain)
+    # app.nightFury.doFalling()
     # test keypressed
     app.nightFury.doJump()
     app.nightFury.doDashLeft()
     app.nightFury.doDashRight()
     # print(app.terrain.isLegalLocation(app.nightFury))
-    if app.terrain.isLegalLocation(app.nightFury):
+    if app.terrain.isLegalLocation(app.nightFury) == True:
         pass
     else:
         app.nightFury.resetLocation(backupPosition)

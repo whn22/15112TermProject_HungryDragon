@@ -68,25 +68,25 @@ class NightFury():
     def getPS(self):
         return self.PS
     
-    # methods with terrain (collision methods)
-    def getMyRoof(self, terrain):
-        return terrain.getRoof(self)
+    # # methods with terrain (collision methods)
+    # def getMyRoof(self, terrain):
+    #     return terrain.getRoof(self)
     
-    def getMyFloor(self, terrain):
-        return terrain.getFloor(self)
+    # def getMyFloor(self, terrain):
+    #     return terrain.getFloor(self)
 
     # move methods
     def goLeft(self, terrain):
         self.x -= self.speed
-        if terrain.isLegalLocation(self):
+        if terrain.isLegalLocation(self) == True:
             pass
         else:
             self.x += self.speed
 
     def goRight(self, terrain):
         self.x += self.speed
-        print(terrain.isLegalLocation(self))
-        if terrain.isLegalLocation(self):
+        # print(terrain.isLegalLocation(self))
+        if terrain.isLegalLocation(self) == True:
             pass
         else:
             self.x -= self.speed
@@ -111,28 +111,49 @@ class NightFury():
     def jump(self, terrain):
         if self.jumpYs or self.fallYs:
             return
-        roof = terrain.getRoof(self)
-        # print(roof)
-        g = self.gravity
         u = self.jumpHeight # initial speed
+        # v = 0
+        g = self.gravity
         y = self.y
         while u > 0:
-            if y < roof:
-                self.jumpYs.pop()
+            test = terrain.isLegalLocation2(self.x, y, self.width, self.height)
+            if test != True:
+                self.fallYs.pop()
+                tx, ty = test # location of colliding box
+                tw, th = terrain.getSpecificBlockSize(self, tx, ty)
+                self.fallYs.append(ty + th)
                 break
             y -= u
-            if u > 0:
-                u -= g
+            u -= g
             self.jumpYs.append(y)
-        if roof != 0:
-            self.jumpYs.append(roof)
         # print(self.jumpYs, 'jump')
 
-    def falling(self, terrain, HEIGHT):
-        floor = terrain.getFloor(self, HEIGHT)
-        # print(self.y + self.height, floor)
-        # print(self.fallYs, self.y == floor - self.height)
-        if self.fallYs or self.y == floor - self.height:
+    # def falling(self, terrain, HEIGHT):
+    #     floor = terrain.getFloor(self, HEIGHT)
+    #     # print(self.y + self.height, floor)
+    #     # print(self.fallYs, self.y == floor - self.height)
+    #     if self.fallYs or self.y == floor - self.height:
+    #         return
+    #     u = 0 # initial falling speed
+    #     v = self.jumpHeight # Maximum falling speed
+    #     g = self.gravity
+    #     y = self.y
+    #     while True:
+    #         # print(y + self.height, floor)
+    #         if y + self.height > floor:
+    #             self.fallYs.pop()
+    #             break
+    #         y += u
+    #         print(u, v)
+    #         if u < v:
+    #             u += g
+    #         self.fallYs.append(y)
+    #     if floor != HEIGHT:
+    #         self.fallYs.append(floor - self.height)
+    #     print(self.fallYs)
+
+    def falling(self, terrain):
+        if self.jumpYs or self.fallYs:
             return
         u = 0 # initial falling speed
         v = self.jumpHeight # Maximum falling speed
@@ -140,16 +161,17 @@ class NightFury():
         y = self.y
         while True:
             # print(y + self.height, floor)
-            if y + self.height > floor:
+            test = terrain.isLegalLocation2(self.x, y, self.width, self.height)
+            if test != True:
                 self.fallYs.pop()
+                tx, ty = test # location of colliding box
+                self.fallYs.append(ty)
                 break
             y += u
             print(u, v)
             if u < v:
                 u += g
             self.fallYs.append(y)
-        if floor != HEIGHT:
-            self.fallYs.append(floor - self.height)
         print(self.fallYs)
 
     def dashL(self):
