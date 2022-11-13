@@ -1,0 +1,19 @@
+Here is some games which I've played before that are similiar to my project.
+
+2D platformers:
+celeste
+cuphead
+
+2D metroidvania:
+Hollow Knight
+Ori and the will of wisps
+
+2D roguelike:
+Dead cells
+The binding of Issac
+
+In Hungry Dargon, player will move very similiar to hollow knight, however, the
+player is affected by gravity when dashing, and can't do wall jump.
+the room generation will be very similiar to the binding of Issac, however, 
+hungry dargon will be side view instead of vertical view.
+The overall gameplay will be similiar to Hollow Knight and Ori.

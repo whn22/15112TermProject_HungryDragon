@@ -1,0 +1,4 @@
+1. MainAnimation class
+2. Player class (NightFuryClass)
+3. Terrain class (sub class: destructible terrain, moveable terrain)
+4. Enemy class (sub class: different kinds of enemies)
