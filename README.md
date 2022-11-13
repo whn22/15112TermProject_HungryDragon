@@ -14,5 +14,3 @@ collision.
 Room generation.
 The AI of enemies and the boss.
 Different attack methods of the dragon interact with the enemies.
-
-TP1: finished basic moving methods (move left right, jump, fall, dash), the difficulty is the collision with player and the terrain.

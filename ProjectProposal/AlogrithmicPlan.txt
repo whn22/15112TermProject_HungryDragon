@@ -1,0 +1,16 @@
+stage1: collision. (with terrain, enemies)
+(I've done this part)
+
+stage3: Different attack methods of the dragon interact with the enemies.
+(determine if the enemy is with in the attack range of the player, if this is 
+true, and key pressed == 'c' is true, then enemy lose health.)
+
+stage5: The AI of enemies (and the boss.)
+(determine if there is an obstacle between player and enemy, if true, then enemy
+stays passive, if false, then enemy wait for 5s, then become active. Active:
+double speed, move towards the player)
+
+stage6: Room generation.
+(have some types of fixed unchangable terrain, random select a type, then add 
+random changable terrains (with reasonable size) to the room, spawn enemys on
+the surface of terrains.)
