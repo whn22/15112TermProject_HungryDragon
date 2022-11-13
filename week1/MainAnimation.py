@@ -12,10 +12,12 @@ nightFury1 = NightFury(0, 590 - 60, 30, 60, 'black', 16, 12, 0.6, 20, 10,
 terrain1 = Terrain('grey')
 # create a temporary map
 terrain1.addBlock(0, 500, 100, 10)
-terrain1.addBlock(100, 400, 100, 10)
-terrain1.addBlock(200, 300, 100, 10)
+terrain1.addBlock(150, 400, 100, 10)
+terrain1.addBlock(350, 300, 100, 50)
 terrain1.addBlock(300, 200, 100, 10)
-terrain1.addBlock(400, 100, 100, 10)
+terrain1.addBlock(500, 100, 100, 20)
+terrain1.addBlock(700, 250, 70, 150)
+terrain1.addBlock(700, 400, 120, 50)
 
 def appStarted(app):
     # timerDelay
@@ -33,7 +35,7 @@ def withinCanvasRange(app, object):
         return False
     return True
 
-def timerFired(app):
+def nightFuryTimerFired(app):
     backupPosition = app.nightFury.getLocation()
     # test default
     app.nightFury.isKilled()
@@ -53,6 +55,13 @@ def timerFired(app):
         # print('here')
         app.nightFury.resetDefaultMove()
         app.nightFury.resetLocation(backupPosition)
+
+def enemiesTimerFired(app):
+    pass
+
+def timerFired(app):
+    nightFuryTimerFired(app)
+    enemiesTimerFired(app)
 
 # helper functions for keyPressed
 def keyPressed(app, event):
@@ -74,9 +83,9 @@ def keyPressed(app, event):
     # dash
     if event.key == 'z':
         if app.nightFury.getDirection() == 'Left':
-            app.dashLXs = app.nightFury.dashL()
+            app.nightFury.dashL()
         elif app.nightFury.getDirection() == 'Right':
-            app.dashRXs = app.nightFury.dashR()
+            app.nightFury.dashR()
     # attack
     if event.key == 'c':
         app.nightFury.slash()
@@ -105,7 +114,7 @@ def drawPSbar(app, canvas):
     nfX, nfY = app.nightFury.getLocation()
     nfW, nfH = app.nightFury.getSize()
     canvas.create_rectangle(nfX, nfY - 10, nfX + lenPS/100 * nfW, 
-                            nfY - 7, fill = 'red')
+                            nfY - 7, fill = 'orange')
 
 def drawLeftSlash(app, canvas):
     nfX, nfY = app.nightFury.getLocation()
@@ -120,7 +129,7 @@ def drawLeftSlash(app, canvas):
                             nfX - 60, nfY + nfH + 15, 
                             nfX, nfH + nfY + 20, 
                             fill = None, outline = 'blue')
-                            
+
 def drawRightSlash(app, canvas):
     nfX, nfY = app.nightFury.getLocation()
     nfW, nfH = app.nightFury.getSize()
@@ -145,4 +154,4 @@ def redrawAll(app,canvas):
         elif app.nightFury.getDirection() == 'Right':
             drawRightSlash(app, canvas)
 
-runApp(width = 600, height = 600)
+runApp(width = 1000, height = 600)

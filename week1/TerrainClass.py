@@ -1,7 +1,10 @@
 class Terrain():
     def __init__(self, color):
-        self.terrainBlocks = {(0, 590):(600, 10)} # default base terrain
+        self.terrainBlocks = {(0, 590):(1000, 10)} # default base terrain
         self.color = color
+
+    def addBlock(self, x, y, w, h):
+        self.terrainBlocks[(x, y)] = (w, h)
 
     def getColor(self):
         return self.color
@@ -17,9 +20,6 @@ class Terrain():
             return self.terrainBlocks[(x, y)]
         else:
             return None
-
-    def addBlock(self, x, y, w, h):
-        self.terrainBlocks[(x, y)] = (w, h)
 
     def isLegalLocation(self, object): # inputs an object
         oX, oY = object.getLocation()

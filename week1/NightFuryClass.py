@@ -81,18 +81,23 @@ class NightFury():
     # move methods
     def goLeft(self, terrain):
         self.x -= self.speed
-        if terrain.isLegalLocation(self) == True:
+        test = terrain.isLegalLocation(self)
+        if test == True:
             pass
         else:
-            self.x += self.speed
+            tx, ty = test
+            tw, th = terrain.getSpecificBlockSize(tx, ty)
+            self.x = tx + tw
 
     def goRight(self, terrain):
         self.x += self.speed
-        # print(terrain.isLegalLocation(self))
-        if terrain.isLegalLocation(self) == True:
+        test = terrain.isLegalLocation(self)
+        if test == True:
             pass
         else:
-            self.x -= self.speed
+            tx, ty = test
+            tw, th = terrain.getSpecificBlockSize(tx, ty)
+            self.x = tx - self.width
 
     def jump(self, terrain):
         if self.jumpYs or self.fallYs:

@@ -1,8 +1,8 @@
 from cmu_112_graphics import *
-import time # sleep()
+# import time # sleep()
 
-from NightFuryClass import NightFury
-from TerrainClass import Terrain
+# from NightFuryClass import NightFury
+# from TerrainClass import Terrain
 
 def appStarted(app):
     pass
@@ -19,4 +19,4 @@ def keyPressed(app, event):
 def redrawAll(app,canvas):
     pass
 
-runApp(width = 600, height = 600)
+runApp(width = 1000, height = 600)
