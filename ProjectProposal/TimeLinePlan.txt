@@ -1,8 +1,8 @@
 TP0
 stage1: the player can do some basic platforming.
 TP1
-stage2: There is some inactive enemies, if player collide with them, player will 
-take damage.
+stage2: There are some inactive enemies, if player collides with them, the player 
+will take damage.
 stage3: the player can attack and kill the enemies.
 stage4: try attach sprites to the game.
 TP2
