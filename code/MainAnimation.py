@@ -194,9 +194,6 @@ def drawPlayer(app, canvas):
         elif app.nightFury.getDirection() == 'Right':
             drawRightSlash(app, canvas)
 
-# def drawEnemies(app, canvas):
-#     drawFlyEnemy(app, canvas)
-
 def redrawAll(app,canvas):
     drawBlocks(app, canvas)
     drawPlayer(app, canvas)
