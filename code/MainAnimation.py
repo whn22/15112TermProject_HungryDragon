@@ -19,12 +19,17 @@ terrain1.addBlock(700, 400, 120, 50)
 
 # __init__(self, x, y, w, h, color, speed, jumpHeight, gravity, ATK, DEF, 
 # health, magic, physicalStrength)
-nightFury1 = NightFury(0, 590 - 60, 30, 60, 'black', 16, 12, 0.6, 20, 10, 
+nightFury1 = NightFury(0, 590 - 50, 20, 50, 'black', 16, 12, 0.6, 20, 10, 
                        100, 100, 100)
 print (nightFury1)
 
 # __init__(self, x, y, w, h, color, speed, DMG, health)
 flyEnemy1 = FlyEnemy(110, 110, 10, 10, 'red', 0.5, 20, 50)
+flyEnemy2 = FlyEnemy(150, 500, 10, 10, 'red', 0.5, 20, 50)
+flyEnemy3 = FlyEnemy(770, 200, 10, 10, 'red', 0.5, 20, 50)
+flyEnemy4 = FlyEnemy(550, 420, 10, 10, 'red', 0.5, 20, 50)
+flyEnemy5 = FlyEnemy(380, 100, 10, 10, 'red', 0.5, 20, 50)
+enemies = [flyEnemy1, flyEnemy2, flyEnemy3, flyEnemy4, flyEnemy5]
 
 def appStarted(app):
     # timerDelay
@@ -34,7 +39,7 @@ def appStarted(app):
     # terrain
     app.terrain = terrain1
     # enemies
-    app.flyEnemy = flyEnemy1
+    app.enemies = enemies
 
 # Helper functions for timerFired.
 def withinCanvasRange(app, object):
@@ -55,6 +60,7 @@ def withinReasonableRange(app, object):
 def nightFuryTimerFired(app):
     backupPosition = app.nightFury.getLocation()
     # test default
+    app.nightFury.refreshSlashLocation()
     app.nightFury.isKilled()
     app.nightFury.regainPS()
     app.nightFury.falling(app.terrain)
@@ -63,7 +69,8 @@ def nightFuryTimerFired(app):
     app.nightFury.doJump()
     app.nightFury.doLeftDash()# app.terrain
     app.nightFury.doRightDash()# app.terrain
-    app.nightFury.doSlash()
+    app.nightFury.doLeftSlash(enemies)
+    app.nightFury.doRightSlash(enemies)
     # test legal, avoid error
     if app.terrain.isLegalLocation(app.nightFury) == True \
         and withinCanvasRange(app, app.nightFury):
@@ -74,15 +81,19 @@ def nightFuryTimerFired(app):
         app.nightFury.resetLocation(backupPosition)
 
 def enemiesTimerFired(app):
-    backupPosition = app.flyEnemy.getLocation()
-    app.flyEnemy.flyIdle(app.terrain)
-    if app.terrain.isLegalLocation(app.flyEnemy) == True \
-        and withinReasonableRange(app, app.flyEnemy):
-        pass
-    else:
-        # print('here')
-        app.flyEnemy.resetDefaultMove()
-        app.flyEnemy.resetLocation(backupPosition)
+    for enemy in app.enemies:
+        backupPosition = enemy.getLocation()
+        if enemy.getIsDead() == True:
+            app.enemies.remove(enemy)
+        if type(enemy) == FlyEnemy:
+            enemy.flyIdle(app.terrain)
+        if app.terrain.isLegalLocation(enemy) == True \
+            and withinReasonableRange(app, enemy):
+            pass
+        else:
+            # print('here')
+            enemy.resetDefaultMove()
+            enemy.resetLocation(backupPosition)
 
 def timerFired(app):
     nightFuryTimerFired(app)
@@ -135,59 +146,50 @@ def drawNightFury(app, canvas):
                             fill = None, outline = nfColor)
 
 def drawPSbar(app, canvas):
-    lenPS = app.nightFury.getPS()
+    ps = app.nightFury.getPS()
     nfX, nfY = app.nightFury.getLocation()
-    nfW, nfH = app.nightFury.getSize()
-    canvas.create_rectangle(nfX, nfY - 10, nfX + lenPS/100 * nfW, 
+    canvas.create_rectangle(nfX - 5, nfY - 10, nfX + ps/100 * 25, 
                             nfY - 7, fill = 'orange')
 
 def drawLeftSlash(app, canvas):
-    nfX, nfY = app.nightFury.getLocation()
-    nfW, nfH = app.nightFury.getSize()
-    nfX += nfW/2
-    canvas.create_polygon(nfX, nfY - 20, 
-                            nfX - 60, nfY - 15, 
-                            nfX - 100, nfY, 
-                            nfX - 120, nfY + 15, 
-                            nfX - 120, nfY + nfH - 15, 
-                            nfX - 100, nfY + nfH, 
-                            nfX - 60, nfY + nfH + 15, 
-                            nfX, nfH + nfY + 20, 
-                            fill = None, outline = 'blue')
+    leftSlash = app.nightFury.getLeftSlashBox()
+    for rect in leftSlash:
+        x, y = rect
+        w, h = leftSlash[rect]
+        canvas.create_rectangle(x, y, x + w, y + h, fill = None, outline = 'blue')
 
 def drawRightSlash(app, canvas):
-    nfX, nfY = app.nightFury.getLocation()
-    nfW, nfH = app.nightFury.getSize()
-    nfX += nfW/2
-    canvas.create_polygon(nfX, nfY - 20, 
-                            nfX + 60, nfY - 15, 
-                            nfX + 100, nfY, 
-                            nfX + 120, nfY + 15, 
-                            nfX + 120, nfY + nfH - 15, 
-                            nfX + 100, nfY + nfH, 
-                            nfX + 60, nfY + nfH + 15, 
-                            nfX, nfH + nfY + 20, 
-                            fill = None, outline = 'blue')
-    
-def drawFlyEnemy(app, canvas):
-    fX, fY = app.flyEnemy.getLocation()
-    fW, fH = app.flyEnemy.getSize()
-    fColor = app.flyEnemy.getColor()
-    # this rectangle is collision box
-    canvas.create_rectangle(fX, fY, fX + fW, fY + fH, 
-                            fill = None, outline = fColor)
+    rightSlash = app.nightFury.getRightSlashBox()
+    for rect in rightSlash:
+        x, y = rect
+        w, h = rightSlash[rect]
+        canvas.create_rectangle(x, y, x + w, y + h, fill = None, outline = 'blue')
+
+def drawEnemies(app, canvas):
+    for enemy in app.enemies:
+        if enemy.getIsDead() == True:
+            continue
+        fX, fY = enemy.getLocation()
+        fW, fH = enemy.getSize()
+        fColor = enemy.getColor()
+        hp = enemy.getHP()
+        # this rectangle is collision box
+        canvas.create_rectangle(fX, fY, fX + fW, fY + fH, 
+                                fill = None, outline = fColor)
+        canvas.create_rectangle(fX - 5, fY - 10, fX + hp/50 * 20 - 5, fY - 7, 
+                                fill = 'red')
 
 def drawPlayer(app, canvas):
     drawNightFury(app, canvas)
     drawPSbar(app, canvas)
-    if app.nightFury.getSlashAttack():
+    if app.nightFury.getSlashFrames():
         if app.nightFury.getDirection() == 'Left':
             drawLeftSlash(app, canvas)
         elif app.nightFury.getDirection() == 'Right':
             drawRightSlash(app, canvas)
 
-def drawEnemies(app, canvas):
-    drawFlyEnemy(app, canvas)
+# def drawEnemies(app, canvas):
+#     drawFlyEnemy(app, canvas)
 
 def redrawAll(app,canvas):
     drawBlocks(app, canvas)

@@ -1,3 +1,6 @@
+from CollisionClass import Collision
+from AttackBoxClass import AttackBox
+
 class NightFury():
     def __init__(self, x, y, w, h, color, speed, jumpHeight, gravity, ATK, DEF,
                  health, magic, physicalStrength):
@@ -24,9 +27,20 @@ class NightFury():
         self.eaten = []
         self.jumpYs = []
         self.fallYs = []
-        self.dashRXs = []
         self.dashLXs = []
-        self.slashAttack = [] # how long the attack will last [1, 2, 3, 4, 5, 6]
+        self.dashRXs = []
+        # attack collision box
+        self.slashFrames = [] # how long the attack will last [1, 2, 3, 4, 5, 6]
+        self.leftSlashBox = AttackBox.createLeftSlashBox(\
+                            self.x, self.y, self.height)
+        self.rightSlashBox = AttackBox.createRightSlashBox(\
+                            self.x, self.y, self.height)
+    
+    def refreshSlashLocation(self):
+        self.leftSlashBox = AttackBox.createLeftSlashBox(\
+                            self.x, self.y, self.height)
+        self.rightSlashBox = AttackBox.createRightSlashBox(\
+                            self.x, self.y, self.height)
     
     def __str__(self):
         return f'NightFury:\n\
@@ -46,6 +60,12 @@ class NightFury():
                 isDead = {self.isDead}\n\
                 direction = {self.direction}\n'
     
+    def getLeftSlashBox(self):
+        return self.leftSlashBox
+    
+    def getRightSlashBox(self):
+        return self.rightSlashBox
+
     # set methods
     def resetLocation(self, tuple):
         self.x, self.y = tuple
@@ -83,6 +103,12 @@ class NightFury():
     
     def getIsDead(self):
         return self.isDead
+    
+    def getATK(self):
+        return self.ATK
+    
+    def getDEF(self):
+        return self.DEF
 
     def getHP(self):
         return self.HP
@@ -93,10 +119,10 @@ class NightFury():
     def getPS(self):
         return self.PS
     
-    def getSlashAttack(self):
-        return self.slashAttack
+    def getSlashFrames(self):
+        return self.slashFrames
 
-    # move methods
+    # keypressed methods
     def goLeft(self, terrain):
         self.x -= self.speed
         test = terrain.isLegalLocation(self)
@@ -169,16 +195,19 @@ class NightFury():
 
     # attack methods
     # def leftSlash(self):
-    #     if self.slashAttack == []:
-    #         self.slashAttack = [1, 2, 3, 4, 5, 6]
+    #     if self.slashFrames == []:
+    #         self.slashFrames = [1, 2, 3, 4, 5, 6]
 
     # def rightSlash(self):
-    #     if self.slashAttack == []:
-    #         self.slashAttack = [1, 2, 3, 4, 5, 6]
+    #     if self.slashFrames == []:
+    #         self.slashFrames = [1, 2, 3, 4, 5, 6]
 
     def slash(self):
-        if self.slashAttack == []:
-            self.slashAttack = [1, 2, 3, 4, 5, 6]
+        if self.slashFrames == []:
+            if self.direction == 'Left':
+                self.slashFrames = [1, 2, 3, 4, 5, 6]
+            if self.direction == 'Right':
+                self.slashFrames = [7, 8, 9, 10, 11, 12]
 
     def quickFarAttack(self):
         pass
@@ -230,41 +259,34 @@ class NightFury():
         if self.dashLXs:
             dashLX = self.dashLXs.pop(0)
             self.x = dashLX
-            # test = terrain.isLegalLocation(self)
-            # if test == True:
-            #     pass
-            # else:
-            #     tx, ty = test
-            #     tw, th = terrain.getSpecificBlockSize(tx, ty)
-            #     self.x = tx + tw
-            #     self.dashLXs = []
 
     def doRightDash(self): # terrain
         if self.dashRXs:
             dashRX = self.dashRXs.pop(0)
             self.x = dashRX
-            # test = terrain.isLegalLocation(self)
-            # if test == True:
-            #     pass
-            # else:
-            #     tx, ty = test
-            #     # tw, th = terrain.getSpecificBlockSize(tx, ty)
-            #     self.x = tx - self.width
-            #     self.dashRXs = []
     
-    def doSlash(self):
-        if self.slashAttack:
-            frame = self.slashAttack.pop(0)
-        # if frame == 3:
-        #     nfX, nfY = self.getLocation()
-        #     nfW, nfH = self.getSize()
-        #     nfX += nfW/2
-        #     canvas.create_polygon(nfX, nfY - 20, 
-        #                             nfX - 60, nfY - 15, 
-        #                             nfX - 100, nfY, 
-        #                             nfX - 120, nfY + 15, 
-        #                             nfX - 120, nfY + nfH - 15, 
-        #                             nfX - 100, nfY + nfH, 
-        #                             nfX - 60, nfY + nfH + 15, 
-        #                             nfX, nfH + nfY + 20, 
-        #                             fill = None, outline = 'blue')
+    def doLeftSlash(self, enemies):
+        if self.slashFrames and self.slashFrames[0] < 7:
+            frame = self.slashFrames.pop(0)
+            if frame == 3:
+                for rect in self.leftSlashBox:
+                    x, y = rect
+                    w, h = self.leftSlashBox[rect]
+                    for enemy in enemies:
+                        test = Collision.isRectangleCollide3(enemy, x, y, w, h)
+                        if test:
+                            enemy.beAttacked(self)
+                            return
+
+    def doRightSlash(self, enemies):
+        if self.slashFrames and self.slashFrames[0] > 6:
+            frame = self.slashFrames.pop(0)
+            if frame == 9:
+                for rect in self.rightSlashBox:
+                    x, y = rect
+                    w, h = self.rightSlashBox[rect]
+                    for enemy in enemies:
+                        test = Collision.isRectangleCollide3(enemy, x, y, w, h)
+                        if test:
+                            enemy.beAttacked(self)
+                            return

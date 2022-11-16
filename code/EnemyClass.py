@@ -17,6 +17,19 @@ class Enemy():
         # default data
         self.isDead = False
         self.direction = 'Right'
+
+    def __repr__(self):
+        return f'Enemy:\n\
+                x = {self.x}\n\
+                y = {self.y}\n\
+                width = {self.width}\n\
+                height = {self.height}\n\
+                color = {self.color}\n\
+                speed = {self.speed}\n\
+                ATK = {self.DMG}\n\
+                HP = {self.HP}\n\
+                isDead = {self.isDead}\n\
+                direction = {self.direction}\n'
     
     # set methods
     def resetLocation(self, tuple):
@@ -69,9 +82,20 @@ class Enemy():
             self.x -= self.speed
 
     # timerfired methods
-    def isKilled(self):
-        if self.HP <= 0:
-            self.isDead = True
+    # def isKilled(self):
+    #     if self.HP <= 0:
+    #         self.isDead = True
+    #     self.HP = 0
+    
+    # health methods:
+    def beAttacked(self, player):
+        print('here')
+        if self.isDead == False:
+            self.HP -= player.getATK()
+            if self.HP <= 0:
+                self.isDead = True
+                self.HP = 0
+        print(self.HP)
 
 class FlyEnemy(Enemy):
     def __init__(self, x, y, w, h, color, speed, DMG, health):
