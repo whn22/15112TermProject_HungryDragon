@@ -1,5 +1,7 @@
+import random
+
 class Enemy():
-    def __init__(self, x, y, w, h, color, speed, gravity, ATK, health):
+    def __init__(self, x, y, w, h, color, speed, DMG, health):
         # self.location = (x, y)
         self.x = x
         self.y = y
@@ -9,14 +11,12 @@ class Enemy():
         # properties
         self.color = color
         self.speed = speed
-        self.gravity = gravity
-        self.ATK = ATK
+        self.DMG = DMG
         # changable data
         self.HP = health
         # default data
         self.isDead = False
         self.direction = 'Right'
-        self.fallYs = []
     
     # set methods
     def resetLocation(self, tuple):
@@ -30,9 +30,6 @@ class Enemy():
     
     def resetDirection(self, str): # Left or Right
         self.direction = str
-    
-    def resetDefaultMove(self):
-        self.fallYs = []
 
     # get methods
     def getDirection(self):
@@ -75,7 +72,43 @@ class Enemy():
     def isKilled(self):
         if self.HP <= 0:
             self.isDead = True
+
+class FlyEnemy(Enemy):
+    def __init__(self, x, y, w, h, color, speed, DMG, health):
+        super().__init__(x, y, w, h, color, speed, DMG, health)
+        self.idlePath = []
+
+    def resetDefaultMove(self):
+        self.idlePath = []
     
+    def createIdlePath(self):
+        chooseX = random.choice([self.speed, -self.speed])
+        chooseY = random.choice([self.speed, -self.speed])
+        for i in range(30):
+            self.idlePath.append((chooseX, chooseY))
+
+    def flyIdle(self, terrain):
+        if self.idlePath == []:
+            self.createIdlePath()
+        dx, dy = self.idlePath.pop(0)
+        self.x += dx
+        self.y += dy
+        if terrain.isLegalLocation(self) == True:
+            pass
+        else:
+            self.idlePath = []
+
+class WalkEnemy(Enemy):
+    def __init__(self, x, y, w, h, color, speed, gravity, DMG, health):
+        super().__init__(self, x, y, w, h, color, speed, DMG, health)
+        # properties
+        self.gravity = gravity
+        # default data
+        self.fallYs = []
+
+    def resetDefaultMove(self):
+        self.fallYs = []
+
     def falling(self, terrain):
         if self.jumpYs or self.fallYs:
             return
@@ -97,3 +130,9 @@ class Enemy():
         if self.jumpYs == [] and self.fallYs:
             fallY = self.fallYs.pop(0)
             self.y = fallY
+        
+    def walkIdle(self, terrain):
+        if self.fallYs == [] and terrain.isLegalLocation(self) == True:
+            self.x += self.speed
+        elif self.fallYs:
+            pass

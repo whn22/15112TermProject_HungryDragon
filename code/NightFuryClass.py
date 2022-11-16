@@ -28,6 +28,24 @@ class NightFury():
         self.dashLXs = []
         self.slashAttack = [] # how long the attack will last [1, 2, 3, 4, 5, 6]
     
+    def __str__(self):
+        return f'NightFury:\n\
+                x = {self.x}\n\
+                y = {self.y}\n\
+                width = {self.width}\n\
+                height = {self.height}\n\
+                color = {self.color}\n\
+                speed = {self.speed}\n\
+                jumpHeight = {self.jumpHeight}\n\
+                gravity = {self.gravity}\n\
+                ATK = {self.ATK}\n\
+                DEF = {self.DEF}\n\
+                HP = {self.HP}\n\
+                MP = {self.MP}\n\
+                PS = {self.PS}\n\
+                isDead = {self.isDead}\n\
+                direction = {self.direction}\n'
+    
     # set methods
     def resetLocation(self, tuple):
         self.x, self.y = tuple
@@ -96,7 +114,7 @@ class NightFury():
             pass
         else:
             tx, ty = test
-            tw, th = terrain.getSpecificBlockSize(tx, ty)
+            # tw, th = terrain.getSpecificBlockSize(tx, ty)
             self.x = tx - self.width
 
     def jump(self, terrain):
@@ -208,16 +226,45 @@ class NightFury():
             fallY = self.fallYs.pop(0)
             self.y = fallY
 
-    def doLeftDash(self):
+    def doLeftDash(self): # terrain
         if self.dashLXs:
             dashLX = self.dashLXs.pop(0)
             self.x = dashLX
+            # test = terrain.isLegalLocation(self)
+            # if test == True:
+            #     pass
+            # else:
+            #     tx, ty = test
+            #     tw, th = terrain.getSpecificBlockSize(tx, ty)
+            #     self.x = tx + tw
+            #     self.dashLXs = []
 
-    def doRightDash(self):
+    def doRightDash(self): # terrain
         if self.dashRXs:
             dashRX = self.dashRXs.pop(0)
             self.x = dashRX
+            # test = terrain.isLegalLocation(self)
+            # if test == True:
+            #     pass
+            # else:
+            #     tx, ty = test
+            #     # tw, th = terrain.getSpecificBlockSize(tx, ty)
+            #     self.x = tx - self.width
+            #     self.dashRXs = []
     
     def doSlash(self):
         if self.slashAttack:
-            self.slashAttack.pop(0)
+            frame = self.slashAttack.pop(0)
+        # if frame == 3:
+        #     nfX, nfY = self.getLocation()
+        #     nfW, nfH = self.getSize()
+        #     nfX += nfW/2
+        #     canvas.create_polygon(nfX, nfY - 20, 
+        #                             nfX - 60, nfY - 15, 
+        #                             nfX - 100, nfY, 
+        #                             nfX - 120, nfY + 15, 
+        #                             nfX - 120, nfY + nfH - 15, 
+        #                             nfX - 100, nfY + nfH, 
+        #                             nfX - 60, nfY + nfH + 15, 
+        #                             nfX, nfH + nfY + 20, 
+        #                             fill = None, outline = 'blue')
