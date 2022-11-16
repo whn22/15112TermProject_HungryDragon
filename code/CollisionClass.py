@@ -8,7 +8,6 @@ class Collision():
             return (rect1, rect2)
         return False
     
-    # def isPolygonCollide(rect1, rect2):
     def isRectangleCollide2(x1, y1, w1, h1, x2, y2, w2, h2): # input coordinates
         if x1 + w1 > x2 and x1 < x2 + w2 and y1 + h1 > y2 and y1 < y2 + h2:
             return True

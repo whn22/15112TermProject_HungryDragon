@@ -32,15 +32,9 @@ class NightFury():
         # attack collision box
         self.slashFrames = [] # how long the attack will last [1, 2, 3, 4, 5, 6]
         self.leftSlashBox = AttackBox.createLeftSlashBox(\
-                            self.x, self.y, self.height)
+                            self.x, self.y, self.width, self.height)
         self.rightSlashBox = AttackBox.createRightSlashBox(\
-                            self.x, self.y, self.height)
-    
-    def refreshSlashLocation(self):
-        self.leftSlashBox = AttackBox.createLeftSlashBox(\
-                            self.x, self.y, self.height)
-        self.rightSlashBox = AttackBox.createRightSlashBox(\
-                            self.x, self.y, self.height)
+                            self.x, self.y, self.width, self.height)
     
     def __str__(self):
         return f'NightFury:\n\
@@ -193,15 +187,6 @@ class NightFury():
             self.dashRXs.append(x)
         # print (dashXs, 'dashR')
 
-    # attack methods
-    # def leftSlash(self):
-    #     if self.slashFrames == []:
-    #         self.slashFrames = [1, 2, 3, 4, 5, 6]
-
-    # def rightSlash(self):
-    #     if self.slashFrames == []:
-    #         self.slashFrames = [1, 2, 3, 4, 5, 6]
-
     def slash(self):
         if self.slashFrames == []:
             if self.direction == 'Left':
@@ -264,6 +249,12 @@ class NightFury():
         if self.dashRXs:
             dashRX = self.dashRXs.pop(0)
             self.x = dashRX
+
+    def refreshSlashLocation(self):
+        self.leftSlashBox = AttackBox.createLeftSlashBox(\
+                            self.x, self.y, self.width, self.height)
+        self.rightSlashBox = AttackBox.createRightSlashBox(\
+                            self.x, self.y, self.width, self.height)
     
     def doLeftSlash(self, enemies):
         if self.slashFrames and self.slashFrames[0] < 7:

@@ -40,11 +40,3 @@ class Terrain():
             if oX + oW > tx and oX < tx + tw and oY + oH > ty and oY < ty + th:
                 return (tx, ty)
         return True
-
-testTerrain = Terrain('grey')
-
-# def roomGeneration():
-#     testTerrain.addBlock(0, 500, 100, 10)
-
-# def illegalAreas():
-#     pass
