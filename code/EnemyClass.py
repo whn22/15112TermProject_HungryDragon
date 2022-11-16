@@ -89,13 +89,11 @@ class Enemy():
     
     # health methods:
     def beAttacked(self, player):
-        print('here')
         if self.isDead == False:
             self.HP -= player.getATK()
             if self.HP <= 0:
                 self.isDead = True
                 self.HP = 0
-        print(self.HP)
 
 class FlyEnemy(Enemy):
     def __init__(self, x, y, w, h, color, speed, DMG, health):

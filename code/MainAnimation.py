@@ -1,5 +1,6 @@
 from cmu_112_graphics import *
 import time # sleep()
+import copy
 
 from TerrainClass import Terrain
 from NightFuryClass import NightFury
@@ -26,10 +27,14 @@ print (nightFury1)
 # __init__(self, x, y, w, h, color, speed, DMG, health)
 flyEnemy1 = FlyEnemy(110, 110, 10, 10, 'red', 0.5, 20, 50)
 flyEnemy2 = FlyEnemy(150, 500, 10, 10, 'red', 0.5, 20, 50)
-flyEnemy3 = FlyEnemy(770, 200, 10, 10, 'red', 0.5, 20, 50)
+# flyEnemy3 = FlyEnemy(770, 200, 10, 10, 'red', 0.5, 20, 50)
+flyEnemy3 = FlyEnemy(170, 500, 10, 10, 'red', 0.5, 20, 50)
 flyEnemy4 = FlyEnemy(550, 420, 10, 10, 'red', 0.5, 20, 50)
 flyEnemy5 = FlyEnemy(380, 100, 10, 10, 'red', 0.5, 20, 50)
-enemies = [flyEnemy1, flyEnemy2, flyEnemy3, flyEnemy4, flyEnemy5]
+flyEnemy6 = FlyEnemy(900, 450, 10, 10, 'red', 0.5, 20, 50)
+flyEnemy7 = FlyEnemy(600, 250, 10, 10, 'red', 0.5, 20, 50)
+enemies = {flyEnemy1, flyEnemy2, flyEnemy3, flyEnemy4, flyEnemy5, flyEnemy6,
+           flyEnemy7}
 
 def appStarted(app):
     # timerDelay
@@ -81,7 +86,8 @@ def nightFuryTimerFired(app):
         app.nightFury.resetLocation(backupPosition)
 
 def enemiesTimerFired(app):
-    for enemy in app.enemies:
+    temp = copy.copy(app.enemies)
+    for enemy in temp:
         backupPosition = enemy.getLocation()
         if enemy.getIsDead() == True:
             app.enemies.remove(enemy)

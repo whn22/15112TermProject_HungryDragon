@@ -269,24 +269,24 @@ class NightFury():
         if self.slashFrames and self.slashFrames[0] < 7:
             frame = self.slashFrames.pop(0)
             if frame == 3:
-                for rect in self.leftSlashBox:
-                    x, y = rect
-                    w, h = self.leftSlashBox[rect]
-                    for enemy in enemies:
+                for enemy in enemies:
+                    for rect in self.leftSlashBox:
+                        x, y = rect
+                        w, h = self.leftSlashBox[rect]
                         test = Collision.isRectangleCollide3(enemy, x, y, w, h)
                         if test:
                             enemy.beAttacked(self)
-                            return
+                            break
 
     def doRightSlash(self, enemies):
         if self.slashFrames and self.slashFrames[0] > 6:
             frame = self.slashFrames.pop(0)
             if frame == 9:
-                for rect in self.rightSlashBox:
-                    x, y = rect
-                    w, h = self.rightSlashBox[rect]
-                    for enemy in enemies:
+                for enemy in enemies:
+                    for rect in self.rightSlashBox:
+                        x, y = rect
+                        w, h = self.rightSlashBox[rect]
                         test = Collision.isRectangleCollide3(enemy, x, y, w, h)
                         if test:
                             enemy.beAttacked(self)
-                            return
+                            break
