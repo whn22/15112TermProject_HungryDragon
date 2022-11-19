@@ -6,12 +6,7 @@ class Terrain():
     def addBlock(self, x, y, w, h):
         self.terrainBlocks[(x, y)] = (w, h)
 
-    def getColor(self):
-        return self.color
-
-    def getBlocks(self):
-        return self.terrainBlocks
-
+    # get methods
     def getBlocksLocation(self):
         return list(self.terrainBlocks)
     
@@ -21,6 +16,7 @@ class Terrain():
         else:
             return None
 
+    # isLegal for terrain
     def isLegalLocation(self, object): # inputs an object
         oX, oY = object.getLocation()
         oW, oH = object.getSize()

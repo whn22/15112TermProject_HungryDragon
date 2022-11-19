@@ -4,7 +4,7 @@ from AttackBoxClass import AttackBox
 class NightFury():
     def __init__(self, x, y, w, h, color, speed, jumpHeight, gravity, ATK, DEF,
                  health, magic, physicalStrength):
-        # self.location = (x, y)
+        self.initLocation = (x, y)
         self.x = x
         self.y = y
         # image (Collision box drawing)
@@ -22,6 +22,7 @@ class NightFury():
         self.MP = magic
         self.PS = physicalStrength
         # default data
+        self.immune = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
         self.isDead = False
         self.direction = 'Right'
         self.eaten = []
@@ -53,69 +54,32 @@ class NightFury():
                 PS = {self.PS}\n\
                 isDead = {self.isDead}\n\
                 direction = {self.direction}\n'
-    
-    def getLeftSlashBox(self):
-        return self.leftSlashBox
-    
-    def getRightSlashBox(self):
-        return self.rightSlashBox
 
     # set methods
     def resetLocation(self, tuple):
         self.x, self.y = tuple
     
-    def resetX(self, x):
-        self.x = x
-    
-    def resetY(self, y):
-        self.y = y
-    
-    def resetDirection(self, str): # Left or Right
-        self.direction = str
-    
-    def resetDefaultMove(self):
-        self.jumpYs = []
-        self.fallYs = []
+    def resetInitLocation(self):
+        self.x, self.y = self.initLocation
+
+    def resetDefaultMoveX(self):
         self.dashRXs = []
         self.dashLXs = []
 
-    # get methods
-    def getDirection(self):
-        return self.direction
+    def resetDefaultMoveY(self):
+        self.jumpYs = []
+        self.fallYs = []
 
+    def resetImmune(self):
+        self.immune = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+
+    # get methods
     def getLocation(self):
         return self.x, self.y
     
     def getSize(self):
         return self.width, self.height
     
-    def getColor(self):
-        return self.color
-    
-    def getSpeed(self):
-        return self.speed
-    
-    def getIsDead(self):
-        return self.isDead
-    
-    def getATK(self):
-        return self.ATK
-    
-    def getDEF(self):
-        return self.DEF
-
-    def getHP(self):
-        return self.HP
-
-    def getMP(self):
-        return self.MP
-
-    def getPS(self):
-        return self.PS
-    
-    def getSlashFrames(self):
-        return self.slashFrames
-
     # keypressed methods
     def goLeft(self, terrain):
         self.x -= self.speed
@@ -164,11 +128,11 @@ class NightFury():
             return
         self.PS -= 30
         x = self.x
-        for i in range(7):
-            x -= self.speed
+        for i in range(5):
+            x -= self.speed * 5
             self.dashLXs.append(x)
-        for i in range(7):
-            x -= self.speed/2
+        for i in range(5):
+            x -= self.speed * 2
             self.dashLXs.append(x)
         # print (dashXs, 'dashL')
 
@@ -179,11 +143,11 @@ class NightFury():
             return
         self.PS -= 30
         x = self.x
-        for i in range(7):
-            x += self.speed
+        for i in range(5):
+            x += self.speed * 5
             self.dashRXs.append(x)
-        for i in range(7):
-            x += self.speed/2
+        for i in range(5):
+            x += self.speed * 2
             self.dashRXs.append(x)
         # print (dashXs, 'dashR')
 
@@ -204,6 +168,7 @@ class NightFury():
     def isKilled(self):
         if self.HP <= 0:
             self.isDead = True
+            self.HP = 0
 
     def regainPS(self): 
         # max PS is 100, regain 0.5 per period
@@ -240,15 +205,27 @@ class NightFury():
             fallY = self.fallYs.pop(0)
             self.y = fallY
 
-    def doLeftDash(self): # terrain
+    def doLeftDash(self, terrain): # terrain
         if self.dashLXs:
             dashLX = self.dashLXs.pop(0)
             self.x = dashLX
+            test = terrain.isLegalLocation(self)
+            if test != True:
+                self.dashLXs = []
+                tx, ty = test # location of colliding box
+                tw, th = terrain.getSpecificBlockSize(tx, ty)
+                self.x = tx + tw
 
-    def doRightDash(self): # terrain
+    def doRightDash(self, terrain): # terrain
         if self.dashRXs:
             dashRX = self.dashRXs.pop(0)
             self.x = dashRX
+            test = terrain.isLegalLocation(self)
+            if test != True:
+                self.dashRXs = []
+                tx, ty = test # location of colliding box
+                # tw, th = terrain.getSpecificBlockSize(tx, ty)
+                self.x = tx - self.width
 
     def refreshSlashLocation(self):
         self.leftSlashBox = AttackBox.createLeftSlashBox(\
@@ -281,3 +258,27 @@ class NightFury():
                         if test:
                             enemy.beAttacked(self)
                             break
+    
+    def loseHealth(self, enemies):
+        if self.immune == []:
+            for enemy in enemies:
+                if Collision.isRectangleCollide1(self, enemy):
+                    self.HP -= enemy.DMG
+                    self.resetImmune()
+                    if self.HP < 0:
+                        self.isDead = True
+                        self.HP = 0
+                    break
+    
+    def unImmune(self):
+        if self.immune:
+            self.immune.pop()
+        
+    def respawn(self):
+        if self.isDead == True:
+            self.resetInitLocation()
+            self.HP = 100
+            self.isDead = False
+            self.resetInitLocation()
+            self.resetDefaultMoveX()
+            self.resetDefaultMoveY()

@@ -35,14 +35,14 @@ class Enemy():
     def resetLocation(self, tuple):
         self.x, self.y = tuple
     
-    def resetX(self, x):
-        self.x = x
-    
-    def resetY(self, y):
-        self.y = y
-    
     def resetDirection(self, str): # Left or Right
         self.direction = str
+    
+    def changeDirection(self):
+        if self.direction == 'Right':
+            self.direction = 'Left'
+        elif self.direction == 'Left':
+            self.direction = 'Right'
 
     # get methods
     def getDirection(self):
@@ -53,15 +53,6 @@ class Enemy():
     
     def getSize(self):
         return self.width, self.height
-    
-    def getColor(self):
-        return self.color
-    
-    def getSpeed(self):
-        return self.speed
-    
-    def getIsDead(self):
-        return self.isDead
 
     def getHP(self):
         return self.HP
@@ -80,17 +71,11 @@ class Enemy():
             pass
         else:
             self.x -= self.speed
-
-    # timerfired methods
-    # def isKilled(self):
-    #     if self.HP <= 0:
-    #         self.isDead = True
-    #     self.HP = 0
     
     # health methods:
     def beAttacked(self, player):
         if self.isDead == False:
-            self.HP -= player.getATK()
+            self.HP -= player.ATK
             if self.HP <= 0:
                 self.isDead = True
                 self.HP = 0
@@ -155,6 +140,10 @@ class WalkEnemy(Enemy):
         
     def walkIdle(self, terrain):
         if self.fallYs == [] and terrain.isLegalLocation(self) == True:
-            self.x += self.speed
+            if self.direction == 'Right':
+                self.x += self.speed
+            elif self.direction == 'Left':
+                self.x -= self.speed
         elif self.fallYs:
-            pass
+            self.fallYs = []
+            self.changeDirection()
