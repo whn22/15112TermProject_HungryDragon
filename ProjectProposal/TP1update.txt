@@ -1,0 +1,4 @@
+To be honest, so far there is no change in my design plan.
+
+However, I think my term project may not alogrithmicly complex enough. I may add 
+some new designs in the future, but I will finish my origional ideas first.
