@@ -1,5 +1,6 @@
 from CollisionClass import Collision
 from AttackBoxClass import AttackBox
+import time # sleep()
 
 class NightFury():
     def __init__(self, x, y, w, h, color, speed, jumpHeight, gravity, ATK, DEF,
@@ -276,7 +277,6 @@ class NightFury():
         
     def respawn(self):
         if self.isDead == True:
-            self.resetInitLocation()
             self.HP = 100
             self.isDead = False
             self.resetInitLocation()

@@ -217,6 +217,14 @@ def drawRightSlash(app, canvas):
         canvas.create_rectangle(x, y, x + w, y + h, fill = None, 
                                 outline = 'blue')
 
+# def drawRespawn(app, canvas):
+#     for i in range(3):
+#         time.sleep(1)
+#         print(1)
+#         canvas.create_text(app.width/2, app.height/2, 
+#                             text = f'You die. Respawn in {3 - i} s', 
+#                             font = 'Arial 18 bold', fill = 'black')
+
 def drawEnemies(app, canvas):
     for enemy in app.enemies:
         if enemy.isDead == True:
@@ -232,6 +240,9 @@ def drawEnemies(app, canvas):
                                 fill = 'red')
 
 def drawPlayer(app, canvas):
+    # if app.nightFury.isDead:
+    #     drawRespawn(app, canvas)
+    # else:
     drawNightFury(app, canvas)
     drawPSbar(app, canvas)
     drawHPbar(app, canvas)
