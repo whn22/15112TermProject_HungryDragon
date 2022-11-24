@@ -22,7 +22,7 @@ class GameObject():
         return self.w, self.h
     
     # collision methods
-    def isObjectCollide(self, other): # inputs two rects
+    def isObjectCollide(self, other): # inputs two gameObjects
         x1, y1 = self.x, self.y
         w1, h1 = self.w, self.h
         x2, y2 = other.getLocation()
@@ -31,7 +31,7 @@ class GameObject():
             return True
         return False
     
-    def testCollide(self, x2, y2, w2, h2): # inputs two rects
+    def testCollide(self, x2, y2, w2, h2): # test temperary location(in falling)
         x1, y1 = self.x, self.y
         w1, h1 = self.w, self.h
         if x1 + w1 > x2 and x1 < x2 + w2 and y1 + h1 > y2 and y1 < y2 + h2:
