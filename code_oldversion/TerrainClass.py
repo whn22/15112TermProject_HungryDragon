@@ -36,3 +36,14 @@ class Terrain():
             if oX + oW > tx and oX < tx + tw and oY + oH > ty and oY < ty + th:
                 return (tx, ty)
         return True
+
+    # draw function
+    def drawBlocks(self, canvas):
+        blocks = self.terrainBlocks
+        blocksLocations = self.getBlocksLocation()
+        tColor = self.color
+        for loc in blocksLocations:
+            x, y = loc
+            w, h = blocks[loc]
+            canvas.create_rectangle(x, y, x + w, y + h, 
+                                    fill = None, outline = tColor)

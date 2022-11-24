@@ -1,4 +1,5 @@
 from GameObjectClass import GameObject
+from CollisionClass import Collision
 from AttackBoxClass import AttackBox
 import time # sleep()
 
@@ -28,9 +29,10 @@ class NightFury(GameObject):
         self.dashRXs = []
         # attack collision box
         self.slashFrames = [] # how long the attack will last [1, 2, 3, 4, 5, 6]
-        attackBox = AttackBox(self.x, self.y, self.w, self.h, 'blue')
-        self.leftSlashBox = attackBox.createLeftSlashBox()
-        self.rightSlashBox = attackBox.createRightSlashBox()
+        self.leftSlashBox = AttackBox.createLeftSlashBox(\
+                            self.x, self.y, self.w, self.h)
+        self.rightSlashBox = AttackBox.createRightSlashBox(\
+                            self.x, self.y, self.w, self.h)
     
     def __str__(self):
         return f'NightFury:\n\
@@ -65,26 +67,25 @@ class NightFury(GameObject):
     # keypressed methods
     def goLeft(self, terrain):
         self.x -= self.speed
-        for block in terrain:
-            test = self.isObjectCollide(block)
-            if test == False:
-                pass
-            else:
-                tx, ty = block.getLocation()
-                tw, th = block.getSize()
-                self.x = tx + tw
+        test = terrain.isLegalLocation(self)
+        if test == True:
+            pass
+        else:
+            tx, ty = test
+            tw, th = terrain.getSpecificBlockSize(tx, ty)
+            self.x = tx + tw
 
     def goRight(self, terrain):
         self.x += self.speed
-        for block in terrain:
-            test = self.isObjectCollide(block)
-            if test == False:
-                pass
-            else:
-                tx, ty = block.getLocation()
-                self.x = tx - self.w
+        test = terrain.isLegalLocation(self)
+        if test == True:
+            pass
+        else:
+            tx, ty = test
+            # tw, th = terrain.getSpecificBlockSize(tx, ty)
+            self.x = tx - self.w
 
-    def jump(self):
+    def jump(self, terrain):
         if self.jumpYs or self.fallYs:
             return
         u = self.jumpHeight # initial speed
@@ -95,14 +96,13 @@ class NightFury(GameObject):
             y -= u
             u -= g
             self.jumpYs.append(y)
-            # for block in terrain:
-            #     test = block.testCollide(self.x, y, self.w, self.h)
-            #     if test == True:
-            #         self.jumpYs.pop()
-            #         tx, ty = block.getLocation()
-            #         tw, th = block.getSize()
-            #         self.jumpYs.append(ty + th)
-            #         break
+            test = terrain.isLegalLocation2(self.x, y, self.w, self.h)
+            if test != True:
+                self.jumpYs.pop()
+                tx, ty = test # location of colliding box
+                tw, th = terrain.getSpecificBlockSize(tx, ty)
+                self.jumpYs.append(ty + th)
+                break
         # print(self.jumpYs, 'jump')
 
     def dashL(self):
@@ -159,18 +159,10 @@ class NightFury(GameObject):
         if self.PS < 100:
             self.PS += 0.5
 
-    def doJump(self, terrain):
+    def doJump(self):
         if self.jumpYs:
             jumpY = self.jumpYs.pop(0)
             self.y = jumpY
-            for block in terrain:
-                test = self.isObjectCollide(block)
-                if test == True:
-                    self.jumpYs = []
-                    tx, ty = block.getLocation()
-                    tw, th = block.getSize()
-                    self.jumpYs.append(ty + th)
-                    break
     
     def falling(self, terrain):
         if self.jumpYs or self.fallYs:
@@ -184,85 +176,83 @@ class NightFury(GameObject):
             if u < v:
                 u += g
             self.fallYs.append(y)
-            for block in terrain:
-                test = block.testCollide(self.x, y, self.w, self.h)
-                if test == True:
-                    self.fallYs.pop()
-                    tx, ty = block.getLocation()
-                    self.fallYs.append(ty - self.h)
-                    return
+            test = terrain.isLegalLocation2(self.x, y, self.w, self.h)
+            if test != True:
+                self.fallYs.pop()
+                # tx, ty = test # location of colliding box
+                # self.fallYs.append(ty)
+                break
         # print(self.fallYs)
 
     def doFalling(self):
         if self.jumpYs == [] and self.fallYs:
             fallY = self.fallYs.pop(0)
             self.y = fallY
-            # for block in terrain:
-            #     test = self.isObjectCollide(block)
-            #     if test == True:
-            #         self.fallYs = []
-            #         tx, ty = block.getLocation()
-            #         self.fallYs.append(ty - self.h)
-            #         return
 
     def doLeftDash(self, terrain): # terrain
         if self.dashLXs:
             dashLX = self.dashLXs.pop(0)
             self.x = dashLX
-            for block in terrain:
-                test = self.isObjectCollide(block)
-                if test == True:
-                    self.dashLXs = []
-                    tx, ty = block.getLocation()
-                    tw, th = block.getSize()
-                    self.x = tx + tw
+            test = terrain.isLegalLocation(self)
+            if test != True:
+                self.dashLXs = []
+                tx, ty = test # location of colliding box
+                tw, th = terrain.getSpecificBlockSize(tx, ty)
+                self.x = tx + tw
 
     def doRightDash(self, terrain): # terrain
         if self.dashRXs:
             dashRX = self.dashRXs.pop(0)
             self.x = dashRX
-            for block in terrain:
-                test = self.isObjectCollide(block)
-                if test == True:
-                    self.dashRXs = []
-                    tx, ty = block.getLocation()
-                    self.x = tx - self.w
+            test = terrain.isLegalLocation(self)
+            if test != True:
+                self.dashRXs = []
+                tx, ty = test # location of colliding box
+                # tw, th = terrain.getSpecificBlockSize(tx, ty)
+                self.x = tx - self.w
 
     def refreshSlashLocation(self):
-        attackBox = AttackBox(self.x, self.y, self.w, self.h, 'blue')
-        self.leftSlashBox = attackBox.createLeftSlashBox()
-        self.rightSlashBox = attackBox.createRightSlashBox()
+        self.leftSlashBox = AttackBox.createLeftSlashBox(\
+                            self.x, self.y, self.w, self.h)
+        self.rightSlashBox = AttackBox.createRightSlashBox(\
+                            self.x, self.y, self.w, self.h)
     
     def doLeftSlash(self, enemies):
         if self.slashFrames and self.slashFrames[0] < 7:
             frame = self.slashFrames.pop(0)
             if frame == 3:
                 for enemy in enemies:
-                    for box in self.leftSlashBox:
-                        if box.isObjectCollide(enemy):
+                    for rect in self.leftSlashBox:
+                        x, y = rect
+                        w, h = self.leftSlashBox[rect]
+                        test = Collision.isRectangleCollide3(enemy, x, y, w, h)
+                        if test:
                             enemy.beAttacked(self)
-                            return
+                            break
 
     def doRightSlash(self, enemies):
         if self.slashFrames and self.slashFrames[0] > 6:
             frame = self.slashFrames.pop(0)
             if frame == 9:
                 for enemy in enemies:
-                    for box in self.rightSlashBox:
-                        if box.isObjectCollide(enemy):
+                    for rect in self.rightSlashBox:
+                        x, y = rect
+                        w, h = self.rightSlashBox[rect]
+                        test = Collision.isRectangleCollide3(enemy, x, y, w, h)
+                        if test:
                             enemy.beAttacked(self)
-                            return
+                            break
     
     def loseHealth(self, enemies):
         if self.immune == []:
             for enemy in enemies:
-                if self.isObjectCollide(enemy):
+                if Collision.isRectangleCollide1(self, enemy):
                     self.HP -= enemy.DMG
                     self.resetImmune()
                     if self.HP < 0:
                         self.isDead = True
                         self.HP = 0
-                    return
+                    break
     
     def unImmune(self):
         if self.immune:
@@ -299,17 +289,17 @@ class NightFury(GameObject):
 
     def drawLeftSlash(self, canvas):
         leftSlash = self.leftSlashBox
-        for box in leftSlash:
-            x, y = box.getLocation()
-            w, h = box.getSize()
+        for rect in leftSlash:
+            x, y = rect
+            w, h = leftSlash[rect]
             canvas.create_rectangle(x, y, x + w, y + h, fill = None, 
                                     outline = 'blue')
 
     def drawRightSlash(self, canvas):
         rightSlash = self.rightSlashBox
-        for box in rightSlash:
-            x, y = box.getLocation()
-            w, h = box.getSize()
+        for rect in rightSlash:
+            x, y = rect
+            w, h = rightSlash[rect]
             canvas.create_rectangle(x, y, x + w, y + h, fill = None, 
                                     outline = 'blue')
 

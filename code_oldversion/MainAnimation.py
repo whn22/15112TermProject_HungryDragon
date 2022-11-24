@@ -2,7 +2,9 @@ from cmu_112_graphics import *
 import time # sleep()
 import copy
 
+from GameObjectClass import GameObject
 from BlockClass import Block
+from TerrainClass import Terrain
 from NightFuryClass import NightFury
 from EnemyClass import FlyEnemy
 
@@ -18,7 +20,6 @@ from EnemyClass import FlyEnemy
 # terrain1.addBlock(700, 320, 70, 120)
 # terrain1.addBlock(700, 400, 120, 50)
 
-ground = Block(0, 590, 1000, 10, 'grey')
 block1 = Block(0, 500, 100, 10, 'grey')
 block2 = Block(150, 400, 100, 10, 'grey')
 block3 = Block(350, 300, 100, 50, 'grey')
@@ -27,7 +28,7 @@ block5 = Block(500, 100, 100, 20, 'grey')
 block6 = Block(650, 210, 15, 70, 'grey')
 block7 = Block(700, 320, 70, 120, 'grey')
 block8 = Block(700, 400, 120, 50, 'grey')
-terrain = {ground, block1, block2, block3, block4, block5, block6,block7,block8}
+terrain = {block1, block2, block3, block4, block5, block6, block7, block8}
 
 # __init__(self, x, y, w, h, color, speed, jumpHeight, gravity, ATK, DEF, 
 # health, magic, physicalStrength)
@@ -91,32 +92,28 @@ def nightFuryHorizontal(app):
     app.nightFury.doLeftDash(app.terrain)
     app.nightFury.doRightDash(app.terrain)
     # check legal
-    for block in app.terrain:
-        if block.isObjectCollide(app.nightFury) == False \
-            and withinCanvasRange(app, app.nightFury):
-            pass
-        else:
-            # print('here')
-            app.nightFury.resetDefaultMoveX()
-            app.nightFury.x = backupX
-            break
+    if app.terrain.isLegalLocation(app.nightFury) == True \
+        and withinCanvasRange(app, app.nightFury):
+        pass
+    else:
+        # print('here')
+        app.nightFury.resetDefaultMoveX()
+        app.nightFury.x = backupX
 
 def nightFuryVertical(app):
     backupY = app.nightFury.y
     app.nightFury.falling(app.terrain)
     app.nightFury.doFalling()
     # keypressed
-    app.nightFury.doJump(app.terrain) #()
+    app.nightFury.doJump()
     # check legal
-    for block in app.terrain:
-        if block.isObjectCollide(app.nightFury) == False \
-            and withinCanvasRange(app, app.nightFury):
-            pass
-        else:
-            # print('here')
-            app.nightFury.resetDefaultMoveY()
-            app.nightFury.y = backupY
-            break
+    if app.terrain.isLegalLocation(app.nightFury) == True \
+        and withinCanvasRange(app, app.nightFury):
+        pass
+    else:
+        # print('here')
+        app.nightFury.resetDefaultMoveY()
+        app.nightFury.y = backupY
 
 def nightFuryTimerFired(app):
     nightFuryHorizontal(app)
@@ -140,15 +137,13 @@ def enemiesTimerFired(app):
             app.enemies.remove(enemy)
         if type(enemy) == FlyEnemy:
             enemy.flyIdle(app.terrain)
-        for block in app.terrain:
-            if block.isObjectCollide(enemy) == False \
-                and withinReasonableRange(app, enemy):
-                pass
-            else:
-                # print('here')
-                enemy.resetDefaultMove()
-                enemy.resetLocation(backupPosition)
-                break
+        if app.terrain.isLegalLocation(enemy) == True \
+            and withinReasonableRange(app, enemy):
+            pass
+        else:
+            # print('here')
+            enemy.resetDefaultMove()
+            enemy.resetLocation(backupPosition)
 
 def timerFired(app):
     nightFuryTimerFired(app)
@@ -165,7 +160,7 @@ def keyPressed(app, event):
     
     # jump
     if event.key == 'x':
-        app.nightFury.jump()#app.terrain
+        app.nightFury.jump(app.terrain)
     # dash
     if event.key == 'z':
     # if event.key == 'l':
@@ -201,12 +196,9 @@ def drawEnemies(app, canvas):
                                 fill = None, outline = fColor)
         canvas.create_rectangle(fX - 5, fY - 10, fX + hp/50 * 20 - 5, fY - 7, 
                                 fill = 'red')
-def drawBlocks(app, canvas):
-    for block in app.terrain:
-        block.drawBlock(canvas)
 
 def redrawAll(app,canvas):
-    drawBlocks(app, canvas)
+    app.terrain.drawBlocks(canvas)
     app.nightFury.drawNightFury(canvas)
     drawEnemies(app, canvas)
 

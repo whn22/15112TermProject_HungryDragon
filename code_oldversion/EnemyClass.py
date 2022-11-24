@@ -43,29 +43,29 @@ class Enemy(GameObject):
     def getDirection(self):
         return self.direction
 
-    # def getLocation(self):
-    #     return self.x, self.y
+    def getLocation(self):
+        return self.x, self.y
     
-    # def getSize(self):
-    #     return self.w, self.h
+    def getSize(self):
+        return self.w, self.h
 
     def getHP(self):
         return self.HP
 
-    # # move methods
-    # def goLeft(self, terrain):
-    #     self.x -= self.speed
-    #     if terrain.isLegalLocation(self) == True:
-    #         pass
-    #     else:
-    #         self.x += self.speed
+    # move methods
+    def goLeft(self, terrain):
+        self.x -= self.speed
+        if terrain.isLegalLocation(self) == True:
+            pass
+        else:
+            self.x += self.speed
 
-    # def goRight(self, terrain):
-    #     self.x += self.speed
-    #     if terrain.isLegalLocation(self) == True:
-    #         pass
-    #     else:
-    #         self.x -= self.speed
+    def goRight(self, terrain):
+        self.x += self.speed
+        if terrain.isLegalLocation(self) == True:
+            pass
+        else:
+            self.x -= self.speed
     
     # health methods:
     def beAttacked(self, player):
@@ -95,12 +95,10 @@ class FlyEnemy(Enemy):
         dx, dy = self.idlePath.pop(0)
         self.x += dx
         self.y += dy
-        for block in terrain:
-            if self.isObjectCollide(block) == False:
-                pass
-            else:
-                self.idlePath = []
-                break
+        if terrain.isLegalLocation(self) == True:
+            pass
+        else:
+            self.idlePath = []
 
 class WalkEnemy(Enemy):
     def __init__(self, x, y, w, h, color, speed, gravity, DMG, health):
@@ -113,36 +111,36 @@ class WalkEnemy(Enemy):
     def resetDefaultMove(self):
         self.fallYs = []
 
-    # def falling(self, terrain):
-    #     if self.jumpYs or self.fallYs:
-    #         return
-    #     u = 1 # initial falling speed
-    #     v = self.jumpHeight # Maximum falling speed
-    #     g = self.gravity
-    #     y = self.y
-    #     while True:
-    #         y += u
-    #         if u < v:
-    #             u += g
-    #         self.fallYs.append(y)
-    #         test = terrain.isLegalLocation2(self.x, y, self.w, self.h)
-    #         if test != True:
-    #             self.fallYs.pop()
-    #             break
+    def falling(self, terrain):
+        if self.jumpYs or self.fallYs:
+            return
+        u = 1 # initial falling speed
+        v = self.jumpHeight # Maximum falling speed
+        g = self.gravity
+        y = self.y
+        while True:
+            y += u
+            if u < v:
+                u += g
+            self.fallYs.append(y)
+            test = terrain.isLegalLocation2(self.x, y, self.w, self.h)
+            if test != True:
+                self.fallYs.pop()
+                break
 
     def doFalling(self):
         if self.jumpYs == [] and self.fallYs:
             fallY = self.fallYs.pop(0)
             self.y = fallY
         
-    # def walkIdle(self, terrain):
-    #     if self.fallYs == [] and terrain.isLegalLocation(self) == True:
-    #         if self.direction == 'Right':
-    #             self.x += self.speed
-    #         elif self.direction == 'Left':
-    #             self.x -= self.speed
-    #     elif self.fallYs:
-    #         self.fallYs = []
-    #         self.changeDirection()
+    def walkIdle(self, terrain):
+        if self.fallYs == [] and terrain.isLegalLocation(self) == True:
+            if self.direction == 'Right':
+                self.x += self.speed
+            elif self.direction == 'Left':
+                self.x -= self.speed
+        elif self.fallYs:
+            self.fallYs = []
+            self.changeDirection()
 
     # draw function

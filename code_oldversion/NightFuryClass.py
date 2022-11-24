@@ -1,4 +1,5 @@
 from GameObjectClass import GameObject
+from CollisionClass import Collision
 from AttackBoxClass import AttackBox
 import time # sleep()
 
@@ -28,7 +29,7 @@ class NightFury(GameObject):
         self.dashRXs = []
         # attack collision box
         self.slashFrames = [] # how long the attack will last [1, 2, 3, 4, 5, 6]
-        attackBox = AttackBox(self.x, self.y, self.w, self.h, 'blue')
+        attackBox = AttackBox(self.x, self.y, self.w, self.h)
         self.leftSlashBox = attackBox.createLeftSlashBox()
         self.rightSlashBox = attackBox.createRightSlashBox()
     
@@ -62,7 +63,6 @@ class NightFury(GameObject):
     def resetImmune(self):
         self.immune = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 
-    # keypressed methods
     def goLeft(self, terrain):
         self.x -= self.speed
         for block in terrain:
@@ -84,7 +84,7 @@ class NightFury(GameObject):
                 tx, ty = block.getLocation()
                 self.x = tx - self.w
 
-    def jump(self):
+    def jump(self, terrain):
         if self.jumpYs or self.fallYs:
             return
         u = self.jumpHeight # initial speed
@@ -95,14 +95,14 @@ class NightFury(GameObject):
             y -= u
             u -= g
             self.jumpYs.append(y)
-            # for block in terrain:
-            #     test = block.testCollide(self.x, y, self.w, self.h)
-            #     if test == True:
-            #         self.jumpYs.pop()
-            #         tx, ty = block.getLocation()
-            #         tw, th = block.getSize()
-            #         self.jumpYs.append(ty + th)
-            #         break
+            for block in terrain:
+                test = self.isObjectCollide(block)
+                if test == True:
+                    self.jumpYs.pop()
+                    tx, ty = block.getLocation()
+                    tw, th = block.getSize()
+                    self.jumpYs.append(ty + th)
+                    break
         # print(self.jumpYs, 'jump')
 
     def dashL(self):
@@ -159,18 +159,10 @@ class NightFury(GameObject):
         if self.PS < 100:
             self.PS += 0.5
 
-    def doJump(self, terrain):
+    def doJump(self):
         if self.jumpYs:
             jumpY = self.jumpYs.pop(0)
             self.y = jumpY
-            for block in terrain:
-                test = self.isObjectCollide(block)
-                if test == True:
-                    self.jumpYs = []
-                    tx, ty = block.getLocation()
-                    tw, th = block.getSize()
-                    self.jumpYs.append(ty + th)
-                    break
     
     def falling(self, terrain):
         if self.jumpYs or self.fallYs:
@@ -185,25 +177,18 @@ class NightFury(GameObject):
                 u += g
             self.fallYs.append(y)
             for block in terrain:
-                test = block.testCollide(self.x, y, self.w, self.h)
+                test = self.isObjectCollide(block)
                 if test == True:
                     self.fallYs.pop()
                     tx, ty = block.getLocation()
                     self.fallYs.append(ty - self.h)
-                    return
+                    break
         # print(self.fallYs)
 
     def doFalling(self):
         if self.jumpYs == [] and self.fallYs:
             fallY = self.fallYs.pop(0)
             self.y = fallY
-            # for block in terrain:
-            #     test = self.isObjectCollide(block)
-            #     if test == True:
-            #         self.fallYs = []
-            #         tx, ty = block.getLocation()
-            #         self.fallYs.append(ty - self.h)
-            #         return
 
     def doLeftDash(self, terrain): # terrain
         if self.dashLXs:
@@ -229,9 +214,10 @@ class NightFury(GameObject):
                     self.x = tx - self.w
 
     def refreshSlashLocation(self):
-        attackBox = AttackBox(self.x, self.y, self.w, self.h, 'blue')
-        self.leftSlashBox = attackBox.createLeftSlashBox()
-        self.rightSlashBox = attackBox.createRightSlashBox()
+        self.leftSlashBox = AttackBox.createLeftSlashBox(\
+                            self.x, self.y, self.w, self.h)
+        self.rightSlashBox = AttackBox.createRightSlashBox(\
+                            self.x, self.y, self.w, self.h)
     
     def doLeftSlash(self, enemies):
         if self.slashFrames and self.slashFrames[0] < 7:
@@ -239,9 +225,10 @@ class NightFury(GameObject):
             if frame == 3:
                 for enemy in enemies:
                     for box in self.leftSlashBox:
-                        if box.isObjectCollide(enemy):
+                        test = self.isObjectCollide(box)
+                        if test:
                             enemy.beAttacked(self)
-                            return
+                            break
 
     def doRightSlash(self, enemies):
         if self.slashFrames and self.slashFrames[0] > 6:
@@ -249,9 +236,10 @@ class NightFury(GameObject):
             if frame == 9:
                 for enemy in enemies:
                     for box in self.rightSlashBox:
-                        if box.isObjectCollide(enemy):
+                        test = self.isObjectCollide(box)
+                        if test:
                             enemy.beAttacked(self)
-                            return
+                            break
     
     def loseHealth(self, enemies):
         if self.immune == []:
@@ -262,7 +250,7 @@ class NightFury(GameObject):
                     if self.HP < 0:
                         self.isDead = True
                         self.HP = 0
-                    return
+                    break
     
     def unImmune(self):
         if self.immune:
@@ -299,17 +287,17 @@ class NightFury(GameObject):
 
     def drawLeftSlash(self, canvas):
         leftSlash = self.leftSlashBox
-        for box in leftSlash:
-            x, y = box.getLocation()
-            w, h = box.getSize()
+        for rect in leftSlash:
+            x, y = rect
+            w, h = leftSlash[rect]
             canvas.create_rectangle(x, y, x + w, y + h, fill = None, 
                                     outline = 'blue')
 
     def drawRightSlash(self, canvas):
         rightSlash = self.rightSlashBox
-        for box in rightSlash:
-            x, y = box.getLocation()
-            w, h = box.getSize()
+        for rect in rightSlash:
+            x, y = rect
+            w, h = rightSlash[rect]
             canvas.create_rectangle(x, y, x + w, y + h, fill = None, 
                                     outline = 'blue')
 
