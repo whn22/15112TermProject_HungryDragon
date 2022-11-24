@@ -159,20 +159,19 @@ class NightFury(GameObject):
         if self.PS < 100:
             self.PS += 0.5
 
-    def doJump(self, terrain):
+    def doJump(self, terrain): # apply jumping coordinates, test legal
         if self.jumpYs:
             jumpY = self.jumpYs.pop(0)
             self.y = jumpY
             for block in terrain:
-                test = self.isObjectCollide(block)
-                if test == True:
+                if self.isObjectCollide(block):
                     self.jumpYs = []
                     tx, ty = block.getLocation()
                     tw, th = block.getSize()
                     self.jumpYs.append(ty + th)
                     break
     
-    def falling(self, terrain):
+    def falling(self, terrain): # generate falling coordinates if suspend.
         if self.jumpYs or self.fallYs:
             return
         u = 1 # initial falling speed
@@ -185,27 +184,19 @@ class NightFury(GameObject):
                 u += g
             self.fallYs.append(y)
             for block in terrain:
-                test = block.testCollide(self.x, y, self.w, self.h)
-                if test == True:
+                if block.testCollide(self.x, y, self.w, self.h):
                     self.fallYs.pop()
                     tx, ty = block.getLocation()
                     self.fallYs.append(ty - self.h)
                     return
         # print(self.fallYs)
 
-    def doFalling(self):
+    def doFalling(self): # if there are falling coordinates, apply them.
         if self.jumpYs == [] and self.fallYs:
             fallY = self.fallYs.pop(0)
             self.y = fallY
-            # for block in terrain:
-            #     test = self.isObjectCollide(block)
-            #     if test == True:
-            #         self.fallYs = []
-            #         tx, ty = block.getLocation()
-            #         self.fallYs.append(ty - self.h)
-            #         return
 
-    def doLeftDash(self, terrain): # terrain
+    def doLeftDash(self, terrain): # apply dash coordinates, test legal
         if self.dashLXs:
             dashLX = self.dashLXs.pop(0)
             self.x = dashLX
@@ -217,7 +208,7 @@ class NightFury(GameObject):
                     tw, th = block.getSize()
                     self.x = tx + tw
 
-    def doRightDash(self, terrain): # terrain
+    def doRightDash(self, terrain):
         if self.dashRXs:
             dashRX = self.dashRXs.pop(0)
             self.x = dashRX
@@ -313,18 +304,7 @@ class NightFury(GameObject):
             canvas.create_rectangle(x, y, x + w, y + h, fill = None, 
                                     outline = 'blue')
 
-    # def drawRespawn(self, canvas):
-    #     for i in range(3):
-    #         time.sleep(1)
-    #         print(1)
-    #         canvas.create_text(self.w/2, self.h/2, 
-    #                             text = f'You die. Respawn in {3 - i} s', 
-    #                             font = 'Arial 18 bold', fill = 'black')
-
     def drawNightFury(self, canvas):
-        # if self.isDead:
-        #     drawRespawn(self, canvas)
-        # else:
         self.drawSelf(canvas)
         self.drawPSbar(canvas)
         self.drawHPbar(canvas)

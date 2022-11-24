@@ -27,9 +27,6 @@ class Enemy(GameObject):
                 direction = {self.direction}\n'
     
     # set methods
-    def resetLocation(self, tuple):
-        self.x, self.y = tuple
-    
     def resetDirection(self, str): # Left or Right
         self.direction = str
     
@@ -43,29 +40,8 @@ class Enemy(GameObject):
     def getDirection(self):
         return self.direction
 
-    # def getLocation(self):
-    #     return self.x, self.y
-    
-    # def getSize(self):
-    #     return self.w, self.h
-
     def getHP(self):
         return self.HP
-
-    # # move methods
-    # def goLeft(self, terrain):
-    #     self.x -= self.speed
-    #     if terrain.isLegalLocation(self) == True:
-    #         pass
-    #     else:
-    #         self.x += self.speed
-
-    # def goRight(self, terrain):
-    #     self.x += self.speed
-    #     if terrain.isLegalLocation(self) == True:
-    #         pass
-    #     else:
-    #         self.x -= self.speed
     
     # health methods:
     def beAttacked(self, player):
@@ -74,6 +50,21 @@ class Enemy(GameObject):
             if self.HP <= 0:
                 self.isDead = True
                 self.HP = 0
+    
+    # draw methods:
+    def drawEnemy(self, canvas):
+        if self.isDead == True:
+            return
+        fX, fY = self.getLocation()
+        fW, fH = self.getSize()
+        fColor = self.color
+        hp = self.HP
+        # this rectangle is collision box
+        canvas.create_rectangle(fX, fY, fX + fW, fY + fH, 
+                                fill = None, outline = fColor)
+        # draw HP bar above head
+        canvas.create_rectangle(fX - 5, fY - 10, fX + hp/50 * 20 - 5, fY - 7, 
+                                fill = 'red')
 
 class FlyEnemy(Enemy):
     def __init__(self, x, y, w, h, color, speed, DMG, health):

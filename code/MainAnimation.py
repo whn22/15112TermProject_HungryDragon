@@ -6,18 +6,6 @@ from BlockClass import Block
 from NightFuryClass import NightFury
 from EnemyClass import FlyEnemy
 
-# # __init__(self)
-# terrain1 = Terrain('grey')
-# # create a temporary map
-# terrain1.addBlock(0, 500, 100, 10)
-# terrain1.addBlock(150, 400, 100, 10)
-# terrain1.addBlock(350, 300, 100, 50)
-# terrain1.addBlock(300, 200, 100, 10)
-# terrain1.addBlock(500, 100, 100, 20)
-# terrain1.addBlock(650, 210, 15, 70)
-# terrain1.addBlock(700, 320, 70, 120)
-# terrain1.addBlock(700, 400, 120, 50)
-
 ground = Block(0, 590, 1000, 10, 'grey')
 block1 = Block(0, 500, 100, 10, 'grey')
 block2 = Block(150, 400, 100, 10, 'grey')
@@ -154,7 +142,7 @@ def timerFired(app):
     nightFuryTimerFired(app)
     enemiesTimerFired(app)
 
-# helper functions for keyPressed
+# helper functions for control
 def keyPressed(app, event):
     # WARNING: let the player set the keys.
     # move
@@ -190,24 +178,15 @@ def keyReleased(app, event):
 # helper functions for redraw All
 def drawEnemies(app, canvas):
     for enemy in app.enemies:
-        if enemy.isDead == True:
-            continue
-        fX, fY = enemy.getLocation()
-        fW, fH = enemy.getSize()
-        fColor = enemy.color
-        hp = enemy.HP
-        # this rectangle is collision box
-        canvas.create_rectangle(fX, fY, fX + fW, fY + fH, 
-                                fill = None, outline = fColor)
-        canvas.create_rectangle(fX - 5, fY - 10, fX + hp/50 * 20 - 5, fY - 7, 
-                                fill = 'red')
+        enemy.drawEnemy(canvas)
+
 def drawBlocks(app, canvas):
     for block in app.terrain:
         block.drawBlock(canvas)
 
 def redrawAll(app,canvas):
     drawBlocks(app, canvas)
-    app.nightFury.drawNightFury(canvas)
     drawEnemies(app, canvas)
+    app.nightFury.drawNightFury(canvas)
 
 runApp(width = 1000, height = 600)

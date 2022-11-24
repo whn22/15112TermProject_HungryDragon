@@ -31,27 +31,3 @@ class AttackBox(GameObject):
         box4 = GameObject(x, y + 7, 112, h - 14, c)
         box5 = GameObject(x, y + 15, 120, h - 30, c)
         return {box1, box2, box3, box4, box5}
-
-    # def createLeftSlashBox(self):
-    #     x = self.x
-    #     y = self.y
-    #     w = self.w
-    #     h = self.h
-    #     x += w/2
-    #     return {(x - 60, y - 15):(60, h + 30),
-    #             (x - 85, y - 7):(85, h + 14),
-    #             (x - 100, y):(100, h),
-    #             (x - 112, y + 7):(112, h - 14),
-    #             (x - 120, y + 15):(120, h - 30)}
-
-    # def createRightSlashBox(self):
-    #     x = self.x
-    #     y = self.y
-    #     w = self.w
-    #     h = self.h
-    #     x += w/2
-    #     return {(x, y - 15):(60, h + 30),
-    #             (x, y - 7):(85, h + 14),
-    #             (x, y):(100, h),
-    #             (x, y + 7):(112, h - 14),
-    #             (x, y + 15):(120, h - 30)}
