@@ -2,9 +2,12 @@ from cmu_112_graphics import *
 import time # sleep()
 import copy
 
+from ButtonClass import Button
 from BlockClass import Block
 from NightFuryClass import NightFury
 from EnemyClass import FlyEnemy
+
+settings = Button(10, 10, 60, 20, 'menu', 'aquamarine', 'settings', 10)
 
 ground = Block(0, 590, 1000, 10, 'grey')
 block1 = Block(0, 500, 100, 10, 'grey')
@@ -19,19 +22,19 @@ terrain = {ground, block1, block2, block3, block4, block5, block6,block7,block8}
 
 # __init__(self, x, y, w, h, color, speed, jumpHeight, gravity, ATK, DEF, 
 # health, magic, physicalStrength)
-nightFury1 = NightFury(0, 590 - 50, 20, 50, 'black', 5, 12, 0.6, 20, 10, 
+nightFury1 = NightFury(0, 590 - 50, 20, 50, 'blueviolet', 5, 13, 0.7, 20, 10, 
                        100, 100, 100)
 print (nightFury1)
 
 # __init__(self, x, y, w, h, color, speed, DMG, health)
-flyEnemy1 = FlyEnemy(110, 220, 10, 10, 'red', 0.5, 20, 50)
-flyEnemy2 = FlyEnemy(150, 500, 10, 10, 'red', 0.5, 20, 50)
-flyEnemy3 = FlyEnemy(770, 200, 10, 10, 'red', 0.5, 20, 50)
-# flyEnemy3 = FlyEnemy(170, 500, 10, 10, 'red', 0.5, 20, 50)
-flyEnemy4 = FlyEnemy(550, 420, 10, 10, 'red', 0.5, 20, 50)
-flyEnemy5 = FlyEnemy(380, 100, 10, 10, 'red', 0.5, 20, 50)
-flyEnemy6 = FlyEnemy(900, 450, 10, 10, 'red', 0.5, 20, 50)
-flyEnemy7 = FlyEnemy(600, 250, 10, 10, 'red', 0.5, 20, 50)
+flyEnemy1 = FlyEnemy(110, 220, 10, 10, 'yellow', 0.5, 20, 50)
+flyEnemy2 = FlyEnemy(150, 500, 10, 10, 'yellow', 0.5, 20, 50)
+flyEnemy3 = FlyEnemy(770, 200, 10, 10, 'yellow', 0.5, 20, 50)
+# flyEnemy3 = FlyEnemy(170, 500, 10, 10, 'yellow', 0.5, 20, 50)
+flyEnemy4 = FlyEnemy(550, 420, 10, 10, 'yellow', 0.5, 20, 50)
+flyEnemy5 = FlyEnemy(380, 100, 10, 10, 'yellow', 0.5, 20, 50)
+flyEnemy6 = FlyEnemy(900, 450, 10, 10, 'yellow', 0.5, 20, 50)
+flyEnemy7 = FlyEnemy(600, 250, 10, 10, 'yellow', 0.5, 20, 50)
 enemies = {flyEnemy1, flyEnemy2, flyEnemy3, flyEnemy4, flyEnemy5, flyEnemy6,
            flyEnemy7}
 
@@ -46,6 +49,8 @@ def appStarted(app):
     app.terrain = terrain
     # enemies
     app.enemies = enemies
+    # buttons
+    app.settings = settings
 
 # Helper functions for timerFired.
 def withinCanvasRange(app, object):
@@ -185,7 +190,11 @@ def drawBlocks(app, canvas):
         block.drawBlock(canvas)
 
 def redrawAll(app,canvas):
+    # draw background
+    canvas.create_rectangle(0, 0, app.width, app.height, 
+                            fill = 'black', outline = None)
     drawBlocks(app, canvas)
+    app.settings.drawButton(canvas)
     drawEnemies(app, canvas)
     app.nightFury.drawNightFury(canvas)
 

@@ -28,7 +28,8 @@ class NightFury(GameObject):
         self.dashRXs = []
         # attack collision box
         self.slashFrames = [] # how long the attack will last [1, 2, 3, 4, 5, 6]
-        attackBox = AttackBox(self.x, self.y, self.w, self.h, 'blue')
+        attackBox = AttackBox(self.x, self.y, self.w, self.h, 'mediumpurple')
+        self.attackColor = attackBox.color
         self.leftSlashBox = attackBox.createLeftSlashBox()
         self.rightSlashBox = attackBox.createRightSlashBox()
     
@@ -62,7 +63,7 @@ class NightFury(GameObject):
     def resetImmune(self):
         self.immune = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
 
-    # keypressed methods
+    # control methods
     def goLeft(self, terrain):
         self.x -= self.speed
         for block in terrain:
@@ -95,15 +96,6 @@ class NightFury(GameObject):
             y -= u
             u -= g
             self.jumpYs.append(y)
-            # for block in terrain:
-            #     test = block.testCollide(self.x, y, self.w, self.h)
-            #     if test == True:
-            #         self.jumpYs.pop()
-            #         tx, ty = block.getLocation()
-            #         tw, th = block.getSize()
-            #         self.jumpYs.append(ty + th)
-            #         break
-        # print(self.jumpYs, 'jump')
 
     def dashL(self):
         if self.dashLXs:
@@ -280,13 +272,13 @@ class NightFury(GameObject):
         ps = self.PS
         nfX, nfY = self.getLocation()
         canvas.create_rectangle(nfX - 5, nfY - 10, nfX + ps/100 * 30 - 5, 
-                                nfY - 7, fill = 'orange')
+                                nfY - 9, fill = 'cyan', outline = 'cyan')
 
     def drawHPbar(self, canvas):
         hp = self.HP
         nfX, nfY = self.getLocation()
         canvas.create_rectangle(nfX - 5, nfY - 20, nfX + hp/100 * 30 - 5, 
-                                nfY - 17, fill = 'red')
+                                nfY - 19, fill = 'lime', outline = 'lime')
 
     def drawLeftSlash(self, canvas):
         leftSlash = self.leftSlashBox
@@ -294,7 +286,7 @@ class NightFury(GameObject):
             x, y = box.getLocation()
             w, h = box.getSize()
             canvas.create_rectangle(x, y, x + w, y + h, fill = None, 
-                                    outline = 'blue')
+                                    outline = self.attackColor)
 
     def drawRightSlash(self, canvas):
         rightSlash = self.rightSlashBox
@@ -302,7 +294,7 @@ class NightFury(GameObject):
             x, y = box.getLocation()
             w, h = box.getSize()
             canvas.create_rectangle(x, y, x + w, y + h, fill = None, 
-                                    outline = 'blue')
+                                    outline = self.attackColor)
 
     def drawNightFury(self, canvas):
         self.drawSelf(canvas)

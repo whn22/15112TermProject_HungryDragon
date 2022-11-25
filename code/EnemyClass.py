@@ -55,16 +55,16 @@ class Enemy(GameObject):
     def drawEnemy(self, canvas):
         if self.isDead == True:
             return
-        fX, fY = self.getLocation()
-        fW, fH = self.getSize()
-        fColor = self.color
+        x, y = self.getLocation()
+        w, h = self.getSize()
+        c = self.color
         hp = self.HP
         # this rectangle is collision box
-        canvas.create_rectangle(fX, fY, fX + fW, fY + fH, 
-                                fill = None, outline = fColor)
+        canvas.create_rectangle(x, y, x + w, y + h, 
+                                fill = None, outline = c)
         # draw HP bar above head
-        canvas.create_rectangle(fX - 5, fY - 10, fX + hp/50 * 20 - 5, fY - 7, 
-                                fill = 'red')
+        canvas.create_rectangle(x - 5, y - 10, x + hp/50 * 20 - 5, y - 9, 
+                                fill = 'lime', outline = 'lime')
 
 class FlyEnemy(Enemy):
     def __init__(self, x, y, w, h, color, speed, DMG, health):
