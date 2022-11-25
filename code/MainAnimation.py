@@ -2,6 +2,7 @@ from cmu_112_graphics import *
 import time # sleep()
 import copy
 
+from ControlSetClass import ControlSet
 from ButtonClass import Button
 from BlockClass import Block
 from NightFuryClass import NightFury
@@ -38,6 +39,8 @@ flyEnemy7 = FlyEnemy(600, 250, 10, 10, 'yellow', 0.5, 20, 50)
 enemies = {flyEnemy1, flyEnemy2, flyEnemy3, flyEnemy4, flyEnemy5, flyEnemy6,
            flyEnemy7}
 
+controlSettings = ControlSet('Left', 'Right', 'x', 'z')
+
 def appStarted(app):
     # timerDelay
     app.timerDelay = 10
@@ -51,6 +54,23 @@ def appStarted(app):
     app.enemies = enemies
     # buttons
     app.settings = settings
+    # menu
+    app.settings = controlSettings
+    app.inputKey = None
+    menu = Button(10, 10, 60, 20, 
+                        'menu', 'aquamarine', 'menu', 10)
+    app.menu = menu
+    app.mouseX, app.mouseY = (-1, -1)
+    leftB = Button(app.width/2 - 300, app.height/10 * 3, 200, 40, 
+                        'left', 'aquamarine', 'set left', 20)
+    rightB = Button(app.width/2 - 300, app.height/10 * 4, 200, 40, 
+                        'right', 'aquamarine', 'set right', 20)
+    jumpB = Button(app.width/2 - 300, app.height/10 * 5, 200, 40, 
+                        'jump', 'aquamarine', 'set jump', 20)
+    dashB = Button(app.width/2 - 300, app.height/10 * 6, 200, 40, 
+                        'dash', 'aquamarine', 'set dash', 20)
+    app.menuButtons = {leftB, rightB, jumpB, dashB}
+    app.menuOn = False
 
 # Helper functions for timerFired.
 def withinCanvasRange(app, object):
@@ -143,25 +163,53 @@ def enemiesTimerFired(app):
                 enemy.resetLocation(backupPosition)
                 break
 
+def menuTimerFired(app):
+    if app.menuOn == False:
+        app.menu.checkMouseOn(app.mouseX, app.mouseY)
+    else:
+        for button in app.menuButtons:
+            button.checkMouseOn(app.mouseX, app.mouseY)
+
 def timerFired(app):
     nightFuryTimerFired(app)
     enemiesTimerFired(app)
+    menuTimerFired(app)
 
 # helper functions for control
+def openMenu(app):
+    app.menuOn = True
+
+def mouseMoved(app, event):
+    app.mouseX, app.mouseY = (event.x, event.y)
+
+def mousePressed(app, event):
+    if app.menuOn == False:
+        app.menu.mouseClicked(event.x, event.y, openMenu, app)
+    else:
+        for button in app.menuButtons:
+            button.mouseClicked(event.x, event.y, 
+                                app.settings.resetKey, (app.inputKey, button))
+
 def keyPressed(app, event):
-    # WARNING: let the player set the keys.
+    # let the players set the keys
+    app.inputKey = event.key
+    if app.inputKey == 'q':
+        app.menuOn = False
     # move
-    if event.key == 'Left':
+    # if event.key == 'Left':
+    if event.key == app.settings.left:
         app.nfGoLeft = True
-    elif event.key == 'Right':
+    # elif event.key == 'Right':
+    elif event.key == app.settings.right:
         app.nfGoRight = True
     
     # jump
-    if event.key == 'x':
+    # if event.key == 'x':
+    if event.key == app.settings.jump:
         app.nightFury.jump()#app.terrain
     # dash
-    if event.key == 'z':
-    # if event.key == 'l':
+    # if event.key == 'z':
+    if event.key == app.settings.dash:
         if app.nightFury.direction == 'Left':
             app.nightFury.dashL()
         elif app.nightFury.direction == 'Right':
@@ -174,10 +222,10 @@ def keyPressed(app, event):
 def keyReleased(app, event):
     # WARNING: let the player set the keys.
     # move
-    if event.key == 'Left':
+    if event.key == app.settings.left:
         app.nfGoLeft = False
 
-    elif event.key == 'Right':
+    elif event.key == app.settings.right:
         app.nfGoRight = False
 
 # helper functions for redraw All
@@ -194,8 +242,10 @@ def redrawAll(app,canvas):
     canvas.create_rectangle(0, 0, app.width, app.height, 
                             fill = 'black', outline = None)
     drawBlocks(app, canvas)
-    app.settings.drawButton(canvas)
     drawEnemies(app, canvas)
     app.nightFury.drawNightFury(canvas)
+    app.menu.drawButton(canvas)
+    if app.menuOn == True:
+        app.settings.drawMenu(app, canvas)
 
 runApp(width = 1000, height = 600)

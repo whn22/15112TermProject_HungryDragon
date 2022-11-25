@@ -42,7 +42,7 @@ class ControlSet():
         canvas.create_rectangle(0, 0, app.width, app.height, 
                                 fill = 'black', outline = None)
         canvas.create_text(app.width/2, app.height/30,
-                        text = 'Press esc to exit',
+                        text = 'Press q to exit',
                         font = 'Arial 10', fill = 'white')
         canvas.create_text(app.width/2, app.height/30 + 10,
                         text = 'Press a key and click to assign its function',

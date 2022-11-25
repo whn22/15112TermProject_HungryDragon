@@ -35,6 +35,8 @@ def mouseMoved(app, event):
 
 def keyPressed(app, event):
     app.inputKey = event.key
+    if app.inputKey == 'q':
+        app.menuOn = False
 
 def mousePressed(app, event):
     if app.menuOn == False:
