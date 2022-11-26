@@ -30,10 +30,10 @@ class NightFury(GameObject):
         self.dashRXs = []
         # attack collision box
         self.slashFrames = [] # how long the attack will last [1, 2, 3, 4, 5, 6]
-        attackBox = AttackBox(self.x, self.y, self.w, self.h, 'mediumpurple')
-        self.attackColor = attackBox.color
-        self.leftSlashBox = attackBox.createLeftSlashBox()
-        self.rightSlashBox = attackBox.createRightSlashBox()
+        self.attackBox = AttackBox(self.x, self.y, self.w, self.h, 'mediumpurple')
+
+        # self.leftSlashBox = attackBox.createLeftSlashBox()
+        # self.rightSlashBox = attackBox.createRightSlashBox()
     
     def __str__(self):
         return f'NightFury:\n\
@@ -53,6 +53,7 @@ class NightFury(GameObject):
                 isDead = {self.isDead}\n\
                 direction = {self.direction}\n'
 
+################################################################################
     # reset methods
     def resetDefaultMoveX(self):
         self.dashRXs = []
@@ -215,29 +216,32 @@ class NightFury(GameObject):
                     self.x = tx - self.w
 
     def refreshSlashLocation(self):
-        attackBox = AttackBox(self.x, self.y, self.w, self.h, 'blue')
-        self.leftSlashBox = attackBox.createLeftSlashBox()
-        self.rightSlashBox = attackBox.createRightSlashBox()
+        self.attackBox = AttackBox(self.x, self.y, self.w, self.h, 'mediumpurple')
+        self.attackBox.createLeftSlashBox()
+        self.attackBox.createRightSlashBox()
+    #     attackBox = AttackBox(self.x, self.y, self.w, self.h, 'blue')
+    #     self.leftSlashBox = attackBox.createLeftSlashBox()
+    #     self.rightSlashBox = attackBox.createRightSlashBox()
     
-    def doLeftSlash(self, enemies):
+    def doLeftSlash(self, app):
         if self.slashFrames and self.slashFrames[0] < 7:
             frame = self.slashFrames.pop(0)
             if frame == 3:
-                for enemy in enemies:
-                    for box in self.leftSlashBox:
+                for enemy in app.enemies:
+                    for box in self.attackBox.leftSlashBox:
                         if box.isObjectCollide(enemy):
-                            enemy.beAttacked(self)
-                            return
+                            enemy.beAttacked(self, app)
+                            break
 
-    def doRightSlash(self, enemies):
+    def doRightSlash(self, app):
         if self.slashFrames and self.slashFrames[0] > 6:
             frame = self.slashFrames.pop(0)
             if frame == 9:
-                for enemy in enemies:
-                    for box in self.rightSlashBox:
+                for enemy in app.enemies:
+                    for box in self.attackBox.rightSlashBox:
                         if box.isObjectCollide(enemy):
-                            enemy.beAttacked(self)
-                            return
+                            enemy.beAttacked(self, app)
+                            break
     
     def loseHealth(self, enemies):
         if self.immune == []:
@@ -317,8 +321,8 @@ class NightFury(GameObject):
         self.loseHealth(app.enemies)
         self.unImmune()
         # keypressed
-        self.doLeftSlash(app.enemies)
-        self.doRightSlash(app.enemies)
+        self.doLeftSlash(app)
+        self.doRightSlash(app)
 
 ################################################################################
     # draw function
@@ -342,28 +346,12 @@ class NightFury(GameObject):
         canvas.create_rectangle(nfX - 5, nfY - 20, nfX + hp/100 * 30 - 5, 
                                 nfY - 19, fill = 'lime', outline = 'lime')
 
-    def drawLeftSlash(self, canvas):
-        leftSlash = self.leftSlashBox
-        for box in leftSlash:
-            x, y = box.getLocation()
-            w, h = box.getSize()
-            canvas.create_rectangle(x, y, x + w, y + h, fill = None, 
-                                    outline = self.attackColor)
-
-    def drawRightSlash(self, canvas):
-        rightSlash = self.rightSlashBox
-        for box in rightSlash:
-            x, y = box.getLocation()
-            w, h = box.getSize()
-            canvas.create_rectangle(x, y, x + w, y + h, fill = None, 
-                                    outline = self.attackColor)
-
     def drawNightFury(self, canvas):
         self.drawSelf(canvas)
         self.drawPSbar(canvas)
         self.drawHPbar(canvas)
         if self.slashFrames:
             if self.direction == 'Left':
-                self.drawLeftSlash(canvas)
+                self.attackBox.drawLeftSlash(canvas)
             elif self.direction == 'Right':
-                self.drawRightSlash(canvas)
+                self.attackBox.drawRightSlash(canvas)

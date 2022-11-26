@@ -46,22 +46,37 @@ class Enemy(GameObject):
     def getHP(self):
         return self.HP
     
-    # health methods:
-    def beAttacked(self, player):
+    # interact with player:
+    def beAttacked(self, player, app):
         if self.isDead == False:
+            # location
             d = player.direction
             if d == 'Left':
                 self.x -= self.knockBack
+                # print(app.terrain)
+                test1 = self.isSetCollide(app.terrain)
+                if test1:
+                    self.x = test1.x + test1.w
+                test2 = self.withinCanvasRange(app)
+                if test2 == False:
+                    self.x = 0
             elif d == 'Right':
                 self.x += self.knockBack
+                test1 = self.isSetCollide(app.terrain)
+                if test1:
+                    self.x = test1.x - self.w
+                test2 = self.withinCanvasRange(app)
+                if test2 == False:
+                    self.x = app.width
+            # health
             self.HP -= player.ATK
             if self.HP <= 0:
                 self.isDead = True
                 self.HP = 0
     
     # AI
-    # def AI(self):
-    #     pass
+    def AI(self):
+        pass
     
     # draw methods:
     def drawEnemy(self, canvas):
@@ -160,11 +175,6 @@ class WalkEnemy(Enemy):
                 self.x += self.speed
             elif self.direction == 'Left':
                 self.x -= self.speed
-        # elif self.withinCanvasRange(app):
-        #     self.fallYs = []
-        #     self.x, self.y = backupPosition
-        #     self.changeDirection()
-        # else:
             for block in app.terrain:
                 if self.isObjectCollide(block) == False and \
                     self.withinCanvasRange(app) and \

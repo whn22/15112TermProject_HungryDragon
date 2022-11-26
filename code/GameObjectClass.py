@@ -31,6 +31,12 @@ class GameObject():
             return True
         return False
     
+    def isSetCollide(self, set): # a set contains gameObjects
+        for item in set:
+            if self.isObjectCollide(item):
+                return item
+        return False
+
     def testCollide(self, x2, y2, w2, h2): # test temperary location (falling)
         x1, y1 = self.x, self.y
         w1, h1 = self.w, self.h
@@ -60,6 +66,15 @@ class GameObject():
             return True
         else:
             return False
+
+    def findDistance(self, other): # find the distance between two centers
+        x1, y1 = self.x, self.y
+        w1, h1 = self.w, self.h
+        x2, y2 = other.getLocation()
+        w2, h2 = other.getSize()
+        cx1, cy1 = (x1 + w1)/2, (y1 + h1)/2
+        cx2, cy2 = (x2 + w2)/2, (y2 + h2)/2
+        return (((cx1 - cx2)**2 + (cy1 - cy2)**2)**0.5)
 
     # app methods
     def withinCanvasRange(self, app):

@@ -83,15 +83,6 @@ def enemiesTimerFired(app):
             enemy.flyIdle(app)
         if type(enemy) == WalkEnemy:
             enemy.walkIdle(app)
-        # for block in app.terrain:
-        #     if block.isObjectCollide(enemy) == False \
-        #         and enemy.withinReasonableRange(app):
-        #         pass
-        #     else:
-        #         # print('here')
-        #         enemy.resetDefaultMove()
-        #         enemy.resetLocation(backupPosition)
-        #         break
 
 def menuTimerFired(app):
     if app.menuOn == False:
@@ -105,7 +96,7 @@ def timerFired(app):
     enemiesTimerFired(app)
     menuTimerFired(app)
 
-# helper functions for control
+# helper functions for controlzz
 def openMenu(app):
     app.menuOn = True
 
