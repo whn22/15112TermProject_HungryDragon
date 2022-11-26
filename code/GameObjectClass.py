@@ -44,3 +44,35 @@ class GameObject():
         if x1 + w1 > x and x1 < x and y1 + h1 > y and y1 < y:
             return True
         return False
+    
+    def testExceedEdge(self, other): # cheack if object is on the edge of another
+        x1, y1 = self.x, self.y
+        w1, h1 = self.w, self.h
+        x2, y2 = other.getLocation()
+        w2, h2 = other.getSize()
+        if x1 + w1 >= x2 + w2 and y1 + h1 == y2 and \
+            x1 >= x2 and x1 <= x2 + w2:
+            # print('reach right edge')
+            return True
+        elif x1 <= x2 and y1 + h1 == y2 and \
+            x1 + w1 >= x2 and x1 + w1 <= x2 + w2:
+            # print('reach left edge')
+            return True
+        else:
+            return False
+
+    # app methods
+    def withinCanvasRange(self, app):
+        oX, oY = self.getLocation()
+        oW, oH = self.getSize()
+        if oX < 0 or oY < 0 or oX + oW > app.width or oY + oH > app.height:
+            return False
+        return True
+
+    def withinReasonableRange(self, app):
+        oX, oY = self.getLocation()
+        oW, oH = self.getSize()
+        if oX < 50 or oY < 50 or oX + oW > app.width - 50 or \
+            oY + oH > app.height - 50:
+            return False
+        return True

@@ -14,7 +14,9 @@ class NightFury(GameObject):
         self.ATK = ATK
         self.DEF = DEF
         # changable data
+        self.maxHP = health
         self.HP = health
+        self.maxMP = magic
         self.MP = magic
         self.PS = physicalStrength
         # default data
@@ -140,6 +142,7 @@ class NightFury(GameObject):
     def accumulateFarAttack(self):
         pass
 
+################################################################################
     # timerfired methods
     def isKilled(self):
         if self.HP <= 0:
@@ -259,6 +262,65 @@ class NightFury(GameObject):
             self.resetDefaultMoveX()
             self.resetDefaultMoveY()
     
+    # timerFired app
+    def nightFuryHorizontal(self, app):
+        backupX = self.x
+        # keypressed
+        if app.nfGoLeft == True:
+            self.direction = 'Left'
+            self.goLeft(app.terrain)
+            if not self.withinCanvasRange(app):
+                self.goRight(app.terrain)
+        elif app.nfGoRight == True:
+            self.direction = 'Right'
+            self.goRight(app.terrain)
+            if not self.withinCanvasRange(app):
+                self.goLeft(app.terrain)
+        self.doLeftDash(app.terrain)
+        self.doRightDash(app.terrain)
+        # check legal
+        for block in app.terrain:
+            if block.isObjectCollide(self) == False \
+                and self.withinCanvasRange(app):
+                pass
+            else:
+                # print('here')
+                self.resetDefaultMoveX()
+                self.x = backupX
+                break
+
+    def nightFuryVertical(self, app):
+        backupY = self.y
+        self.falling(app.terrain)
+        self.doFalling()
+        # keypressed
+        self.doJump(app.terrain) #()
+        # check legal
+        for block in app.terrain:
+            if block.isObjectCollide(self) == False \
+                and self.withinCanvasRange(app):
+                pass
+            else:
+                # print('here')
+                self.resetDefaultMoveY()
+                self.y = backupY
+                break
+
+    def nightFuryTimerFired(self, app):
+        self.nightFuryHorizontal(app)
+        self.nightFuryVertical(app)
+        # test default
+        self.respawn()
+        self.refreshSlashLocation()
+        self.isKilled()
+        self.regainPS()
+        self.loseHealth(app.enemies)
+        self.unImmune()
+        # keypressed
+        self.doLeftSlash(app.enemies)
+        self.doRightSlash(app.enemies)
+
+################################################################################
     # draw function
     def drawSelf(self, canvas):
         nfX, nfY = self.getLocation()

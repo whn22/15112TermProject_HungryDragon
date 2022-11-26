@@ -2,15 +2,18 @@ import random
 from GameObjectClass import GameObject
 
 class Enemy(GameObject):
-    def __init__(self, x, y, w, h, color, speed, DMG, health):
+    def __init__(self, x, y, w, h, color, speed, DMG, knockBack, health):
         super().__init__(x, y, w, h, color)
         # properties
         self.speed = speed
         self.DMG = DMG
+        self.knockBack = knockBack
         # changable data
+        self.maxHP = health
         self.HP = health
         # default data
         self.isDead = False
+        self.isActive = False
         self.direction = 'Right'
 
     def __repr__(self):
@@ -46,10 +49,19 @@ class Enemy(GameObject):
     # health methods:
     def beAttacked(self, player):
         if self.isDead == False:
+            d = player.direction
+            if d == 'Left':
+                self.x -= self.knockBack
+            elif d == 'Right':
+                self.x += self.knockBack
             self.HP -= player.ATK
             if self.HP <= 0:
                 self.isDead = True
                 self.HP = 0
+    
+    # AI
+    # def AI(self):
+    #     pass
     
     # draw methods:
     def drawEnemy(self, canvas):
@@ -63,12 +75,13 @@ class Enemy(GameObject):
         canvas.create_rectangle(x, y, x + w, y + h, 
                                 fill = None, outline = c)
         # draw HP bar above head
-        canvas.create_rectangle(x - 5, y - 10, x + hp/50 * 20 - 5, y - 9, 
+        canvas.create_rectangle(x - 5, y - 10, 
+                                x + hp/self.maxHP * (w + 5), y - 9, 
                                 fill = 'lime', outline = 'lime')
 
 class FlyEnemy(Enemy):
-    def __init__(self, x, y, w, h, color, speed, DMG, health):
-        super().__init__(x, y, w, h, color, speed, DMG, health)
+    def __init__(self, x, y, w, h, color, speed, DMG, knockBack, health):
+        super().__init__(x, y, w, h, color, speed, DMG, knockBack, health)
         self.idlePath = []
 
     def resetDefaultMove(self):
@@ -80,60 +93,86 @@ class FlyEnemy(Enemy):
         for i in range(30):
             self.idlePath.append((chooseX, chooseY))
 
-    def flyIdle(self, terrain):
+    def flyIdle(self, app):
+        backupPosition = self.x, self.y
         if self.idlePath == []:
             self.createIdlePath()
         dx, dy = self.idlePath.pop(0)
         self.x += dx
         self.y += dy
-        for block in terrain:
+        for block in app.terrain:
             if self.isObjectCollide(block) == False:
                 pass
             else:
                 self.idlePath = []
                 break
+        for block in app.terrain:
+            if self.isObjectCollide(block) == False \
+                and self.withinReasonableRange(app):
+                pass
+            else:
+                # print('here')
+                self.resetDefaultMove()
+                self.resetLocation(backupPosition)
+                break
 
 class WalkEnemy(Enemy):
-    def __init__(self, x, y, w, h, color, speed, gravity, DMG, health):
-        super().__init__(self, x, y, w, h, color, speed, DMG, health)
+    def __init__(self, x, y, w, h, color, speed, DMG, knockBack, health):
+        super().__init__(x, y, w, h, color, speed, DMG, knockBack, health)
         # properties
-        self.gravity = gravity
+        self.gravity = 0.7
+        self.jumpheight = 13
         # default data
         self.fallYs = []
 
     def resetDefaultMove(self):
         self.fallYs = []
 
-    # def falling(self, terrain):
-    #     if self.jumpYs or self.fallYs:
-    #         return
-    #     u = 1 # initial falling speed
-    #     v = self.jumpHeight # Maximum falling speed
-    #     g = self.gravity
-    #     y = self.y
-    #     while True:
-    #         y += u
-    #         if u < v:
-    #             u += g
-    #         self.fallYs.append(y)
-    #         test = terrain.isLegalLocation2(self.x, y, self.w, self.h)
-    #         if test != True:
-    #             self.fallYs.pop()
-    #             break
+    def falling(self, terrain): # generate falling coordinates if suspend.
+        if self.fallYs:
+            return
+        u = 1 # initial falling speed
+        v = self.jumpheight # Maximum falling speed
+        g = self.gravity 
+        y = self.y
+        while True:
+            y += u
+            if u < v:
+                u += g
+            self.fallYs.append(y)
+            for block in terrain:
+                if block.testCollide(self.x, y, self.w, self.h):
+                    self.fallYs.pop()
+                    tx, ty = block.getLocation()
+                    self.fallYs.append(ty - self.h)
+                    return
+        # print(self.fallYs)
 
-    def doFalling(self):
-        if self.jumpYs == [] and self.fallYs:
+    def doFalling(self): # if there are falling coordinates, apply them.
+        if self.fallYs:
             fallY = self.fallYs.pop(0)
             self.y = fallY
         
-    # def walkIdle(self, terrain):
-    #     if self.fallYs == [] and terrain.isLegalLocation(self) == True:
-    #         if self.direction == 'Right':
-    #             self.x += self.speed
-    #         elif self.direction == 'Left':
-    #             self.x -= self.speed
-    #     elif self.fallYs:
-    #         self.fallYs = []
-    #         self.changeDirection()
-
-    # draw function
+    def walkIdle(self, app):
+        backupPosition = self.x, self.y
+        if self.isActive == False:
+            if self.direction == 'Right':
+                self.x += self.speed
+            elif self.direction == 'Left':
+                self.x -= self.speed
+        # elif self.withinCanvasRange(app):
+        #     self.fallYs = []
+        #     self.x, self.y = backupPosition
+        #     self.changeDirection()
+        # else:
+            for block in app.terrain:
+                if self.isObjectCollide(block) == False and \
+                    self.withinCanvasRange(app) and \
+                    self.testExceedEdge(block) == False:
+                    pass
+                else:
+                    self.x, self.y = backupPosition
+                    self.changeDirection()
+                    break
+        else:
+            pass
