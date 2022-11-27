@@ -77,7 +77,7 @@ from GenerateLevel import Level1
 
 nightFury1 = NightFury(0, 590 - 50, 20, 50, 'blueviolet', 5, 13, 0.7, 20, 10, 
                        100, 100, 100)
-level1 = Level1(3, 5, nightFury1)
+level1 = Level1(3, 5)
 
 def appStarted(app):
     level1.createTerrain(app)
@@ -94,6 +94,8 @@ def keyPressed(app, event):
 
 # helper functions for redraw All
 def redrawAll(app, canvas):
+    canvas.create_rectangle(0, 0, app.width, app.height, 
+                            fill = 'black', outline = None)
     Block.drawBlockSet(app.terrain1, canvas)
     pass
 

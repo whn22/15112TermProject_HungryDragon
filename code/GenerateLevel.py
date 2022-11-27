@@ -7,27 +7,41 @@ from EnemyClass import FlyEnemy, WalkEnemy
 from NightFuryClass import NightFury
 
 class Level1():
-    def __init__(self, terrainNum, enemyNum, player):
+    def __init__(self, blockNum, enemyNum):
         # set number
-        self.backupNum = terrainNum * 4, enemyNum
-        self.terrainNum = terrainNum * 4
+        self.backupNum = blockNum * 4, enemyNum
+        self.blockNum = blockNum * 4
         self.enemyNum = enemyNum
         # default settings
         self.base = set()
+        self.blocks = set()
         self.terrain = set()
-        self.door = (0, 590 - player.h) # changable
-        self.startEndLoc = [0, 590 - player.h]
+        self.enter = None # changable
+        self.exit = None
         self.enemies = set()
+        self.win = False
     
-    def initNum(self):
-        self.terrainNum, self.enemyNum = self.backupNum
+    def refresh(self, app):
+        self.initAll()
+        self.createTerrain(app)
 
-    def findMinDistance(self, block):
-        terrain = list(self.terrain)
-        minDX = 0
-        minDY = 0
-        pass
+    def initAll(self):
+        self.blockNum, self.enemyNum = self.backupNum
+        self.blocks = set()
+        self.terrain = set()
+        # self.enemies = set()
 
+    # def findMinDistance(self, block):
+    #     terrain = list(self.terrain)
+    #     minDX = 0
+    #     minDY = 0
+    #     pass
+
+    def passLevel(self, player, enemies):
+        if enemies == set() and player.isObjectCollide(self.exit):
+            self.win = True
+
+    # this function is wrong, do not use it
     def testVaildPath(self):
         terrain = list(self.terrain)
         maxDX = 0
@@ -46,8 +60,9 @@ class Level1():
         else:
             return True
 
-    def GenerateDoor(): # generate two doors, one for enter, one for exit
-        pass
+    # def GenerateDoor(self): # generate two doors, one for enter, one for exit
+
+    #     pass
 
     # def terrainAddBlock(self, app):
     #     color = 'grey' # WARNING: hard code color
@@ -59,6 +74,50 @@ class Level1():
     #     ty = random.randint(100, app.height - th)
     #     block = Block(tx, ty, tw, th, color)
     #     self.terrain.add(block)
+
+    def createEnter(self, app):
+        if self.enter == None:
+            self.enter = Block(20, app.height - 10, 30, 10, 'aquamarine')
+        else:
+            # eg.end on celling, regenerate on botton.
+            # same location (width = width, height flipped, vice versa)
+            if self.exit == None:
+                self.createExit(app)
+            self.enter = Block(self.exit.x, app.height - 10, 30, 10, 'aquamarine')
+    
+    def createExit(self, app):
+        if self.enter == None:
+            self.createEnter(app)
+        self.exit = Block(random.randint(20, app.width - 20 - 30), 0, 30, 10, 'aquamarine')
+        platform = Block(self.exit.x - 10, 100, 50, 20, 'grey')
+        self.blocks.add(platform)
+
+    # def createExit(self, app):
+    #     exitx, exity = -1, -1
+    #     # exitw, exith = 30, 10 or 10, 30
+    #     if self.enter == None:
+    #         self.enter = Block(10, app.height - 10, 30, 10, 'aquamarine')
+    #     enterx, entery = self.enter.getLocation()
+    #     if enterx == 0:
+    #         exitx = random.choice(app.width - 10, random.randint(10, app.width - 10 - 30))
+    #         if exitx == app.width - 10:
+    #             # 30 is the width of the door
+    #             exity = random.randint(10, app.height - 10 - 30)
+    #         else:
+    #             if entery < app.height/2:
+    #                 exity = app.height - 10
+    #             else:
+    #                 exity = 0
+    #     if entery == app.height - 10:
+    #         exity = random.choice(0, random.randint(10, app.height - 10 - 30))
+    #         if exity == 0:
+    #             exitx = random.randint(10, app.width - 10 - 30)
+    #         else:
+    #             if enterx < app.width/2:
+    #                 exitx = app.width - 10
+    #             else:
+    #                 exitx = 0
+    #     self.exit = Block(exitx, exity, 30, 10, 'aquamarine')
 
     def createBase(self, app):
         color = 'grey' # WARNING: hard code color
@@ -77,43 +136,59 @@ class Level1():
         # if they can from a path to the success end, then legal
         # if not, generate again.
         color = 'grey' # WARNING: hard code color
-        for i in range(self.terrainNum//4):
+        for i in range(self.blockNum//4):
             tw = random.randint(20, 200)
             th = random.randint(10, 100)
-            tx = random.randint(0, app.width/2 - tw)
+            tx = random.randint(20, app.width/2 - tw)
             ty = random.randint(100, app.height/2 - th)
             block = Block(tx, ty, tw, th, color)
-            self.terrain.add(block)
-        for i in range(self.terrainNum//4):
+            self.blocks.add(block)
+        for i in range(self.blockNum//4):
             tw = random.randint(20, 200)
             th = random.randint(10, 100)
             tx = random.randint(app.width/2 - tw, app.width)
             ty = random.randint(100, app.height/2 - th)
             block = Block(tx, ty, tw, th, color)
-            self.terrain.add(block)
-        for i in range(self.terrainNum//4):
+            self.blocks.add(block)
+        for i in range(self.blockNum//4):
             tw = random.randint(20, 200)
             th = random.randint(10, 100)
-            tx = random.randint(0, app.width/2 - tw)
+            tx = random.randint(20, app.width/2 - tw)
             ty = random.randint(app.height/2 - th, app.height - th)
             block = Block(tx, ty, tw, th, color)
-            self.terrain.add(block)
-        for i in range(self.terrainNum//4):
+            self.blocks.add(block)
+        for i in range(self.blockNum//4):
             tw = random.randint(20, 200)
             th = random.randint(10, 100)
             tx = random.randint(app.width/2 - tw, app.width)
             ty = random.randint(app.height/2 - th, app.height - th)
             block = Block(tx, ty, tw, th, color)
-            self.terrain.add(block)
-    
+            self.blocks.add(block)
+
     def createTerrain(self, app):
+        self.createBase(app)
         self.createBlocks(app)
-        if self.terrain != set() and self.testVaildPath():
-            self.terrain = self.terrain + self.base
-        else:
-            self.initNum()
-            self.terrain = set()
-            self.createTerrain(app)
+        self.createEnter(app)
+        self.createExit(app)
+        self.terrain = self.blocks.union(self.base)
+        self.terrain.add(self.enter)
+        self.terrain.add(self.exit)
+
+    def drawPassLevel(self, app, canvas):
+        canvas.create_text(app.width/2, app.height/2,
+                text = 'Level passed',
+                font = 'Arial 20', fill = 'white')
+
+    # def createTerrain(self, app):
+    #     self.createBlocks(app)
+    #     if self.blocks != set() and self.testVaildPath():
+    #         self.terrain = self.blocks + self.base
+    #         self.terrain.add(self.enter)
+    #         self.terrain.add(self.exit)
+    #     else:
+    #         self.initAll()
+    #         self.terrain = set()
+    #         self.createTerrain(app)
 
     # # __init__(self, x, y, w, h, color, speed, DMG, knockBack, health):
     # # flyEnemy1 = FlyEnemy(110, 220, 10, 10, 'yellow', 0.5, 20, 20, 50)
@@ -138,8 +213,8 @@ class Level1():
     #     color = 'grey' # WARNING: hard code color
     #     ground = Block(0, 590, 1000, 10, color)
     #     self.terrain.add(ground)
-    #     if self.terrainNum == 0:
-    #         self.initNum()
+    #     if self.blockNum == 0:
+    #         self.initAll()
     #         return
     #     else:
     #         tw = random.randint(20, 200)

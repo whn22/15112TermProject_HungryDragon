@@ -26,18 +26,6 @@ class ControlSet():
             self.dash = input
         print(self)
 
-    # def resetLeftKey(self, event):
-    #     self.left = event.key
-    
-    # def resetRightKey(self, event):
-    #     self.right = event.key
-
-    # def resetJumpKey(self, event):
-    #     self.jump = event.key
-
-    # def resetDashKey(self, event):
-    #     self.dash = event.key
-
     def drawMenu(self, app, canvas):
         canvas.create_rectangle(0, 0, app.width, app.height, 
                                 fill = 'black', outline = None)

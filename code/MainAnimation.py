@@ -11,6 +11,7 @@ from EnemyClass import Enemy, FlyEnemy, WalkEnemy
 from GenerateLevel import Level1
 
 settings = Button(10, 10, 60, 20, 'menu', 'aquamarine', 'settings', 10)
+refresh = Button(80, 10, 60, 20, 'refresh', 'aquamarine', 'refresh', 10)
 
 ground = Block(0, 590, 1000, 10, 'grey')
 block1 = Block(0, 500, 100, 10, 'grey')
@@ -45,7 +46,7 @@ enemies = {walkEnemy1, flyEnemy2, flyEnemy3, flyEnemy4, flyEnemy5, flyEnemy6,
 controlSettings = ControlSet('Left', 'Right', 'x', 'z')
 
 # 3 * 4
-level1 = Level1(3, 5, nightFury1)
+level1 = Level1(3, 5)
 
 def appStarted(app):
     # timerDelay
@@ -57,11 +58,13 @@ def appStarted(app):
     # terrain
     # app.terrain = terrain
     level1.createTerrain(app)
+    app.level1 = level1
     app.terrain = level1.terrain
     # enemies
     app.enemies = enemies
     # buttons
     app.settings = settings
+    app.refresh = refresh
     # menu
     app.settings = controlSettings
     app.inputKey = None
@@ -91,7 +94,8 @@ def enemiesTimerFired(app):
         if type(enemy) == WalkEnemy:
             enemy.walkIdle(app)
 
-def menuTimerFired(app):
+def buttonTimerFired(app):
+    app.refresh.checkMouseOn(app.mouseX, app.mouseY)
     if app.menuOn == False:
         app.menu.checkMouseOn(app.mouseX, app.mouseY)
     else:
@@ -101,7 +105,8 @@ def menuTimerFired(app):
 def timerFired(app):
     app.nightFury.nightFuryTimerFired(app)
     enemiesTimerFired(app)
-    menuTimerFired(app)
+    buttonTimerFired(app)
+    app.level1.passLevel(app.nightFury, app.enemies)
 
 # helper functions for controlzz
 def openMenu(app):
@@ -117,6 +122,8 @@ def mousePressed(app, event):
         for button in app.menuButtons:
             button.mouseClicked(event.x, event.y, 
                                 app.settings.resetKey, (app.inputKey, button))
+    app.refresh.mouseClicked(event.x, event.y, app.level1.refresh, app)
+    app.terrain = level1.terrain
 
 def keyPressed(app, event):
     # let the players set the keys
@@ -164,7 +171,10 @@ def redrawAll(app,canvas):
     Block.drawBlockSet(app.terrain, canvas)
     Enemy.drawEnemySet(app.enemies, canvas)
     app.nightFury.drawNightFury(canvas)
+    app.refresh.drawButton(canvas)
     app.menu.drawButton(canvas)
+    if app.level1.win == True:
+        app.level1.drawPassLevel(app, canvas)
     if app.menuOn == True:
         app.settings.drawMenu(app, canvas)
 

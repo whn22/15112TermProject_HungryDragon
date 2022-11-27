@@ -23,7 +23,7 @@ class Button(GameObject):
 
     def callFunction(self, f, p): # p should be tuple if multiple parameters
         if self.isClicked == True:
-            print('here')
+            # print('here')
             f(p)
             self.isClicked = False
     
@@ -47,7 +47,8 @@ class Button(GameObject):
             canvas.create_text(x + w/2, y + h/2, text = self.text,
                                     font = f'Arial {self.textSize}', 
                                     fill = 'black')
-        
+    
+    # this hasn't been used
     def drawButtonWait(self, canvas): # for customized key settings
         x, y = self.getLocation()
         w, h = self.getSize()

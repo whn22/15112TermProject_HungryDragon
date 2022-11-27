@@ -16,3 +16,7 @@ class Block(GameObject):
     def drawBlockSet(terrain, canvas):
         for block in terrain:
             block.drawBlock(canvas)
+
+# class Door(Block):
+#     def __init__(self, x, y, w, h, color):
+#         super().__init__(x, y, w, h, color)
