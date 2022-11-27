@@ -57,17 +57,17 @@ class Enemy(GameObject):
                 test1 = self.isSetCollide(app.terrain)
                 if test1:
                     self.x = test1.x + test1.w
-                test2 = self.withinCanvasRange(app)
+                test2 = self.withinReasonableRange(app)
                 if test2 == False:
-                    self.x = 0
+                    self.x = 50
             elif d == 'Right':
                 self.x += self.knockBack
                 test1 = self.isSetCollide(app.terrain)
                 if test1:
                     self.x = test1.x - self.w
-                test2 = self.withinCanvasRange(app)
+                test2 = self.withinReasonableRange(app)
                 if test2 == False:
-                    self.x = app.width
+                    self.x = app.width - 50
             # health
             self.HP -= player.ATK
             if self.HP <= 0:
@@ -93,6 +93,10 @@ class Enemy(GameObject):
         canvas.create_rectangle(x - 5, y - 10, 
                                 x + hp/self.maxHP * (w + 5), y - 9, 
                                 fill = 'lime', outline = 'lime')
+
+    def drawEnemySet(enemies, canvas):
+        for enemy in enemies:
+            enemy.drawEnemy(canvas)
 
 class FlyEnemy(Enemy):
     def __init__(self, x, y, w, h, color, speed, DMG, knockBack, health):

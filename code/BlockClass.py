@@ -12,3 +12,7 @@ class Block(GameObject):
         h = self.h
         canvas.create_rectangle(x, y, x + w, y + h, 
                                 fill = None, outline = self.color)
+                            
+    def drawBlockSet(terrain, canvas):
+        for block in terrain:
+            block.drawBlock(canvas)

@@ -30,7 +30,7 @@ class NightFury(GameObject):
         self.dashRXs = []
         # attack collision box
         self.slashFrames = [] # how long the attack will last [1, 2, 3, 4, 5, 6]
-        self.attackBox = AttackBox(self.x, self.y, self.w, self.h, 'mediumpurple')
+        self.attackBox = AttackBox(self.x, self.y, self.w, self.h, 'aquamarine')
 
         # self.leftSlashBox = attackBox.createLeftSlashBox()
         # self.rightSlashBox = attackBox.createRightSlashBox()
@@ -216,7 +216,7 @@ class NightFury(GameObject):
                     self.x = tx - self.w
 
     def refreshSlashLocation(self):
-        self.attackBox = AttackBox(self.x, self.y, self.w, self.h, 'mediumpurple')
+        self.attackBox = AttackBox(self.x, self.y, self.w, self.h, 'aquamarine')
         self.attackBox.createLeftSlashBox()
         self.attackBox.createRightSlashBox()
     #     attackBox = AttackBox(self.x, self.y, self.w, self.h, 'blue')
@@ -344,7 +344,7 @@ class NightFury(GameObject):
         hp = self.HP
         nfX, nfY = self.getLocation()
         canvas.create_rectangle(nfX - 5, nfY - 20, nfX + hp/100 * 30 - 5, 
-                                nfY - 19, fill = 'lime', outline = 'lime')
+                                nfY - 19, fill = 'turquoise', outline = 'turquoise')
 
     def drawNightFury(self, canvas):
         self.drawSelf(canvas)

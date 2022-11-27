@@ -6,7 +6,9 @@ from ControlSetClass import ControlSet
 from ButtonClass import Button
 from BlockClass import Block
 from NightFuryClass import NightFury
-from EnemyClass import FlyEnemy, WalkEnemy
+from EnemyClass import Enemy, FlyEnemy, WalkEnemy
+
+from GenerateLevel import Level1
 
 settings = Button(10, 10, 60, 20, 'menu', 'aquamarine', 'settings', 10)
 
@@ -23,7 +25,7 @@ terrain = {ground, block1, block2, block3, block4, block5, block6,block7,block8}
 
 # __init__(self, x, y, w, h, color, speed, jumpHeight, gravity, ATK, DEF, 
 # health, magic, physicalStrength)
-nightFury1 = NightFury(0, 590 - 50, 20, 50, 'blueviolet', 5, 13, 0.7, 20, 10, 
+nightFury1 = NightFury(10, 590 - 50, 20, 50, 'white', 5, 13, 0.7, 20, 10, 
                        100, 100, 100)
 print (nightFury1)
 
@@ -42,6 +44,9 @@ enemies = {walkEnemy1, flyEnemy2, flyEnemy3, flyEnemy4, flyEnemy5, flyEnemy6,
 
 controlSettings = ControlSet('Left', 'Right', 'x', 'z')
 
+# 3 * 4
+level1 = Level1(3, 5, nightFury1)
+
 def appStarted(app):
     # timerDelay
     app.timerDelay = 10
@@ -50,7 +55,9 @@ def appStarted(app):
     app.nfGoLeft = False
     app.nfGoRight = False
     # terrain
-    app.terrain = terrain
+    # app.terrain = terrain
+    level1.createTerrain(app)
+    app.terrain = level1.terrain
     # enemies
     app.enemies = enemies
     # buttons
@@ -150,20 +157,12 @@ def keyReleased(app, event):
         app.nfGoRight = False
 
 # helper functions for redraw All
-def drawEnemies(app, canvas):
-    for enemy in app.enemies:
-        enemy.drawEnemy(canvas)
-
-def drawBlocks(app, canvas):
-    for block in app.terrain:
-        block.drawBlock(canvas)
-
 def redrawAll(app,canvas):
     # draw background
     canvas.create_rectangle(0, 0, app.width, app.height, 
                             fill = 'black', outline = None)
-    drawBlocks(app, canvas)
-    drawEnemies(app, canvas)
+    Block.drawBlockSet(app.terrain, canvas)
+    Enemy.drawEnemySet(app.enemies, canvas)
     app.nightFury.drawNightFury(canvas)
     app.menu.drawButton(canvas)
     if app.menuOn == True:
