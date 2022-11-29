@@ -7,6 +7,7 @@ from ButtonClass import Button
 from BlockClass import Block
 from NightFuryClass import NightFury
 from EnemyClass import Enemy, FlyEnemy, WalkEnemy
+from SpritesClass import NightFurySprites
 
 from GenerateLevel import Level1
 
@@ -48,6 +49,8 @@ controlSettings = ControlSet('Left', 'Right', 'x', 'z')
 # 3 * 4
 level1 = Level1(3, 5)
 
+nfIdle = NightFurySprites()
+
 def appStarted(app):
     # timerDelay
     app.timerDelay = 10
@@ -83,6 +86,10 @@ def appStarted(app):
     app.menuButtons = {leftB, rightB, jumpB, dashB}
     app.menuOn = False
 
+    #!!!!!!!!!!!!!!!!test cases for sprites!!!!!!!!!!!!!!!!!!!!!
+    app.nfIdle = nfIdle
+    app.nfIdle.initializeAll(app)
+
 def enemiesTimerFired(app):
     temp = copy.copy(app.enemies)
     for enemy in temp:
@@ -107,6 +114,8 @@ def timerFired(app):
     enemiesTimerFired(app)
     buttonTimerFired(app)
     app.level1.passLevel(app.nightFury, app.enemies)
+    # sprites timerFired
+    app.nfIdle.nfSpritesTimer()
 
 # helper functions for controlzz
 def openMenu(app):
@@ -141,7 +150,7 @@ def keyPressed(app, event):
     # jump
     # if event.key == 'x':
     if event.key == app.settings.jump:
-        app.nightFury.jump()#app.terrain
+        app.nightFury.jump() # app.terrain
     # dash
     # if event.key == 'z':
     if event.key == app.settings.dash:
@@ -170,12 +179,15 @@ def redrawAll(app,canvas):
                             fill = 'black', outline = None)
     Block.drawBlockSet(app.terrain, canvas)
     Enemy.drawEnemySet(app.enemies, canvas)
-    app.nightFury.drawNightFury(canvas)
+    # player box
+    # app.nightFury.drawNightFury(canvas)
     app.refresh.drawButton(canvas)
     app.menu.drawButton(canvas)
     if app.level1.win == True:
         app.level1.drawPassLevel(app, canvas)
     if app.menuOn == True:
         app.settings.drawMenu(app, canvas)
+    # draw sprites
+    app.nfIdle.drawSprites(app, app.nightFury, canvas)
 
 runApp(width = 1000, height = 600)

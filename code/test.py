@@ -62,41 +62,44 @@
 
 # runApp(width=1000, height=600)
 
-from cmu_112_graphics import *
-# import time # sleep()
+# from cmu_112_graphics import *
+# # import time # sleep()
 
+# # from NightFuryClass import NightFury
+# # from TerrainClass import Terrain
+# from ControlSetClass import ControlSet
+# from ButtonClass import Button
+# from BlockClass import Block
 # from NightFuryClass import NightFury
-# from TerrainClass import Terrain
-from ControlSetClass import ControlSet
-from ButtonClass import Button
-from BlockClass import Block
-from NightFuryClass import NightFury
-from EnemyClass import Enemy, FlyEnemy, WalkEnemy
+# from EnemyClass import Enemy, FlyEnemy, WalkEnemy
 
-from GenerateLevel import Level1
+# from GenerateLevel import Level1
 
-nightFury1 = NightFury(0, 590 - 50, 20, 50, 'blueviolet', 5, 13, 0.7, 20, 10, 
-                       100, 100, 100)
-level1 = Level1(3, 5)
+# nightFury1 = NightFury(0, 590 - 50, 20, 50, 'blueviolet', 5, 13, 0.7, 20, 10, 
+#                        100, 100, 100)
+# level1 = Level1(3, 5)
 
-def appStarted(app):
-    level1.createTerrain(app)
-    app.terrain1 = level1.terrain
-    pass
+# def appStarted(app):
+#     level1.createTerrain(app)
+#     app.terrain1 = level1.terrain
+#     pass
 
-# Helper functions for timerFired.
-def timerFired(app):
-    pass
+# # Helper functions for timerFired.
+# def timerFired(app):
+#     pass
 
-# helper functions for keyPressed
-def keyPressed(app, event):
-    pass
+# # helper functions for keyPressed
+# def keyPressed(app, event):
+#     pass
 
-# helper functions for redraw All
-def redrawAll(app, canvas):
-    canvas.create_rectangle(0, 0, app.width, app.height, 
-                            fill = 'black', outline = None)
-    Block.drawBlockSet(app.terrain1, canvas)
-    pass
+# # helper functions for redraw All
+# def redrawAll(app, canvas):
+#     canvas.create_rectangle(0, 0, app.width, app.height, 
+#                             fill = 'black', outline = None)
+#     Block.drawBlockSet(app.terrain1, canvas)
+#     pass
 
-runApp(width = 1000, height = 600)
+# runApp(width = 1000, height = 600)
+
+l = list(range(1, 101))
+print(l)

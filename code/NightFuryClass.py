@@ -20,16 +20,20 @@ class NightFury(GameObject):
         self.MP = magic
         self.PS = physicalStrength
         # default data
-        self.immune = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        self.immune = list(range(1, 15))
         self.isDead = False
         self.direction = 'Right'
         self.eaten = []
         self.jumpYs = []
+        self.lenJ = 0
         self.fallYs = []
+        self.lenF = 0
         self.dashLXs = []
         self.dashRXs = []
         # attack collision box
-        self.slashFrames = [] # how long the attack will last [1, 2, 3, 4, 5, 6]
+        self.slashFramesL = []
+        self.slashFramesR = [] # how long the attack will last 15
+        self.frame = -1
         self.attackBox = AttackBox(self.x, self.y, self.w, self.h, 'aquamarine')
 
         # self.leftSlashBox = attackBox.createLeftSlashBox()
@@ -64,7 +68,7 @@ class NightFury(GameObject):
         self.fallYs = []
 
     def resetImmune(self):
-        self.immune = [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+        self.immune = list(range(1, 15))
 
     # control methods
     def goLeft(self, terrain):
@@ -99,6 +103,7 @@ class NightFury(GameObject):
             y -= u
             u -= g
             self.jumpYs.append(y)
+        self.lenJ = len(self.jumpYs)
 
     def dashL(self):
         if self.dashLXs:
@@ -107,10 +112,10 @@ class NightFury(GameObject):
             return
         self.PS -= 30
         x = self.x
-        for i in range(5):
+        for i in range(6):
             x -= self.speed * 5
             self.dashLXs.append(x)
-        for i in range(5):
+        for i in range(6):
             x -= self.speed * 2
             self.dashLXs.append(x)
         # print (dashXs, 'dashL')
@@ -122,20 +127,19 @@ class NightFury(GameObject):
             return
         self.PS -= 30
         x = self.x
-        for i in range(5):
+        for i in range(6):
             x += self.speed * 5
             self.dashRXs.append(x)
-        for i in range(5):
+        for i in range(6):
             x += self.speed * 2
             self.dashRXs.append(x)
         # print (dashXs, 'dashR')
 
     def slash(self):
-        if self.slashFrames == []:
-            if self.direction == 'Left':
-                self.slashFrames = [1, 2, 3, 4, 5, 6]
-            if self.direction == 'Right':
-                self.slashFrames = [7, 8, 9, 10, 11, 12]
+        if self.slashFramesL == [] and self.direction == 'Left':
+            self.slashFramesL = list(range(0, 15))
+        if self.slashFramesR == [] and self.direction == 'Right':
+            self.slashFramesR = list(range(0, 15))
 
     def quickFarAttack(self):
         pass
@@ -168,7 +172,7 @@ class NightFury(GameObject):
                     break
     
     def falling(self, terrain): # generate falling coordinates if suspend.
-        if self.jumpYs or self.fallYs:
+        if len(self.jumpYs) > 1 or self.fallYs:
             return
         u = 1 # initial falling speed
         v = self.jumpHeight # Maximum falling speed
@@ -184,6 +188,7 @@ class NightFury(GameObject):
                     self.fallYs.pop()
                     tx, ty = block.getLocation()
                     self.fallYs.append(ty - self.h)
+                    self.lenF = len(self.fallYs)
                     return
         # print(self.fallYs)
 
@@ -224,9 +229,9 @@ class NightFury(GameObject):
     #     self.rightSlashBox = attackBox.createRightSlashBox()
     
     def doLeftSlash(self, app):
-        if self.slashFrames and self.slashFrames[0] < 7:
-            frame = self.slashFrames.pop(0)
-            if frame == 3:
+        if self.slashFramesL and self.direction == 'Left':
+            self.frame = self.slashFramesL.pop(0)
+            if self.frame == 2:
                 for enemy in app.enemies:
                     for box in self.attackBox.leftSlashBox:
                         if box.isObjectCollide(enemy):
@@ -234,9 +239,9 @@ class NightFury(GameObject):
                             break
 
     def doRightSlash(self, app):
-        if self.slashFrames and self.slashFrames[0] > 6:
-            frame = self.slashFrames.pop(0)
-            if frame == 9:
+        if self.slashFramesR and self.direction == 'Right':
+            self.frame = self.slashFramesR.pop(0)
+            if self.frame == 2:
                 for enemy in app.enemies:
                     for box in self.attackBox.rightSlashBox:
                         if box.isObjectCollide(enemy):
@@ -350,8 +355,7 @@ class NightFury(GameObject):
         self.drawSelf(canvas)
         self.drawPSbar(canvas)
         self.drawHPbar(canvas)
-        if self.slashFrames:
-            if self.direction == 'Left':
-                self.attackBox.drawLeftSlash(canvas)
-            elif self.direction == 'Right':
-                self.attackBox.drawRightSlash(canvas)
+        if self.slashFramesL:
+            self.attackBox.drawLeftSlash(canvas)
+        if self.slashFramesR:
+            self.attackBox.drawRightSlash(canvas)
