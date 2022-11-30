@@ -218,9 +218,10 @@ class NightFury(GameObject):
             if self.shootFrames == []:
                 self.shooting = False
             x, y = frame
-            self.shot = GameObject(x, y, 10, 10, 'aquamarine')
+            self.shot = GameObject(x, y, 20, 20, 'aquamarine')
+            sx, sy = self.shot.getLocation()
             for enemy in enemies:
-                if self.shot.isObjectCollide(enemy):
+                if enemy.testCollide(sx - 5, sy - 5, 30, 30):
                     enemy.beAttacked(self, app)
                     return
 

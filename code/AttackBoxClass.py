@@ -43,7 +43,7 @@ class AttackBox(GameObject):
         w = self.w
         h = self.h
         x += w/2
-        self.longAtkBox = GameObject(x, y + h * 0.3, 10, 10, c) # not very good data
+        self.longAtkBox = GameObject(x, y + h * 0.3, 20, 20, c) # not very good data
 
     # draw methods
     def drawLeftSlash(self, canvas):
