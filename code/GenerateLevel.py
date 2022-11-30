@@ -1,4 +1,5 @@
 import random
+import time
 from MenuClass import Menu
 from ButtonClass import Button
 from BlockClass import Block
@@ -53,7 +54,7 @@ class Level():
         if self.enter == None:
             self.createEnter(app)
         self.exit = Block(random.randint(20, app.width - 20 - 30), 0, 30, 15, 'aquamarine')
-        platform = Block(self.exit.x - 10, 100, 50, 20, 'grey')
+        platform = Block(self.exit.x - 10, 130, 50, 20, 'grey')
         self.blocks.add(platform)
 
     def createBase(self, app):
@@ -76,8 +77,8 @@ class Level():
             tx = int(app.width/self.blockNum) * i
             if lastY < 100:
                 ty = random.randint(100, app.height - 200)
-            elif lastY + 100 > app.height:
-                ty = random.randint(lastY - 250, app.height - 100)
+            elif lastY > app.height - 150:
+                ty = random.randint(lastY - 250, app.height - 150)
             else:
                 ty = random.randint(lastY - 100, lastY + 250)
             lastY = ty
@@ -90,6 +91,11 @@ class Level():
         self.createEnter(app)
         self.createExit(app)
         self.terrain = self.blocks.union(self.base)
+    
+    def generateLevel(self, app):
+        self.initAll()
+        self.createTerrain(app)
+        self.createEnemies(app)
 
     # create enemies
     # this is a test function which only creates fly enemies

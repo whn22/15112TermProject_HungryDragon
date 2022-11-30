@@ -222,7 +222,7 @@ class NightFury(GameObject):
                     return
 
     def drawShoot(self, canvas):
-        print(self.shootFrames)
+        # print(self.shootFrames)
         if self.shot and self.shooting == True:
             self.shot.drawGameObject(canvas)
         else:

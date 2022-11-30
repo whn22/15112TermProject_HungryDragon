@@ -65,6 +65,11 @@ def buttonTimerFired(app):
             button.checkMouseOn(app.mouseX, app.mouseY)
 
 def timerFired(app):
+    # if app.level.win == True:
+    #     app.level.generateLevel(app)
+    #     app.terrain = app.level.terrain
+    #     app.enemies = app.level.enemies
+    #     app.level.win = False
     app.nightFury.nightFuryTimerFired(app)
     Enemy.enemiesTimerFired(app)
     buttonTimerFired(app)
@@ -146,6 +151,7 @@ def redrawAll(app,canvas):
     app.menuButton.drawButton(canvas)
     if app.level.win == True:
         app.level.drawPassLevel(app, canvas)
+        time.sleep(5)
         return
     if app.menu.menuOn == True:
         app.menu.drawMenu(app, canvas)
