@@ -9,7 +9,7 @@ from NightFuryClass import NightFury
 from EnemyClass import Enemy, FlyEnemy, WalkEnemy
 from SpritesClass import NightFurySprites
 
-from GenerateLevel import Level1
+from GenerateLevel import Level
 
 # ground = Block(0, 590, 1000, 10, 'grey')
 # block1 = Block(0, 500, 100, 10, 'grey')
@@ -29,27 +29,28 @@ from GenerateLevel import Level1
 # health, magic, physicalStrength)
 
 
-# __init__(self, x, y, w, h, color, speed, DMG, knockBack, health):
-# flyEnemy1 = FlyEnemy(110, 220, 10, 10, 'yellow', 0.5, 20, 20, 50)
-walkEnemy1 = WalkEnemy(50, 480, 20, 20, 'yellow', 0.5, 20, 20, 50)
-flyEnemy2 = FlyEnemy(150, 500, 10, 10, 'yellow', 0.5, 20, 20, 50)
-flyEnemy3 = FlyEnemy(770, 200, 10, 10, 'yellow', 0.5, 20, 20, 50)
-# flyEnemy3 = FlyEnemy(170, 500, 10, 10, 'yellow', 0.5, 20, 50)
-flyEnemy4 = FlyEnemy(550, 420, 10, 10, 'yellow', 0.5, 20, 20, 50)
-flyEnemy5 = FlyEnemy(380, 100, 10, 10, 'yellow', 0.5, 20, 20, 50)
-flyEnemy6 = FlyEnemy(900, 450, 10, 10, 'yellow', 0.5, 20, 20, 50)
-flyEnemy7 = FlyEnemy(600, 250, 10, 10, 'yellow', 0.5, 20, 20, 50)
-enemies = {walkEnemy1, flyEnemy2, flyEnemy3, flyEnemy4, flyEnemy5, flyEnemy6,
-           flyEnemy7}
+# # __init__(self, x, y, w, h, color, speed, DMG, knockBack, health):
+# # flyEnemy1 = FlyEnemy(110, 220, 10, 10, 'yellow', 0.5, 20, 20, 50)
+# walkEnemy1 = WalkEnemy(50, 480, 20, 20, 'yellow', 0.5, 20, 20, 50)
+# flyEnemy2 = FlyEnemy(150, 500, 10, 10, 'yellow', 0.5, 20, 20, 50)
+# flyEnemy3 = FlyEnemy(770, 200, 10, 10, 'yellow', 0.5, 20, 20, 50)
+# # flyEnemy3 = FlyEnemy(170, 500, 10, 10, 'yellow', 0.5, 20, 50)
+# flyEnemy4 = FlyEnemy(550, 420, 10, 10, 'yellow', 0.5, 20, 20, 50)
+# flyEnemy5 = FlyEnemy(380, 100, 10, 10, 'yellow', 0.5, 20, 20, 50)
+# flyEnemy6 = FlyEnemy(900, 450, 10, 10, 'yellow', 0.5, 20, 20, 50)
+# flyEnemy7 = FlyEnemy(600, 250, 10, 10, 'yellow', 0.5, 20, 20, 50)
+# enemies = {walkEnemy1, flyEnemy2, flyEnemy3, flyEnemy4, flyEnemy5, flyEnemy6,
+#            flyEnemy7}
 
-level1 = Level1(10, 5)
+level = Level(10, 5)
 
 def appStarted(app):
     # initialize all data
     menu = Menu('Left', 'Right', 'x', 'z')
-    level1.createTerrain(app)
+    level.createTerrain(app)
+    level.createEnemies(app)
     nfheight = 50
-    startX, startY = level1.enter.x, level1.enter.y - nfheight
+    startX, startY = level.enter.x, level.enter.y - nfheight
     nfSprites = NightFurySprites()
     nightFury1 = NightFury(startX, startY, 20, 50, 'white', 5, 13, 0.7, 20, 10, 
                         100, 100, 100)
@@ -64,10 +65,10 @@ def appStarted(app):
     app.nfGoRight = False
     # terrain
     # app.terrain = terrain
-    app.level1 = level1
-    app.terrain = level1.terrain
+    app.level = level
+    app.terrain = level.terrain
     # enemies
-    app.enemies = enemies
+    app.enemies = level.enemies
     # buttons
     # app.menu = settings
     app.menuButton = menuButton
@@ -98,7 +99,7 @@ def timerFired(app):
     app.nightFury.nightFuryTimerFired(app)
     Enemy.enemiesTimerFired(app)
     buttonTimerFired(app)
-    app.level1.passLevel(app.nightFury, app.enemies)
+    app.level.passLevel(app.nightFury, app.enemies)
     # sprites timerFired
     app.nfSprites.nfSpritesTimer()
 
@@ -107,6 +108,7 @@ def mouseMoved(app, event):
     app.mouseX, app.mouseY = (event.x, event.y)
 
 def mousePressed(app, event):
+    # menu methods
     if app.menu.menuOn == False:
         app.menuButton.mouseClicked(event.x, event.y, app.menu.openMenu, app)
     else:
@@ -114,8 +116,13 @@ def mousePressed(app, event):
             button.mouseClicked(event.x, event.y, 
                                 app.menu.resetKey, (app.inputKey, button))
     app.refreshButton.mouseClicked(event.x, event.y, 
-                                app.level1.refreshLevel, app)
-    app.terrain = level1.terrain
+                                app.level.refreshLevel, app)
+    app.terrain = level.terrain
+    # player shoot methods
+    app.nightFury.aiming = True
+
+def mouseReleased(app, event):
+    app.nightFury.aiming = False
 
 def keyPressed(app, event):
     # let the players set the keys
@@ -153,15 +160,15 @@ def redrawAll(app,canvas):
     # draw background
     canvas.create_rectangle(0, 0, app.width, app.height, 
                             fill = 'black', outline = None)
-    app.level1.drawDoors(canvas)
+    app.level.drawDoors(canvas)
     Block.drawBlockSet(app.terrain, canvas)
     Enemy.drawEnemySet(app.enemies, canvas)
     app.nfSprites.drawSprites(app, app.nightFury, canvas)
     # app.nightFury.drawNightFury(canvas)    # player collision box
     app.refreshButton.drawButton(canvas)
     app.menuButton.drawButton(canvas)
-    if app.level1.win == True:
-        app.level1.drawPassLevel(app, canvas)
+    if app.level.win == True:
+        app.level.drawPassLevel(app, canvas)
         return
     if app.menu.menuOn == True:
         app.menu.drawMenu(app, canvas)
