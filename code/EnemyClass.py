@@ -107,7 +107,7 @@ class Enemy(GameObject):
         # draw HP bar above head
         canvas.create_rectangle(x - 5, y - 10, 
                                 x + hp/self.maxHP * (w + 5), y - 9, 
-                                fill = 'lime', outline = 'lime')
+                                fill = 'turquoise', outline = 'turquoise')
 
     def drawEnemySet(enemies, canvas):
         for enemy in enemies:

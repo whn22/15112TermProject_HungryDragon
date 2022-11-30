@@ -8,7 +8,7 @@ class Menu():
         self.dash = dash
         self.slash = slash
         self.menuButtons = {}
-        self.menuOn = False
+        self.menuOn = True
     
     def __repr__(self):
         return f'controlSettings:\n\
@@ -51,7 +51,7 @@ class Menu():
         canvas.create_rectangle(0, 0, app.width, app.height, 
                                 fill = 'black', outline = None)
         canvas.create_text(app.width/2, app.height/30,
-                        text = 'Press q to exit',
+                        text = 'Press q to enter game',
                         font = 'Arial 10', fill = 'white')
         canvas.create_text(app.width/2, app.height/30 + 10,
                         text = 'Press a key and click to assign its function',
@@ -67,10 +67,10 @@ class Menu():
                                 dash = {self.dash}\n\
                                 slash = {self.slash}\n',
                                 font = 'Arial 10', fill = 'white')
-        canvas.create_text(app.width/2 + 200, app.height/2 - 70,
+        canvas.create_text(app.width/2 + 170, app.height/2 - 70,
                         text = f'Hungry Dargon',
                                 font = 'Arial 50', fill = 'aquamarine')
-        canvas.create_text(app.width/2 + 200, app.height/2 + 20,
+        canvas.create_text(app.width/2 + 170, app.height/2 + 20,
                         text = f'Instructions:\n\
                                 1.Kill all enemies with slash or shoot\n\
                                 2.Reach the EXIT on the celling\n\

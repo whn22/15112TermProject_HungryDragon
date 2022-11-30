@@ -13,7 +13,7 @@ class Level():
         self.backupNum = blockNum, enemyNum
         self.blockNum = blockNum
         self.enemyNum = enemyNum
-        # default terrain settings
+        # default settings
         self.base = set()
         self.blocks = set()
         self.terrain = set()
@@ -22,15 +22,24 @@ class Level():
         self.enemies = set()
         # pass level
         self.win = False
+        self.levelOrd = 1
     
     # general methods
     def refreshLevel(self, app):
-        self.initAll()
+        self.initSets()
         self.createTerrain(app)
         self.createEnemies(app)
 
-    def initAll(self):
+    def reStart(self, app):
         self.blockNum, self.enemyNum = self.backupNum
+        self.enter = None
+        self.exit = None
+        self.win = False
+        self.levelOrd = 1
+        self.refreshLevel(app)
+
+    def initSets(self):
+        # self.blockNum, self.enemyNum = self.backupNum
         self.blocks = set()
         self.terrain = set()
         self.enemies = set()
@@ -38,6 +47,8 @@ class Level():
     def passLevel(self, player, enemies):
         # print(len(enemies), player.isObjectCollide(self.exit))
         if enemies == set() and player.isObjectCollide(self.exit):
+            self.levelOrd += 1
+            self.enemyNum += 1
             self.win = True
 
     # create terrain
@@ -55,14 +66,14 @@ class Level():
         if self.enter == None:
             self.createEnter(app)
         self.exit = Block(random.randint(70, app.width - 70 - 30), 0, 30, 15, 'aquamarine')
+
+    def createBase(self, app):
         platform1 = Block(self.exit.x - 10, 120, 50, 20, 'grey')
         self.blocks.add(platform1)
         platform2 = Block(random.randint(self.exit.x - 70, self.exit.x + 70), 
                             random.randint(170, 220), 
-                            60, 15, 'grey')
+                            80, 15, 'grey')
         self.blocks.add(platform2)
-
-    def createBase(self, app):
         color = 'grey' # WARNING: hard code color
         ground = Block(0, app.height - 10, app.width, 10, color)
         leftWall = Block(0, 0, 10, app.height, color)
@@ -91,21 +102,21 @@ class Level():
             self.blocks.add(block)
 
     def createTerrain(self, app):
-        self.createBase(app)
-        self.createBlocks(app)
         self.createEnter(app)
         self.createExit(app)
+        self.createBase(app)
+        self.createBlocks(app)
         self.terrain = self.blocks.union(self.base)
     
     def generateLevel(self, app):
-        self.initAll()
+        self.initSets()
         self.createTerrain(app)
         self.createEnemies(app)
 
     # create enemies
     # this is a test function which only creates fly enemies
     def createEnemies(self, app):
-        color = 'aquamarine' # WARNING: hard code color
+        color = 'white' # WARNING: hard code color
         for i in range(self.enemyNum + 1):
             if i == 0:
                 continue

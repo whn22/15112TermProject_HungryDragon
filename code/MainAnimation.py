@@ -1,6 +1,7 @@
 from cmu_112_graphics import *
 import time # sleep()
 import copy
+import math
 
 from MenuClass import Menu
 from DisplayClass import Display
@@ -12,7 +13,7 @@ from SpritesClass import NightFurySprites
 
 from GenerateLevel import Level
 
-level = Level(10, 5)
+level = Level(10, 3)
 
 def appStarted(app):
     # initialize all data
@@ -108,6 +109,9 @@ def mouseReleased(app, event):
 
 def keyPressed(app, event):
     # let the players set the keys
+    if app.nightFury.isDead == True and event.key == 'r':
+        app.level.reStart(app)
+        app.nightFury.respawn()
     app.inputKey = event.key
     if app.inputKey == 'q':
         app.menu.menuOn = False
@@ -139,6 +143,9 @@ def keyReleased(app, event):
 
 # helper functions for redraw All
 def redrawAll(app,canvas):
+    if app.nightFury.isDead == True:
+        NightFury.drawDead(canvas, app)
+        return
     # draw background
     canvas.create_rectangle(0, 0, app.width, app.height, 
                             fill = 'black', outline = None)

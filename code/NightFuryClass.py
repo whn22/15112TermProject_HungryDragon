@@ -1,5 +1,6 @@
 from GameObjectClass import GameObject
 from AttackBoxClass import AttackBox
+import math
 import time # sleep()
 
 class NightFury(GameObject):
@@ -173,17 +174,19 @@ class NightFury(GameObject):
             sx, sy = self.attackBox.longAtkBox.getLocation()
             dx = x - sx
             dy = y - sy
+            if dx == 0 or dy == 0:
+                return
             a = dy/dx # gradient
             b = y - a*x # intersection
             # sx, sy means shoot x, shoot y
             while True:
                 if dx < 0:
-                    sx -= 20
+                    sx -= (50/abs(a) + 50)**0.5
                     sy = a * sx + b
                     self.shootFrames.append((sx, sy))
                     # print(sx, sy)
                 else:
-                    sx += 20
+                    sx += (50/abs(a) + 50)**0.5
                     sy = a * sx + b
                     self.shootFrames.append((sx, sy))
                     # print(sx, sy)
@@ -400,7 +403,7 @@ class NightFury(GameObject):
         self.nightFuryHorizontal(app)
         self.nightFuryVertical(app)
         # test default
-        self.respawn()
+        # self.respawn()
         self.refreshSlashLocation()
         self.isKilled()
         self.regainPS()
@@ -444,3 +447,12 @@ class NightFury(GameObject):
             self.attackBox.drawRightSlash(canvas)
         # self.drawAim(canvas)
         # self.drawShoot(canvas)
+
+    # app drawing method
+    # if app.nightFury.isDead == True:
+    def drawDead(canvas, app):
+        canvas.create_rectangle(0, 0, app.width, app.height, 
+                                fill = 'black', outline = None)
+        canvas.create_text(app.width/2, app.height/2,
+            text = 'You die, press r to respawn',
+            font = 'Arial 20', fill = 'turquoise')
