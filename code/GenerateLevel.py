@@ -27,12 +27,13 @@ class Level():
     def refreshLevel(self, app):
         self.initAll()
         self.createTerrain(app)
+        self.createEnemies(app)
 
     def initAll(self):
         self.blockNum, self.enemyNum = self.backupNum
         self.blocks = set()
         self.terrain = set()
-        # self.enemies = set()
+        self.enemies = set()
 
     def passLevel(self, player, enemies):
         # print(len(enemies), player.isObjectCollide(self.exit))
@@ -53,9 +54,13 @@ class Level():
     def createExit(self, app):
         if self.enter == None:
             self.createEnter(app)
-        self.exit = Block(random.randint(20, app.width - 20 - 30), 0, 30, 15, 'aquamarine')
-        platform = Block(self.exit.x - 10, 130, 50, 20, 'grey')
-        self.blocks.add(platform)
+        self.exit = Block(random.randint(70, app.width - 70 - 30), 0, 30, 15, 'aquamarine')
+        platform1 = Block(self.exit.x - 10, 120, 50, 20, 'grey')
+        self.blocks.add(platform1)
+        platform2 = Block(random.randint(self.exit.x - 70, self.exit.x + 70), 
+                            random.randint(170, 220), 
+                            60, 15, 'grey')
+        self.blocks.add(platform2)
 
     def createBase(self, app):
         color = 'grey' # WARNING: hard code color
@@ -78,9 +83,9 @@ class Level():
             if lastY < 100:
                 ty = random.randint(100, app.height - 200)
             elif lastY > app.height - 150:
-                ty = random.randint(lastY - 250, app.height - 150)
+                ty = random.randint(lastY - 200, app.height - 150)
             else:
-                ty = random.randint(lastY - 100, lastY + 250)
+                ty = random.randint(lastY - 100, lastY + 200)
             lastY = ty
             block = Block(tx, ty, tw, th, color)
             self.blocks.add(block)

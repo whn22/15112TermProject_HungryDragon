@@ -178,12 +178,12 @@ class NightFury(GameObject):
             # sx, sy means shoot x, shoot y
             while True:
                 if dx < 0:
-                    sx -= 30
+                    sx -= 20
                     sy = a * sx + b
                     self.shootFrames.append((sx, sy))
                     # print(sx, sy)
                 else:
-                    sx += 30
+                    sx += 20
                     sy = a * sx + b
                     self.shootFrames.append((sx, sy))
                     # print(sx, sy)

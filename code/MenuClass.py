@@ -1,11 +1,12 @@
 from ButtonClass import Button
 
 class Menu():
-    def __init__(self, left, right, jump, dash):
+    def __init__(self, left, right, jump, dash, slash):
         self.left = left
         self.right = right
         self.jump = jump
         self.dash = dash
+        self.slash = slash
         self.menuButtons = {}
         self.menuOn = False
     
@@ -26,21 +27,25 @@ class Menu():
             self.jump = input
         elif button.ID == 'dash':
             self.dash = input
+        elif button.ID == 'slash':
+            self.slash = input
         print(self)
     
     def openMenu(self, app):
         self.menuOn = True
 
     def createMenu(self, app):
-        leftB = Button(app.width/2 - 300, app.height/10 * 3, 200, 40, 
+        leftB = Button(app.width/2 - 300, app.height/10 * 2, 200, 40, 
                             'left', 'aquamarine', 'set left', 20)
-        rightB = Button(app.width/2 - 300, app.height/10 * 4, 200, 40, 
+        rightB = Button(app.width/2 - 300, app.height/10 * 3, 200, 40, 
                             'right', 'aquamarine', 'set right', 20)
-        jumpB = Button(app.width/2 - 300, app.height/10 * 5, 200, 40, 
+        jumpB = Button(app.width/2 - 300, app.height/10 * 4, 200, 40, 
                             'jump', 'aquamarine', 'set jump', 20)
-        dashB = Button(app.width/2 - 300, app.height/10 * 6, 200, 40, 
+        dashB = Button(app.width/2 - 300, app.height/10 * 5, 200, 40, 
                             'dash', 'aquamarine', 'set dash', 20)
-        self.menuButtons = {leftB, rightB, jumpB, dashB}
+        slashB = Button(app.width/2 - 300, app.height/10 * 6, 200, 40, 
+                            'dash', 'aquamarine', 'set slash', 20)
+        self.menuButtons = {leftB, rightB, jumpB, dashB, slashB}
 
     def drawMenu(self, app, canvas):
         canvas.create_rectangle(0, 0, app.width, app.height, 
@@ -59,8 +64,18 @@ class Menu():
                                 left = {self.left}\n\
                                 right = {self.right}\n\
                                 jump = {self.jump}\n\
-                                dash = {self.dash}\n',
-                        font = 'Arial 10', fill = 'white')
+                                dash = {self.dash}\n\
+                                slash = {self.slash}\n',
+                                font = 'Arial 10', fill = 'white')
+        canvas.create_text(app.width/2 + 200, app.height/2 - 70,
+                        text = f'Hungry Dargon',
+                                font = 'Arial 50', fill = 'aquamarine')
+        canvas.create_text(app.width/2 + 200, app.height/2 + 20,
+                        text = f'Instructions:\n\
+                                1.Kill all enemies with slash or shoot\n\
+                                2.Reach the EXIT on the celling\n\
+                                Drag mouse to aim, release to shoot',
+                                font = 'Arial 10', fill = 'white')
         for button in self.menuButtons:
             if button.isClicked == False:
                 button.drawButton(canvas)

@@ -3,6 +3,7 @@ import time # sleep()
 import copy
 
 from MenuClass import Menu
+from DisplayClass import Display
 from ButtonClass import Button
 from BlockClass import Block
 from NightFuryClass import NightFury
@@ -15,29 +16,28 @@ level = Level(10, 5)
 
 def appStarted(app):
     # initialize all data
-    menu = Menu('Left', 'Right', 'x', 'z')
+    menu = Menu('Left', 'Right', 'x', 'z', 'c')
     level.createTerrain(app)
     level.createEnemies(app)
-    nfheight = 50
-    startX, startY = level.enter.x, level.enter.y - nfheight
+    # level
+    app.level = level
+    app.terrain = level.terrain
+    app.enemies = level.enemies
+    # nfheight = 50
+    # startX, startY = level.enter.x, level.enter.y - nfheight
+    startX, startY = app.level.enter.getLocation()
     nfSprites = NightFurySprites()
     nightFury1 = NightFury(startX, startY, 20, 50, 'white', 5, 13, 0.7, 20, 10, 
                         100, 100, 100)
     print (nightFury1)
-    menuButton = Button(10, 10, 60, 20, 'menuButton', 'aquamarine', 'menu', 10)
-    refreshButton = Button(80, 10, 60, 20, 'refreshButton', 'aquamarine', 'refresh', 10)
+    menuButton = Button(app.width - 70, 10, 60, 20, 'menuButton', 'aquamarine', 'menu', 10)
+    refreshButton = Button(app.width - 140, 10, 60, 20, 'refreshButton', 'aquamarine', 'refresh', 10)
     # timerDelay
     app.timerDelay = 10
     # nightFury
     app.nightFury = nightFury1
     app.nfGoLeft = False
     app.nfGoRight = False
-    # terrain
-    # app.terrain = terrain
-    app.level = level
-    app.terrain = level.terrain
-    # enemies
-    app.enemies = level.enemies
     # buttons
     # app.menu = settings
     app.menuButton = menuButton
@@ -65,12 +65,14 @@ def buttonTimerFired(app):
             button.checkMouseOn(app.mouseX, app.mouseY)
 
 def timerFired(app):
-    # if app.level.win == True:
-    #     app.level.generateLevel(app)
-    #     app.terrain = app.level.terrain
-    #     app.enemies = app.level.enemies
-    #     app.level.win = False
+    if app.level.win == True:
+        app.level.generateLevel(app)
+        app.terrain = app.level.terrain
+        app.enemies = app.level.enemies
+        app.nightFury.resetLocation(app.level.enter.getLocation())
+        app.level.win = False
     app.nightFury.nightFuryTimerFired(app)
+    app.enemies = app.level.enemies
     Enemy.enemiesTimerFired(app)
     buttonTimerFired(app)
     app.level.passLevel(app.nightFury, app.enemies)
@@ -143,6 +145,7 @@ def redrawAll(app,canvas):
     app.level.drawDoors(canvas)
     Block.drawBlockSet(app.terrain, canvas)
     Enemy.drawEnemySet(app.enemies, canvas)
+    Display.display(app, canvas)
     app.nfSprites.drawSprites(app, app.nightFury, canvas)
     # app.nightFury.drawNightFury(canvas)    # player collision box
     app.nightFury.drawAim(canvas)
@@ -151,7 +154,7 @@ def redrawAll(app,canvas):
     app.menuButton.drawButton(canvas)
     if app.level.win == True:
         app.level.drawPassLevel(app, canvas)
-        time.sleep(5)
+        # time.sleep(1)
         return
     if app.menu.menuOn == True:
         app.menu.drawMenu(app, canvas)
