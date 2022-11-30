@@ -9,8 +9,8 @@ from NightFuryClass import NightFury
 class Level1():
     def __init__(self, blockNum, enemyNum):
         # set number
-        self.backupNum = blockNum, enemyNum
-        self.blockNum = blockNum
+        self.backupNum = blockNum * 4, enemyNum
+        self.blockNum = blockNum * 4
         self.enemyNum = enemyNum
         # default settings
         self.base = set()
@@ -131,26 +131,40 @@ class Level1():
         self.base.add(rightWall)
         self.base.add(celling)
 
-    def createBlocks(self, app):
-        color = 'grey' # WARNING: hard code color
-        lastY = app.height - 100
-        for i in range(self.blockNum):
-            # tw = random.randint(20, 200)
-            # th = random.randint(10, 100)
-            # tx = random.randint(20, app.width/2 - tw)
-            # ty = random.randint(100, app.height/2 - th)
-            tw = random.randint(20, 200)
-            th = random.randint(10, 100)
-            tx = int(app.width/self.blockNum) * i
-            if lastY < 100:
-                ty = random.randint(100, app.height - 200)
-            elif lastY + 100 > app.height:
-                ty = random.randint(lastY - 250, app.height - 100)
-            else:
-                ty = random.randint(lastY - 100, lastY + 250)
-            lastY = ty
-            block = Block(tx, ty, tw, th, color)
-            self.blocks.add(block)
+    # def createBlocks(self, app):
+    #     # using recursion
+    #     # random generate n blocks (within canvas range), 
+    #     # if they can from a path to the success end, then legal
+    #     # if not, generate again.
+    #     color = 'grey' # WARNING: hard code color
+    #     for i in range(self.blockNum//4):
+    #         tw = random.randint(20, 200)
+    #         th = random.randint(10, 100)
+    #         tx = random.randint(20, app.width/2 - tw)
+    #         ty = random.randint(100, app.height/2 - th)
+    #         block = Block(tx, ty, tw, th, color)
+    #         self.blocks.add(block)
+    #     for i in range(self.blockNum//4):
+    #         tw = random.randint(20, 200)
+    #         th = random.randint(10, 100)
+    #         tx = random.randint(app.width/2 - tw, app.width)
+    #         ty = random.randint(100, app.height/2 - th)
+    #         block = Block(tx, ty, tw, th, color)
+    #         self.blocks.add(block)
+    #     for i in range(self.blockNum//4):
+    #         tw = random.randint(20, 200)
+    #         th = random.randint(10, 100)
+    #         tx = random.randint(20, app.width/2 - tw)
+    #         ty = random.randint(app.height/2 - th, app.height - th)
+    #         block = Block(tx, ty, tw, th, color)
+    #         self.blocks.add(block)
+    #     for i in range(self.blockNum//4):
+    #         tw = random.randint(20, 200)
+    #         th = random.randint(10, 100)
+    #         tx = random.randint(app.width/2 - tw, app.width)
+    #         ty = random.randint(app.height/2 - th, app.height - th)
+    #         block = Block(tx, ty, tw, th, color)
+    #         self.blocks.add(block)
 
     def createTerrain(self, app):
         self.createBase(app)

@@ -11,25 +11,23 @@ from SpritesClass import NightFurySprites
 
 from GenerateLevel import Level1
 
-menuButton = Button(10, 10, 60, 20, 'menuButton', 'aquamarine', 'menu', 10)
-refreshButton = Button(80, 10, 60, 20, 'refreshButton', 'aquamarine', 'refresh', 10)
+# ground = Block(0, 590, 1000, 10, 'grey')
+# block1 = Block(0, 500, 100, 10, 'grey')
+# block2 = Block(150, 400, 100, 10, 'grey')
+# block3 = Block(350, 300, 100, 50, 'grey')
+# block4 = Block(300, 200, 100, 10, 'grey')
+# block5 = Block(500, 100, 100, 20, 'grey')
+# block6 = Block(650, 210, 15, 70, 'grey')
+# block7 = Block(700, 320, 70, 120, 'grey')
+# block8 = Block(700, 400, 120, 50, 'grey')
+# terrain = {ground, block1, block2, block3, block4, block5, block6,block7,block8}
 
-ground = Block(0, 590, 1000, 10, 'grey')
-block1 = Block(0, 500, 100, 10, 'grey')
-block2 = Block(150, 400, 100, 10, 'grey')
-block3 = Block(350, 300, 100, 50, 'grey')
-block4 = Block(300, 200, 100, 10, 'grey')
-block5 = Block(500, 100, 100, 20, 'grey')
-block6 = Block(650, 210, 15, 70, 'grey')
-block7 = Block(700, 320, 70, 120, 'grey')
-block8 = Block(700, 400, 120, 50, 'grey')
-terrain = {ground, block1, block2, block3, block4, block5, block6,block7,block8}
+
+
 
 # __init__(self, x, y, w, h, color, speed, jumpHeight, gravity, ATK, DEF, 
 # health, magic, physicalStrength)
-nightFury1 = NightFury(10, 590 - 50, 20, 50, 'white', 5, 13, 0.7, 20, 10, 
-                       100, 100, 100)
-print (nightFury1)
+
 
 # __init__(self, x, y, w, h, color, speed, DMG, knockBack, health):
 # flyEnemy1 = FlyEnemy(110, 220, 10, 10, 'yellow', 0.5, 20, 20, 50)
@@ -44,14 +42,20 @@ flyEnemy7 = FlyEnemy(600, 250, 10, 10, 'yellow', 0.5, 20, 20, 50)
 enemies = {walkEnemy1, flyEnemy2, flyEnemy3, flyEnemy4, flyEnemy5, flyEnemy6,
            flyEnemy7}
 
-menu = Menu('Left', 'Right', 'x', 'z')
-
-# 3 * 4
-level1 = Level1(3, 5)
-
-nfSprites = NightFurySprites()
+level1 = Level1(10, 5)
 
 def appStarted(app):
+    # initialize all data
+    menu = Menu('Left', 'Right', 'x', 'z')
+    level1.createTerrain(app)
+    nfheight = 50
+    startX, startY = level1.enter.x, level1.enter.y - nfheight
+    nfSprites = NightFurySprites()
+    nightFury1 = NightFury(startX, startY, 20, 50, 'white', 5, 13, 0.7, 20, 10, 
+                        100, 100, 100)
+    print (nightFury1)
+    menuButton = Button(10, 10, 60, 20, 'menuButton', 'aquamarine', 'menu', 10)
+    refreshButton = Button(80, 10, 60, 20, 'refreshButton', 'aquamarine', 'refresh', 10)
     # timerDelay
     app.timerDelay = 10
     # nightFury
@@ -60,7 +64,6 @@ def appStarted(app):
     app.nfGoRight = False
     # terrain
     # app.terrain = terrain
-    level1.createTerrain(app)
     app.level1 = level1
     app.terrain = level1.terrain
     # enemies
@@ -164,4 +167,4 @@ def redrawAll(app,canvas):
         app.menu.drawMenu(app, canvas)
     # draw sprites
 
-runApp(width = 1000, height = 600)
+runApp(width = 1000, height = 500)
