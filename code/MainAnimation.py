@@ -10,48 +10,41 @@ from BlockClass import Block
 from NightFuryClass import NightFury
 from EnemyClass import Enemy, FlyEnemy, WalkEnemy
 from SpritesClass import NightFurySprites
-
 from GenerateLevel import Level
 
-level = Level(10, 3)
-
 def appStarted(app):
-    # initialize all data
+    # initialize
+    level = Level(10, 3)
     menu = Menu('Left', 'Right', 'x', 'z', 'c')
     level.createTerrain(app)
     level.createEnemies(app)
+    menuButton = Button(app.width - 70, 10, 60, 20, 
+                        'menuButton', 'aquamarine', 'menu', 10)
+    refreshButton = Button(app.width - 140, 10, 60, 20, 
+                        'refreshButton', 'aquamarine', 'refresh', 10)
     # level
     app.level = level
     app.terrain = level.terrain
     app.enemies = level.enemies
-    # nfheight = 50
-    # startX, startY = level.enter.x, level.enter.y - nfheight
     startX, startY = app.level.enter.getLocation()
+    # nightFury
     nfSprites = NightFurySprites()
     nightFury1 = NightFury(startX, startY, 20, 50, 'white', 5, 13, 0.7, 20, 10, 
                         100, 100, 100)
-    print (nightFury1)
-    menuButton = Button(app.width - 70, 10, 60, 20, 'menuButton', 'aquamarine', 'menu', 10)
-    refreshButton = Button(app.width - 140, 10, 60, 20, 'refreshButton', 'aquamarine', 'refresh', 10)
-    # timerDelay
-    app.timerDelay = 10
-    # nightFury
+    # print (nightFury1)
     app.nightFury = nightFury1
     app.nfGoLeft = False
     app.nfGoRight = False
+    # timerDelay
+    app.timerDelay = 10
     # buttons
-    # app.menu = settings
     app.menuButton = menuButton
     app.refreshButton = refreshButton
-    # app.menuButton = Button(10, 10, 60, 20, 
-    #                     'menu', 'aquamarine', 'menu', 10)
     # menu
     app.menu = menu
     app.inputKey = None
-
     app.mouseX, app.mouseY = (-1, -1)
     app.menu.createMenu(app)
-
     #sprites
     app.nfSprites = nfSprites
     app.nfSprites.initializeAll(app)
@@ -66,17 +59,21 @@ def buttonTimerFired(app):
             button.checkMouseOn(app.mouseX, app.mouseY)
 
 def timerFired(app):
+    # level timerFired
     if app.level.win == True:
         app.level.generateLevel(app)
         app.terrain = app.level.terrain
         app.enemies = app.level.enemies
         app.nightFury.resetLocation(app.level.enter.getLocation())
         app.level.win = False
+    app.level.passLevel(app.nightFury, app.enemies)
+    # nightFury timerFired
     app.nightFury.nightFuryTimerFired(app)
+    # enemies timerFired
     app.enemies = app.level.enemies
     Enemy.enemiesTimerFired(app)
+    # button timerFired
     buttonTimerFired(app)
-    app.level.passLevel(app.nightFury, app.enemies)
     # sprites timerFired
     app.nfSprites.nfSpritesTimer()
 
@@ -94,7 +91,7 @@ def mousePressed(app, event):
                                 app.menu.resetKey, (app.inputKey, button))
     app.refreshButton.mouseClicked(event.x, event.y, 
                                 app.level.refreshLevel, app)
-    app.terrain = level.terrain
+    app.terrain = app.level.terrain
 
 def mouseDragged(app, event):
     # player shoot methods

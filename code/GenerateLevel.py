@@ -1,11 +1,6 @@
 import random
-import time
-from MenuClass import Menu
-from ButtonClass import Button
 from BlockClass import Block
-from NightFuryClass import NightFury
 from EnemyClass import FlyEnemy, WalkEnemy
-from NightFuryClass import NightFury
 
 class Level():
     def __init__(self, blockNum, enemyNum):

@@ -79,6 +79,7 @@ class GameObject():
         else:
             return False
 
+    # this function hasn't been used
     def findDistance(self, other): # find the distance between two centers
         x1, y1 = self.x, self.y
         w1, h1 = self.w, self.h

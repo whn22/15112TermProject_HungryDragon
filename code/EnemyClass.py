@@ -165,6 +165,7 @@ class FlyEnemy(Enemy):
         else:
             self.flyActive(app)
 
+# this class has error, can't be used
 class WalkEnemy(Enemy):
     def __init__(self, x, y, w, h, color, speed, DMG, knockBack, health):
         super().__init__(x, y, w, h, color, speed, DMG, knockBack, health)

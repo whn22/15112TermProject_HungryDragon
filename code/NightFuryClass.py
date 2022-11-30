@@ -1,7 +1,5 @@
 from GameObjectClass import GameObject
 from AttackBoxClass import AttackBox
-import math
-import time # sleep()
 
 class NightFury(GameObject):
     def __init__(self, x, y, w, h, color, speed, jumpHeight, gravity, ATK, DEF,
@@ -42,9 +40,6 @@ class NightFury(GameObject):
         self.refS = -1
         self.refE = -1
         self.attackBox = AttackBox(self.x, self.y, self.w, self.h, 'aquamarine')
-
-        # self.leftSlashBox = attackBox.createLeftSlashBox()
-        # self.rightSlashBox = attackBox.createRightSlashBox()
     
     def __str__(self):
         return f'NightFury:\n\
@@ -150,8 +145,6 @@ class NightFury(GameObject):
 
     # mousePressed, True, mouseReleased, False
     def aim(self, x, y):
-        # px, py = -1, -1 # the coordinate of path (px, py)
-        # print(x, y)
         if self.aiming == True and self.shootFrames == []:
             # find shoot path: y = ax + b
             sx, sy = self.attackBox.longAtkBox.getLocation()
@@ -404,7 +397,6 @@ class NightFury(GameObject):
         self.nightFuryHorizontal(app)
         self.nightFuryVertical(app)
         # test default
-        # self.respawn()
         self.refreshSlashLocation()
         self.isKilled()
         self.regainPS()
@@ -446,8 +438,6 @@ class NightFury(GameObject):
             self.attackBox.drawLeftSlash(canvas)
         if self.slashFramesR:
             self.attackBox.drawRightSlash(canvas)
-        # self.drawAim(canvas)
-        # self.drawShoot(canvas)
 
     # app drawing method
     # if app.nightFury.isDead == True:

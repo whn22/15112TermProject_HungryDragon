@@ -23,7 +23,6 @@ class Button(GameObject):
 
     def callFunction(self, f, p): # p should be tuple if multiple parameters
         if self.isClicked == True:
-            # print('here')
             f(p)
             self.isClicked = False
     
