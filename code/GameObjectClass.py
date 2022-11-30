@@ -30,6 +30,17 @@ class GameObject():
         if x1 + w1 > x2 and x1 < x2 + w2 and y1 + h1 > y2 and y1 < y2 + h2:
             return True
         return False
+
+    def isObjectTouch(self, other): # inputs two gameObjects
+        x1, y1 = self.x, self.y
+        w1, h1 = self.w, self.h
+        x2, y2 = other.getLocation()
+        w2, h2 = other.getSize()
+        if x1 + w1 > x2 and x1 < x2 + w2 and (y1 + h1 == y2 or y1 == y2 + h2):
+            return True
+        elif y1 + h1 > y2 and y1 < y2 + h2 and (x1 + w1 == x2 or x1 == x2 + w2):
+            return True
+        return False
     
     def isSetCollide(self, set): # a set contains gameObjects
         for item in set:

@@ -2,7 +2,7 @@ from cmu_112_graphics import *
 import time # sleep()
 import copy
 
-from ControlSetClass import ControlSet
+from MenuClass import Menu
 from ButtonClass import Button
 from BlockClass import Block
 from NightFuryClass import NightFury
@@ -11,8 +11,8 @@ from SpritesClass import NightFurySprites
 
 from GenerateLevel import Level1
 
-settings = Button(10, 10, 60, 20, 'menu', 'aquamarine', 'settings', 10)
-refresh = Button(80, 10, 60, 20, 'refresh', 'aquamarine', 'refresh', 10)
+menuButton = Button(10, 10, 60, 20, 'menuButton', 'aquamarine', 'menu', 10)
+refreshButton = Button(80, 10, 60, 20, 'refreshButton', 'aquamarine', 'refresh', 10)
 
 ground = Block(0, 590, 1000, 10, 'grey')
 block1 = Block(0, 500, 100, 10, 'grey')
@@ -44,12 +44,12 @@ flyEnemy7 = FlyEnemy(600, 250, 10, 10, 'yellow', 0.5, 20, 20, 50)
 enemies = {walkEnemy1, flyEnemy2, flyEnemy3, flyEnemy4, flyEnemy5, flyEnemy6,
            flyEnemy7}
 
-controlSettings = ControlSet('Left', 'Right', 'x', 'z')
+menu = Menu('Left', 'Right', 'x', 'z')
 
 # 3 * 4
 level1 = Level1(3, 5)
 
-nfIdle = NightFurySprites()
+nfSprites = NightFurySprites()
 
 def appStarted(app):
     # timerDelay
@@ -66,110 +66,83 @@ def appStarted(app):
     # enemies
     app.enemies = enemies
     # buttons
-    app.settings = settings
-    app.refresh = refresh
+    # app.menu = settings
+    app.menuButton = menuButton
+    app.refreshButton = refreshButton
+    # app.menuButton = Button(10, 10, 60, 20, 
+    #                     'menu', 'aquamarine', 'menu', 10)
     # menu
-    app.settings = controlSettings
-    app.inputKey = None
-    menu = Button(10, 10, 60, 20, 
-                        'menu', 'aquamarine', 'menu', 10)
     app.menu = menu
+    app.inputKey = None
+
     app.mouseX, app.mouseY = (-1, -1)
-    leftB = Button(app.width/2 - 300, app.height/10 * 3, 200, 40, 
-                        'left', 'aquamarine', 'set left', 20)
-    rightB = Button(app.width/2 - 300, app.height/10 * 4, 200, 40, 
-                        'right', 'aquamarine', 'set right', 20)
-    jumpB = Button(app.width/2 - 300, app.height/10 * 5, 200, 40, 
-                        'jump', 'aquamarine', 'set jump', 20)
-    dashB = Button(app.width/2 - 300, app.height/10 * 6, 200, 40, 
-                        'dash', 'aquamarine', 'set dash', 20)
-    app.menuButtons = {leftB, rightB, jumpB, dashB}
-    app.menuOn = False
+    app.menu.createMenu(app)
 
-    #!!!!!!!!!!!!!!!!test cases for sprites!!!!!!!!!!!!!!!!!!!!!
-    app.nfIdle = nfIdle
-    app.nfIdle.initializeAll(app)
+    #sprites
+    app.nfSprites = nfSprites
+    app.nfSprites.initializeAll(app)
 
-def enemiesTimerFired(app):
-    temp = copy.copy(app.enemies)
-    for enemy in temp:
-        # backupPosition = enemy.getLocation()
-        if enemy.isDead == True:
-            app.enemies.remove(enemy)
-        if type(enemy) == FlyEnemy:
-            enemy.flyIdle(app)
-        if type(enemy) == WalkEnemy:
-            enemy.walkIdle(app)
-
+# helper functions for timerFired
 def buttonTimerFired(app):
-    app.refresh.checkMouseOn(app.mouseX, app.mouseY)
-    if app.menuOn == False:
-        app.menu.checkMouseOn(app.mouseX, app.mouseY)
+    app.refreshButton.checkMouseOn(app.mouseX, app.mouseY)
+    if app.menu.menuOn == False:
+        app.menuButton.checkMouseOn(app.mouseX, app.mouseY)
     else:
-        for button in app.menuButtons:
+        for button in app.menu.menuButtons:
             button.checkMouseOn(app.mouseX, app.mouseY)
 
 def timerFired(app):
     app.nightFury.nightFuryTimerFired(app)
-    enemiesTimerFired(app)
+    Enemy.enemiesTimerFired(app)
     buttonTimerFired(app)
     app.level1.passLevel(app.nightFury, app.enemies)
     # sprites timerFired
-    app.nfIdle.nfSpritesTimer()
+    app.nfSprites.nfSpritesTimer()
 
-# helper functions for controlzz
-def openMenu(app):
-    app.menuOn = True
-
+# helper functions for control
 def mouseMoved(app, event):
     app.mouseX, app.mouseY = (event.x, event.y)
 
 def mousePressed(app, event):
-    if app.menuOn == False:
-        app.menu.mouseClicked(event.x, event.y, openMenu, app)
+    if app.menu.menuOn == False:
+        app.menuButton.mouseClicked(event.x, event.y, app.menu.openMenu, app)
     else:
-        for button in app.menuButtons:
+        for button in app.menu.menuButtons:
             button.mouseClicked(event.x, event.y, 
-                                app.settings.resetKey, (app.inputKey, button))
-    app.refresh.mouseClicked(event.x, event.y, app.level1.refresh, app)
+                                app.menu.resetKey, (app.inputKey, button))
+    app.refreshButton.mouseClicked(event.x, event.y, 
+                                app.level1.refreshLevel, app)
     app.terrain = level1.terrain
 
 def keyPressed(app, event):
     # let the players set the keys
     app.inputKey = event.key
     if app.inputKey == 'q':
-        app.menuOn = False
+        app.menu.menuOn = False
     # move
-    # if event.key == 'Left':
-    if event.key == app.settings.left:
+    if event.key == app.menu.left:
         app.nfGoLeft = True
-    # elif event.key == 'Right':
-    elif event.key == app.settings.right:
+    elif event.key == app.menu.right:
         app.nfGoRight = True
-    
     # jump
-    # if event.key == 'x':
-    if event.key == app.settings.jump:
-        app.nightFury.jump() # app.terrain
+    if event.key == app.menu.jump:
+        app.nightFury.jump()
     # dash
-    # if event.key == 'z':
-    if event.key == app.settings.dash:
+    if event.key == app.menu.dash:
         if app.nightFury.direction == 'Left':
             app.nightFury.dashL()
         elif app.nightFury.direction == 'Right':
             app.nightFury.dashR()
     # attack
     if event.key == 'c':
-    # if event.key == 'j':
         app.nightFury.slash()
 
 def keyReleased(app, event):
-    # WARNING: let the player set the keys.
     # move
-    if event.key == app.settings.left:
+    if event.key == app.menu.left:
         app.nfGoLeft = False
 
-    elif event.key == app.settings.right:
+    elif event.key == app.menu.right:
         app.nfGoRight = False
 
 # helper functions for redraw All
@@ -177,17 +150,18 @@ def redrawAll(app,canvas):
     # draw background
     canvas.create_rectangle(0, 0, app.width, app.height, 
                             fill = 'black', outline = None)
+    app.level1.drawDoors(canvas)
     Block.drawBlockSet(app.terrain, canvas)
     Enemy.drawEnemySet(app.enemies, canvas)
-    # player box
-    # app.nightFury.drawNightFury(canvas)
-    app.refresh.drawButton(canvas)
-    app.menu.drawButton(canvas)
+    app.nfSprites.drawSprites(app, app.nightFury, canvas)
+    # app.nightFury.drawNightFury(canvas)    # player collision box
+    app.refreshButton.drawButton(canvas)
+    app.menuButton.drawButton(canvas)
     if app.level1.win == True:
         app.level1.drawPassLevel(app, canvas)
-    if app.menuOn == True:
-        app.settings.drawMenu(app, canvas)
+        return
+    if app.menu.menuOn == True:
+        app.menu.drawMenu(app, canvas)
     # draw sprites
-    app.nfIdle.drawSprites(app, app.nightFury, canvas)
 
 runApp(width = 1000, height = 600)

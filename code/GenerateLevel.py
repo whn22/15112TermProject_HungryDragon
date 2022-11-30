@@ -1,5 +1,5 @@
 import random
-from ControlSetClass import ControlSet
+from MenuClass import Menu
 from ButtonClass import Button
 from BlockClass import Block
 from NightFuryClass import NightFury
@@ -21,7 +21,7 @@ class Level1():
         self.enemies = set()
         self.win = False
     
-    def refresh(self, app):
+    def refreshLevel(self, app):
         self.initAll()
         self.createTerrain(app)
 
@@ -38,6 +38,7 @@ class Level1():
     #     pass
 
     def passLevel(self, player, enemies):
+        print(len(enemies), player.isObjectCollide(self.exit))
         if enemies == set() and player.isObjectCollide(self.exit):
             self.win = True
 
@@ -77,7 +78,7 @@ class Level1():
 
     def createEnter(self, app):
         if self.enter == None:
-            self.enter = Block(20, app.height - 10, 30, 10, 'aquamarine')
+            self.enter = Block(20, app.height - 15, 30, 15, 'aquamarine')
         else:
             # eg.end on celling, regenerate on botton.
             # same location (width = width, height flipped, vice versa)
@@ -88,7 +89,7 @@ class Level1():
     def createExit(self, app):
         if self.enter == None:
             self.createEnter(app)
-        self.exit = Block(random.randint(20, app.width - 20 - 30), 0, 30, 10, 'aquamarine')
+        self.exit = Block(random.randint(20, app.width - 20 - 30), 0, 30, 15, 'aquamarine')
         platform = Block(self.exit.x - 10, 100, 50, 20, 'grey')
         self.blocks.add(platform)
 
@@ -171,13 +172,29 @@ class Level1():
         self.createEnter(app)
         self.createExit(app)
         self.terrain = self.blocks.union(self.base)
-        self.terrain.add(self.enter)
-        self.terrain.add(self.exit)
+    
+    # def createDoor(self, app):
+    #     self.door.add(self.enter)
+    #     self.door.add(self.exit)
 
     def drawPassLevel(self, app, canvas):
         canvas.create_text(app.width/2, app.height/2,
                 text = 'Level passed',
                 font = 'Arial 20', fill = 'white')
+    
+    def drawDoors(self, canvas):
+        x1 = self.enter.x
+        y1 = self.enter.y
+        w1 = self.enter.w
+        h1 = self.enter.h
+        canvas.create_rectangle(x1, y1, x1 + w1, y1 + h1, 
+                                fill = None, outline = self.enter.color)
+        x2 = self.exit.x
+        y2 = self.exit.y
+        w2 = self.exit.w
+        h2 = self.exit.h
+        canvas.create_rectangle(x2, y2, x2 + w2, y2 + h2, 
+                                fill = None, outline = self.exit.color)
 
     # def createTerrain(self, app):
     #     self.createBlocks(app)

@@ -1,11 +1,13 @@
 from ButtonClass import Button
 
-class ControlSet():
+class Menu():
     def __init__(self, left, right, jump, dash):
         self.left = left
         self.right = right
         self.jump = jump
         self.dash = dash
+        self.menuButtons = {}
+        self.menuOn = False
     
     def __repr__(self):
         return f'controlSettings:\n\
@@ -25,6 +27,20 @@ class ControlSet():
         elif button.ID == 'dash':
             self.dash = input
         print(self)
+    
+    def openMenu(self, app):
+        self.menuOn = True
+
+    def createMenu(self, app):
+        leftB = Button(app.width/2 - 300, app.height/10 * 3, 200, 40, 
+                            'left', 'aquamarine', 'set left', 20)
+        rightB = Button(app.width/2 - 300, app.height/10 * 4, 200, 40, 
+                            'right', 'aquamarine', 'set right', 20)
+        jumpB = Button(app.width/2 - 300, app.height/10 * 5, 200, 40, 
+                            'jump', 'aquamarine', 'set jump', 20)
+        dashB = Button(app.width/2 - 300, app.height/10 * 6, 200, 40, 
+                            'dash', 'aquamarine', 'set dash', 20)
+        self.menuButtons = {leftB, rightB, jumpB, dashB}
 
     def drawMenu(self, app, canvas):
         canvas.create_rectangle(0, 0, app.width, app.height, 
@@ -45,7 +61,7 @@ class ControlSet():
                                 jump = {self.jump}\n\
                                 dash = {self.dash}\n',
                         font = 'Arial 10', fill = 'white')
-        for button in app.menuButtons:
+        for button in self.menuButtons:
             if button.isClicked == False:
                 button.drawButton(canvas)
             else:

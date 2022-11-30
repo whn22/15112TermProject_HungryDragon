@@ -155,7 +155,7 @@ class NightFurySprites():
 
     def drawSlash(self, player, canvas):
         if player.slashFramesL:
-            print('left', player.frame)
+            # print('left', player.frame)
             sprite = self.slashLeft[player.frame - 1]
             canvas.create_image(player.x, player.y + player.h * 1.2, 
                                 image=ImageTk.PhotoImage(sprite))
@@ -165,7 +165,7 @@ class NightFurySprites():
                                 image=ImageTk.PhotoImage(effect))
             return True
         elif player.slashFramesR:
-            print('right', player.frame)
+            # print('right', player.frame)
             sprite = self.slashRight[len(self.effectRight) - (player.frame - 1) - 1]
             canvas.create_image(player.x + player.w * 0.6, player.y + player.h * 1.2, 
                                 image=ImageTk.PhotoImage(sprite))

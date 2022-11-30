@@ -1,4 +1,5 @@
 import random
+import copy
 from GameObjectClass import GameObject
 
 class Enemy(GameObject):
@@ -45,7 +46,7 @@ class Enemy(GameObject):
 
     def getHP(self):
         return self.HP
-    
+
     # interact with player:
     def beAttacked(self, player, app):
         if self.isDead == False:
@@ -75,8 +76,22 @@ class Enemy(GameObject):
                 self.HP = 0
     
     # AI
-    def AI(self):
-        pass
+    def generalAI(self, player):
+        if self.findDistance(player) < 150:
+            self.isActive = True
+        else:
+            self.isActive = False
+
+    def enemiesTimerFired(app):
+        temp = copy.copy(app.enemies)
+        for enemy in temp:
+            # backupPosition = enemy.getLocation()
+            if enemy.isDead == True:
+                app.enemies.remove(enemy)
+            if type(enemy) == FlyEnemy:
+                enemy.flyTimerFired(app)
+            if type(enemy) == WalkEnemy:
+                enemy.walkTimerFired(app)
     
     # draw methods:
     def drawEnemy(self, canvas):
@@ -134,6 +149,21 @@ class FlyEnemy(Enemy):
                 self.resetDefaultMove()
                 self.resetLocation(backupPosition)
                 break
+    
+    def flyActive(self, app):
+        pass
+
+    # def flyAI(self, app):
+    #     if self.isActive == False:
+    #         self.flyIdle(app)
+    #     else:
+    #         self.flyActive(app)
+    
+    def flyTimerFired(self, app):
+        if self.isActive == False:
+            self.flyIdle(app)
+        else:
+            self.flyActive(app)
 
 class WalkEnemy(Enemy):
     def __init__(self, x, y, w, h, color, speed, DMG, knockBack, health):
@@ -174,19 +204,31 @@ class WalkEnemy(Enemy):
         
     def walkIdle(self, app):
         backupPosition = self.x, self.y
+        if self.direction == 'Right':
+            self.x += self.speed
+        elif self.direction == 'Left':
+            self.x -= self.speed
+        for block in app.terrain:
+            if self.isObjectCollide(block) == False and \
+                self.withinCanvasRange(app) and \
+                self.testExceedEdge(block) == False:
+                pass
+            else:
+                self.x, self.y = backupPosition
+                self.changeDirection()
+                break
+    
+    def walkActive(self, app):
+        pass
+
+    # def walkAI(self, app):
+    #     if self.isActive == False:
+    #         self.walkIdle(app)
+    #     else:
+    #         self.walkActive(app)
+
+    def walkTimerFired(self, app):
         if self.isActive == False:
-            if self.direction == 'Right':
-                self.x += self.speed
-            elif self.direction == 'Left':
-                self.x -= self.speed
-            for block in app.terrain:
-                if self.isObjectCollide(block) == False and \
-                    self.withinCanvasRange(app) and \
-                    self.testExceedEdge(block) == False:
-                    pass
-                else:
-                    self.x, self.y = backupPosition
-                    self.changeDirection()
-                    break
+            self.walkIdle(app)
         else:
-            pass
+            self.walkActive(app)
