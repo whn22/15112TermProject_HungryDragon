@@ -31,6 +31,7 @@ class GameObject():
             return True
         return False
 
+    # this function hasn't been used
     def isObjectTouch(self, other): # inputs two gameObjects
         x1, y1 = self.x, self.y
         w1, h1 = self.w, self.h
@@ -95,6 +96,11 @@ class GameObject():
             return False
         return True
 
+    def pointWithinCanvasRange(x, y, app):
+        if x < 0 or y < 0 or x > app.width or y > app.height:
+            return False
+        return True
+
     def withinReasonableRange(self, app):
         oX, oY = self.getLocation()
         oW, oH = self.getSize()
@@ -102,3 +108,8 @@ class GameObject():
             oY + oH > app.height - 50:
             return False
         return True
+
+    def drawGameObject(self, canvas):
+        x1, y1 = self.x, self.y
+        w1, h1 = self.w, self.h
+        canvas.create_rectangle(x1, y1, x1 + w1, y1 + h1, fill = self.color)

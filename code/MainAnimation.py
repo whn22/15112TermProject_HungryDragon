@@ -11,37 +11,6 @@ from SpritesClass import NightFurySprites
 
 from GenerateLevel import Level
 
-# ground = Block(0, 590, 1000, 10, 'grey')
-# block1 = Block(0, 500, 100, 10, 'grey')
-# block2 = Block(150, 400, 100, 10, 'grey')
-# block3 = Block(350, 300, 100, 50, 'grey')
-# block4 = Block(300, 200, 100, 10, 'grey')
-# block5 = Block(500, 100, 100, 20, 'grey')
-# block6 = Block(650, 210, 15, 70, 'grey')
-# block7 = Block(700, 320, 70, 120, 'grey')
-# block8 = Block(700, 400, 120, 50, 'grey')
-# terrain = {ground, block1, block2, block3, block4, block5, block6,block7,block8}
-
-
-
-
-# __init__(self, x, y, w, h, color, speed, jumpHeight, gravity, ATK, DEF, 
-# health, magic, physicalStrength)
-
-
-# # __init__(self, x, y, w, h, color, speed, DMG, knockBack, health):
-# # flyEnemy1 = FlyEnemy(110, 220, 10, 10, 'yellow', 0.5, 20, 20, 50)
-# walkEnemy1 = WalkEnemy(50, 480, 20, 20, 'yellow', 0.5, 20, 20, 50)
-# flyEnemy2 = FlyEnemy(150, 500, 10, 10, 'yellow', 0.5, 20, 20, 50)
-# flyEnemy3 = FlyEnemy(770, 200, 10, 10, 'yellow', 0.5, 20, 20, 50)
-# # flyEnemy3 = FlyEnemy(170, 500, 10, 10, 'yellow', 0.5, 20, 50)
-# flyEnemy4 = FlyEnemy(550, 420, 10, 10, 'yellow', 0.5, 20, 20, 50)
-# flyEnemy5 = FlyEnemy(380, 100, 10, 10, 'yellow', 0.5, 20, 20, 50)
-# flyEnemy6 = FlyEnemy(900, 450, 10, 10, 'yellow', 0.5, 20, 20, 50)
-# flyEnemy7 = FlyEnemy(600, 250, 10, 10, 'yellow', 0.5, 20, 20, 50)
-# enemies = {walkEnemy1, flyEnemy2, flyEnemy3, flyEnemy4, flyEnemy5, flyEnemy6,
-#            flyEnemy7}
-
 level = Level(10, 5)
 
 def appStarted(app):
@@ -118,11 +87,17 @@ def mousePressed(app, event):
     app.refreshButton.mouseClicked(event.x, event.y, 
                                 app.level.refreshLevel, app)
     app.terrain = level.terrain
+
+def mouseDragged(app, event):
     # player shoot methods
-    app.nightFury.aiming = True
+    app.nightFury.aiming = True # this maybe redundant
+    app.nightFury.aim(event.x, event.y)
 
 def mouseReleased(app, event):
-    app.nightFury.aiming = False
+    if app.nightFury.aiming == True: # this maybe redundant
+        app.nightFury.shooting = True
+        app.nightFury.shoot(event.x, event.y, app.enemies, app.terrain, app)
+        app.nightFury.aiming = False
 
 def keyPressed(app, event):
     # let the players set the keys
@@ -165,6 +140,8 @@ def redrawAll(app,canvas):
     Enemy.drawEnemySet(app.enemies, canvas)
     app.nfSprites.drawSprites(app, app.nightFury, canvas)
     # app.nightFury.drawNightFury(canvas)    # player collision box
+    app.nightFury.drawAim(canvas)
+    app.nightFury.drawShoot(canvas)
     app.refreshButton.drawButton(canvas)
     app.menuButton.drawButton(canvas)
     if app.level.win == True:

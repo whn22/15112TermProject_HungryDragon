@@ -34,7 +34,7 @@ class Level():
         # self.enemies = set()
 
     def passLevel(self, player, enemies):
-        print(len(enemies), player.isObjectCollide(self.exit))
+        # print(len(enemies), player.isObjectCollide(self.exit))
         if enemies == set() and player.isObjectCollide(self.exit):
             self.win = True
 

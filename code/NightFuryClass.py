@@ -36,6 +36,10 @@ class NightFury(GameObject):
         self.slashFrame = -1
         self.shootFrames = []
         self.aiming = False
+        self.shooting = False
+        self.shot = None
+        self.refS = -1
+        self.refE = -1
         self.attackBox = AttackBox(self.x, self.y, self.w, self.h, 'aquamarine')
 
         # self.leftSlashBox = attackBox.createLeftSlashBox()
@@ -144,14 +148,85 @@ class NightFury(GameObject):
             self.slashFramesR = list(range(0, 15))
 
     # mousePressed, True, mouseReleased, False
-    def shoot(self, x, y):
-        px, py = -1, -1 # the coordinate of path (px, py)
+    def aim(self, x, y):
+        # px, py = -1, -1 # the coordinate of path (px, py)
+        # print(x, y)
         if self.aiming == True and self.shootFrames == []:
             # find shoot path: y = ax + b
-            dx = x - self.x
-            dy = y - self.y
-            a = dx/dy # gradient
+            sx, sy = self.attackBox.longAtkBox.getLocation()
+            dx = x - sx
+            dy = y - sy
+            if dx != 0:
+                a = dy/dx # gradient
+                b = y - a*x # intersection
+            else:
+                return
+            # sx, sy means shoot x, shoot y
+            self.refS = (sx, sy)
+            if dx < 0:
+                self.refE = (-sx * 500, -(a * sx * 500 + b))
+            else:
+                self.refE = (sx * 500, a * sx * 500 + b)
+    
+    def shoot(self, x, y, enemies, terrain, app):
+        if self.shooting == True and self.shootFrames == []:
+            sx, sy = self.attackBox.longAtkBox.getLocation()
+            dx = x - sx
+            dy = y - sy
+            a = dy/dx # gradient
             b = y - a*x # intersection
+            # sx, sy means shoot x, shoot y
+            while True:
+                if dx < 0:
+                    sx -= 30
+                    sy = a * sx + b
+                    self.shootFrames.append((sx, sy))
+                    # print(sx, sy)
+                else:
+                    sx += 30
+                    sy = a * sx + b
+                    self.shootFrames.append((sx, sy))
+                    # print(sx, sy)
+                for enemy in enemies:
+                    if enemy.testCollide(sx, sy, 10, 10) or \
+                        GameObject.pointWithinCanvasRange(sx, sy, app) == False:
+                        # self.shootFrames.pop()
+                        # print(self.shootFrames)
+                        return
+                for block in terrain:
+                    if block.testCollide(sx, sy, 10, 10) or \
+                        GameObject.pointWithinCanvasRange(sx, sy, app) == False:
+                        self.shootFrames.pop()
+                        # print(self.shootFrames)
+                        return
+
+    def drawAim(self, canvas):
+        # print(self.refS, self.refE, '!!!!!!!!!!')
+        # if self.refS == None or self.refE == None:
+        if self.aiming == False:
+            return
+        x1, y1 = self.refS
+        x2, y2 = self.refE
+        canvas.create_line(x1, y1, x2, y2, fill = 'turquoise')
+    
+    def getShot(self, enemies, app):
+        if self.shootFrames:
+            frame = self.shootFrames.pop(0)
+            if self.shootFrames == []:
+                self.shooting = False
+            x, y = frame
+            self.shot = GameObject(x, y, 10, 10, 'aquamarine')
+            for enemy in enemies:
+                if self.shot.isObjectCollide(enemy):
+                    enemy.beAttacked(self, app)
+                    return
+
+    def drawShoot(self, canvas):
+        print(self.shootFrames)
+        if self.shot and self.shooting == True:
+            self.shot.drawGameObject(canvas)
+        else:
+            self.shot = None
 
     def accumulateFarAttack(self):
         pass
@@ -232,6 +307,7 @@ class NightFury(GameObject):
         self.attackBox = AttackBox(self.x, self.y, self.w, self.h, 'aquamarine')
         self.attackBox.createLeftSlashBox()
         self.attackBox.createRightSlashBox()
+        self.attackBox.createLongAtkBox()
     
     def doLeftSlash(self, app):
         if self.slashFramesL and self.direction == 'Left':
@@ -333,6 +409,7 @@ class NightFury(GameObject):
         # keypressed
         self.doLeftSlash(app)
         self.doRightSlash(app)
+        self.getShot(app.enemies, app)
 
 ################################################################################
     # draw function
@@ -365,3 +442,5 @@ class NightFury(GameObject):
             self.attackBox.drawLeftSlash(canvas)
         if self.slashFramesR:
             self.attackBox.drawRightSlash(canvas)
+        # self.drawAim(canvas)
+        # self.drawShoot(canvas)
