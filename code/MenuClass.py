@@ -76,6 +76,10 @@ class Menu():
                                 2.Reach the EXIT on the celling\n\
                                 Drag mouse to aim, release to shoot',
                                 font = 'Arial 10', fill = 'white')
+        canvas.create_text(app.width/2 + 170, app.height/2 + 80,
+                        text = f'Warning:\n\
+                                If you stuck by terrain, click refresh\n',
+                                font = 'Arial 10', fill = 'white')
         for button in self.menuButtons:
             if button.isClicked == False:
                 button.drawButton(canvas)

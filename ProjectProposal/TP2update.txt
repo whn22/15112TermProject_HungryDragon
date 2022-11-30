@@ -1,0 +1,32 @@
+Current Changes:
+1. the player can do unlimited shoots (long attack).
+2. the player can't regain health, and if they die, the game will restart.
+
+Future Changes:
+1. make the game side-scrolling instead of rooms.
+2. add some 'fruit' to the map, so that player can 'eat' them and regain health.
+3. the enemy AI will be: If within a certain range, they will become active and
+    attack the player.
+
+Work done this week:
+1. change the code structure, make it look clean
+2. change collision completely (function is the same)
+3. add menu, button
+4. add shooting function
+5. add sprites
+6. player key settings
+7. random generate level and enemies, enter and exit
+
+Future Work:
+1. add enemy AI
+2. side-scrolling
+3. add a boss
+4. add sprites to terrain, enemies and shots
+
+Current bugs: (try to fix next week)
+1. when fly enemies are knockback out of 'reasonable range', they don't move.
+2. when multipule keys are pressed at the same time, errors in sprites display.
+3. sometimes when the player respawn, the enemies will respawn in terrain.
+*** 4. player may not be able to move between the random generated terrain.
+5. the jump sprites aren't fully displayed when player begins falling.
+6. the shooting bullet speed will change if shoot in different angles.
