@@ -31,9 +31,11 @@ class NightFury(GameObject):
         self.dashLXs = []
         self.dashRXs = []
         # attack collision box
-        self.slashFramesL = []
-        self.slashFramesR = [] # how long the attack will last 15
-        self.frame = -1
+        self.slashFramesL = [] # how long the attack will last: 15
+        self.slashFramesR = [] 
+        self.slashFrame = -1
+        self.shootFrames = []
+        self.aiming = False
         self.attackBox = AttackBox(self.x, self.y, self.w, self.h, 'aquamarine')
 
         # self.leftSlashBox = attackBox.createLeftSlashBox()
@@ -141,8 +143,15 @@ class NightFury(GameObject):
         if self.slashFramesR == [] and self.direction == 'Right':
             self.slashFramesR = list(range(0, 15))
 
-    def quickFarAttack(self):
-        pass
+    # mousePressed, True, mouseReleased, False
+    def shoot(self, x, y):
+        px, py = -1, -1 # the coordinate of path (px, py)
+        if self.aiming == True and self.shootFrames == []:
+            # find shoot path: y = ax + b
+            dx = x - self.x
+            dy = y - self.y
+            a = dx/dy # gradient
+            b = y - a*x # intersection
 
     def accumulateFarAttack(self):
         pass
@@ -190,7 +199,6 @@ class NightFury(GameObject):
                     self.fallYs.append(ty - self.h)
                     self.lenF = len(self.fallYs)
                     return
-        # print(self.fallYs)
 
     def doFalling(self): # if there are falling coordinates, apply them.
         if self.jumpYs == [] and self.fallYs:
@@ -224,14 +232,11 @@ class NightFury(GameObject):
         self.attackBox = AttackBox(self.x, self.y, self.w, self.h, 'aquamarine')
         self.attackBox.createLeftSlashBox()
         self.attackBox.createRightSlashBox()
-    #     attackBox = AttackBox(self.x, self.y, self.w, self.h, 'blue')
-    #     self.leftSlashBox = attackBox.createLeftSlashBox()
-    #     self.rightSlashBox = attackBox.createRightSlashBox()
     
     def doLeftSlash(self, app):
         if self.slashFramesL and self.direction == 'Left':
-            self.frame = self.slashFramesL.pop(0)
-            if self.frame == 2:
+            self.slashFrame = self.slashFramesL.pop(0)
+            if self.slashFrame == 2:
                 for enemy in app.enemies:
                     for box in self.attackBox.leftSlashBox:
                         if box.isObjectCollide(enemy):
@@ -240,8 +245,8 @@ class NightFury(GameObject):
 
     def doRightSlash(self, app):
         if self.slashFramesR and self.direction == 'Right':
-            self.frame = self.slashFramesR.pop(0)
-            if self.frame == 2:
+            self.slashFrame = self.slashFramesR.pop(0)
+            if self.slashFrame == 2:
                 for enemy in app.enemies:
                     for box in self.attackBox.rightSlashBox:
                         if box.isObjectCollide(enemy):
@@ -349,7 +354,8 @@ class NightFury(GameObject):
         hp = self.HP
         nfX, nfY = self.getLocation()
         canvas.create_rectangle(nfX - 5, nfY - 20, nfX + hp/100 * 30 - 5, 
-                                nfY - 19, fill = 'turquoise', outline = 'turquoise')
+                                nfY - 19, fill = 'turquoise', 
+                                outline = 'turquoise')
 
     def drawNightFury(self, canvas):
         self.drawSelf(canvas)

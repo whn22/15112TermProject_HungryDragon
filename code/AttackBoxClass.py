@@ -5,6 +5,7 @@ class AttackBox(GameObject):
         super().__init__(x, y, w, h, color)
         self.leftSlashBox = {}
         self.rightSlashBox = {}
+        self.longAtkBox = None
 
     def createLeftSlashBox(self):
         c = self.color
@@ -35,7 +36,13 @@ class AttackBox(GameObject):
         self.rightSlashBox = {box1, box2, box3, box4, box5}
 
     def createLongAtkBox(self):
-        pass
+        # create initial location, not include the shoot path.
+        c = self.color
+        x = self.x
+        y = self.y
+        w = self.w
+        h = self.h
+        self.longAtkBox = GameObject(x, y + h * 0.3, 10, 10, c) # not very good data
 
     # draw methods
     def drawLeftSlash(self, canvas):
@@ -55,3 +62,9 @@ class AttackBox(GameObject):
             w, h = box.getSize()
             canvas.create_rectangle(x, y, x + w, y + h, fill = None, 
                                     outline = self.color)
+                
+    def drawLongAtkBox(self, canvas):
+        x, y = self.longAtkBox.getLocation()
+        w, h = self.longAtkBox.getSize()
+        canvas.create_rectangle(x, y, x + w, y + h, fill = None, 
+                                outline = self.color)
