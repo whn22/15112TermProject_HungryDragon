@@ -1,5 +1,5 @@
 import random
-from BlockClass import Block
+from BlockClass import Block, MovBlock
 from EnemyClass import FlyEnemy, WalkEnemy
 
 class Level():
@@ -15,6 +15,7 @@ class Level():
         self.enter = None # changable
         self.exit = None
         self.enemies = set()
+        self.platforms = set()
         # pass level
         self.win = False
         self.levelOrd = 1
@@ -38,6 +39,7 @@ class Level():
         self.blocks = set()
         self.terrain = set()
         self.enemies = set()
+        self.platforms = set()
 
     def passLevel(self, player, enemies):
         # print(len(enemies), player.isObjectCollide(self.exit))
@@ -62,13 +64,20 @@ class Level():
             self.createEnter(app)
         self.exit = Block(random.randint(70, app.width - 70 - 30), 0, 30, 15, 'aquamarine')
 
+    def createPlatforms(self, app):
+        color = 'white' # WARNING: hard code color
+        # lastX = app.width - 100
+        for i in range(5):
+            tw = random.randint(20, 150)
+            th = random.randint(10, 30)
+            ty = int(app.height/6) * (i + 1)
+            tx = random.randint(150, app.width - 150)
+            platform = Block(tx, ty, tw, th, color)
+            self.platforms.add(platform)
+
     def createBase(self, app):
         platform1 = Block(self.exit.x - 10, 120, 50, 20, 'grey')
         self.blocks.add(platform1)
-        platform2 = Block(random.randint(self.exit.x - 70, self.exit.x + 70), 
-                            random.randint(170, 220), 
-                            80, 15, 'grey')
-        self.blocks.add(platform2)
         color = 'grey' # WARNING: hard code color
         ground = Block(0, app.height - 10, app.width, 10, color)
         leftWall = Block(0, 0, 10, app.height, color)
@@ -78,6 +87,23 @@ class Level():
         self.base.add(leftWall)
         self.base.add(rightWall)
         self.base.add(celling)
+
+    # def createBlocks(self, app):
+    #     color = 'grey' # WARNING: hard code color
+    #     lastY = app.height - 100
+    #     for i in range(self.blockNum):
+    #         tw = random.randint(20, int(app.width/self.blockNum))
+    #         th = random.randint(10, 100)
+    #         tx = int(app.width/self.blockNum) * i
+    #         if lastY < 100:
+    #             ty = random.randint(100, app.height - 200)
+    #         elif lastY > app.height - 150:
+    #             ty = random.randint(lastY - 70, app.height - 150)
+    #         else:
+    #             ty = random.randint(lastY - 70, lastY + 70)
+    #         lastY = ty
+    #         block = Block(tx, ty, tw, th, color)
+    #         self.blocks.add(block)
 
     def createBlocks(self, app):
         color = 'grey' # WARNING: hard code color
@@ -93,15 +119,17 @@ class Level():
             else:
                 ty = random.randint(lastY - 100, lastY + 200)
             lastY = ty
-            block = Block(tx, ty, tw, th, color)
+            block = MovBlock(tx, ty, tw, th, color)
             self.blocks.add(block)
 
     def createTerrain(self, app):
         self.createEnter(app)
         self.createExit(app)
+        self.createPlatforms(app)
         self.createBase(app)
         self.createBlocks(app)
-        self.terrain = self.blocks.union(self.base)
+        # self.terrain = self.blocks.union(self.base)
+        self.terrain = self.base.union(self.platforms, self.blocks)
     
     def generateLevel(self, app):
         self.initSets()

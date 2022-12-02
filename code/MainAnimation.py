@@ -14,7 +14,7 @@ from GenerateLevel import Level
 
 def appStarted(app):
     # initialize
-    level = Level(10, 3)
+    level = Level(7, 3)
     menu = Menu('Left', 'Right', 'x', 'z', 'c')
     level.createTerrain(app)
     level.createEnemies(app)
@@ -151,7 +151,7 @@ def redrawAll(app,canvas):
     Enemy.drawEnemySet(app.enemies, canvas)
     Display.display(app, canvas)
     app.nfSprites.drawSprites(app, app.nightFury, canvas)
-    # app.nightFury.drawNightFury(canvas)    # player collision box
+    # app.nightFury.drawNightFury(canvas)  # player collision box
     app.nightFury.drawAim(canvas)
     app.nightFury.drawShoot(canvas)
     app.refreshButton.drawButton(canvas)

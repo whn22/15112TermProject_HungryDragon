@@ -172,17 +172,22 @@ class NightFury(GameObject):
             a = dy/dx # gradient
             b = y - a*x # intersection
             # sx, sy means shoot x, shoot y
+            d = 20
+            # dsx = (-2*a*b + (4*(a**2)*(b**2) - 
+            #     4*(b**2-d**2)*(a**2+1))**0.5)/(2*(a**2 + 1))
+            dsx = (d**2/(1 + a**2))**0.5
+            dsy = a * dsx
+            # print(dsx, dsy)
             while True:
                 if dx < 0:
-                    sx -= (50/abs(a) + 50)**0.5
-                    sy = a * sx + b
-                    self.shootFrames.append((sx, sy))
+                    sx -= dsx
+                    sy -= dsy
                     # print(sx, sy)
                 else:
-                    sx += (50/abs(a) + 50)**0.5
-                    sy = a * sx + b
-                    self.shootFrames.append((sx, sy))
+                    sx += dsx
+                    sy += dsy
                     # print(sx, sy)
+                self.shootFrames.append((sx, sy))
                 for enemy in enemies:
                     if enemy.testCollide(sx, sy, 10, 10) or \
                         GameObject.pointWithinCanvasRange(sx, sy, app) == False:

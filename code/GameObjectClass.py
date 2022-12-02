@@ -63,7 +63,7 @@ class GameObject():
             return True
         return False
     
-    def testExceedEdge(self, other): # cheack if object is on the edge of another
+    def testExceedEdge(self, other): # check if object is on the edge of another
         x1, y1 = self.x, self.y
         w1, h1 = self.w, self.h
         x2, y2 = other.getLocation()
