@@ -6,7 +6,7 @@ import math
 from MenuClass import Menu
 from DisplayClass import Display
 from ButtonClass import Button
-from BlockClass import Block
+from BlockClass import Block, MovBlock
 from NightFuryClass import NightFury
 from EnemyClass import Enemy, FlyEnemy, WalkEnemy
 from SpritesClass import NightFurySprites
@@ -76,6 +76,13 @@ def timerFired(app):
     buttonTimerFired(app)
     # sprites timerFired
     app.nfSprites.nfSpritesTimer()
+    # hold
+    for block in app.terrain:
+        if type(block) == MovBlock:
+            print(app.nightFury.hold, block.hold)
+            if app.nightFury.hold == True and block.hold == True:
+            # and block.isObjectTouch(app.nightFury):
+                block.move(app)
 
 # helper functions for control
 def mouseMoved(app, event):
@@ -129,14 +136,29 @@ def keyPressed(app, event):
     # attack
     if event.key == 'c':
         app.nightFury.slash()
+    
+    # move blocks
+    if event.key == 'Space':
+        for block in app.terrain:
+            if type(block) == MovBlock and block.isObjectTouch(app.nightFury):
+                if app.nightFury.hold == False:
+                    block.hold = True
+                    block.findDiff(app)
+                app.nightFury.hold = True
+                # block.move(app)
 
 def keyReleased(app, event):
     # move
     if event.key == app.menu.left:
         app.nfGoLeft = False
-
     elif event.key == app.menu.right:
         app.nfGoRight = False
+
+    if event.key == 'Space':
+        app.nightFury.hold = False
+        for block in app.terrain:
+            if type(block) == MovBlock:
+                block.hold = False
 
 # helper functions for redraw All
 def redrawAll(app,canvas):

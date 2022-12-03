@@ -21,6 +21,7 @@ class NightFury(GameObject):
         # default data
         self.immune = list(range(1, 15))
         self.isDead = False
+        self.hold = False
         self.direction = 'Right'
         self.eaten = []
         self.jumpYs = []
@@ -240,6 +241,12 @@ class NightFury(GameObject):
             self.isDead = True
             self.HP = 0
 
+    def holdBlock(self):
+        if self.hold == True:
+            self.PS -= 1
+            if self.PS <= 0:
+                self.hold = False
+
     def regainPS(self): 
         # max PS is 100, regain 0.5 per period
         if self.PS < 100:
@@ -404,6 +411,7 @@ class NightFury(GameObject):
         # test default
         self.refreshSlashLocation()
         self.isKilled()
+        self.holdBlock()
         self.regainPS()
         self.loseHealth(app.enemies)
         self.unImmune()

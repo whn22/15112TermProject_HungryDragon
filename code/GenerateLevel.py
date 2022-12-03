@@ -1,5 +1,6 @@
 import random
-from BlockClass import Block, MovBlock
+import copy
+from BlockClass import Block, MovBlock, Platform
 from EnemyClass import FlyEnemy, WalkEnemy
 
 class Level():
@@ -51,13 +52,13 @@ class Level():
     # create terrain
     def createEnter(self, app):
         if self.enter == None:
-            self.enter = Block(20, app.height - 15, 30, 15, 'aquamarine')
+            self.enter = Block(20, app.height - 60, 30, 60, 'aquamarine')
         else:
             # eg.end on celling, regenerate on botton.
             # same location (width = width, height flipped, vice versa)
             if self.exit == None:
                 self.createExit(app)
-            self.enter = Block(self.exit.x, app.height - 10, 30, 10, 'aquamarine')
+            self.enter = Block(self.exit.x, app.height - 60, 30, 60, 'aquamarine')
     
     def createExit(self, app):
         if self.enter == None:
@@ -68,15 +69,15 @@ class Level():
         color = 'white' # WARNING: hard code color
         # lastX = app.width - 100
         for i in range(5):
-            tw = random.randint(20, 150)
-            th = random.randint(10, 30)
+            tw = random.randint(50, 100)
+            th = random.randint(10, 20)
             ty = int(app.height/6) * (i + 1)
             tx = random.randint(150, app.width - 150)
-            platform = Block(tx, ty, tw, th, color)
+            platform = Platform(tx, ty, tw, th, color)
             self.platforms.add(platform)
 
     def createBase(self, app):
-        platform1 = Block(self.exit.x - 10, 120, 50, 20, 'grey')
+        platform1 = Platform(self.exit.x - 10, 120, 50, 20, 'white')
         self.blocks.add(platform1)
         color = 'grey' # WARNING: hard code color
         ground = Block(0, app.height - 10, app.width, 10, color)
@@ -121,6 +122,15 @@ class Level():
             lastY = ty
             block = MovBlock(tx, ty, tw, th, color)
             self.blocks.add(block)
+        copyB = copy.copy(self.blocks)
+        for block in copyB:
+            if block.isObjectCollide(self.enter):
+                self.blocks.remove(block)
+        copyB = copy.copy(self.blocks)
+        for block in copyB:
+            for platform in self.platforms:
+                if block.isObjectCollide(platform):
+                    self.blocks.discard(block)
 
     def createTerrain(self, app):
         self.createEnter(app)
