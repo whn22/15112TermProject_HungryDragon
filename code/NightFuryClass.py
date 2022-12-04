@@ -1,3 +1,5 @@
+import copy
+
 from GameObjectClass import GameObject
 from AttackBoxClass import AttackBox
 from BlockClass import Block, MovBlock, Platform
@@ -210,15 +212,6 @@ class NightFury(GameObject):
                         self.shootFrames.pop()
                         # print(self.shootFrames)
                         return
-
-    def drawAim(self, canvas):
-        # print(self.refS, self.refE, '!!!!!!!!!!')
-        # if self.refS == None or self.refE == None:
-        if self.aiming == False:
-            return
-        x1, y1 = self.refS
-        x2, y2 = self.refE
-        canvas.create_line(x1, y1, x2, y2, fill = 'turquoise')
     
     def getShot(self, enemies, app):
         if self.shootFrames:
@@ -363,6 +356,15 @@ class NightFury(GameObject):
                         self.HP = 0
                     return
     
+    def eat(self, app):
+        foodSet = copy.copy(app.level.food)
+        for f in foodSet:
+            if self.isObjectCollide(f):
+                self.HP += 30
+                if self.HP >= self.maxHP:
+                    self.HP = self.maxHP
+                app.level.food.remove(f)
+    
     def unImmune(self):
         if self.immune:
             self.immune.pop()
@@ -439,6 +441,7 @@ class NightFury(GameObject):
         self.holdBlock()
         self.regainPS()
         self.loseHealth(app.enemies)
+        self.eat(app)
         self.unImmune()
         # keypressed
         self.doLeftSlash(app)
@@ -468,10 +471,19 @@ class NightFury(GameObject):
                                 nfY - 19, fill = 'turquoise', 
                                 outline = 'turquoise')
 
+    def drawAim(self, canvas):
+        # if self.refS == None or self.refE == None:
+        if self.aiming == False:
+            return
+        x1, y1 = self.refS
+        x2, y2 = self.refE
+        canvas.create_line(x1, y1, x2, y2, fill = 'turquoise')
+
     def drawNightFury(self, canvas):
         self.drawSelf(canvas)
         self.drawPSbar(canvas)
         self.drawHPbar(canvas)
+        self.drawAim(canvas)
         if self.slashFramesL:
             self.attackBox.drawLeftSlash(canvas)
         if self.slashFramesR:

@@ -58,17 +58,20 @@ class Enemy(GameObject):
                 test1 = self.isSetCollide(app.terrain)
                 if test1:
                     self.x = test1.x + test1.w
-                test2 = self.withinReasonableRange(app)
-                if test2 == False:
-                    self.x = 50
+                if self.isActive == False:
+                    test2 = self.withinReasonableRange(app)
+                    if test2 == False:
+                        self.x = 50
             elif d == 'Right':
                 self.x += self.knockBack
                 test1 = self.isSetCollide(app.terrain)
                 if test1:
                     self.x = test1.x - self.w
-                test2 = self.withinReasonableRange(app)
-                if test2 == False:
-                    self.x = app.width - 50
+                if self.isActive == False:
+                    test2 = self.withinReasonableRange(app)
+                    test2 = self.withinReasonableRange(app)
+                    if test2 == False:
+                        self.x = app.width - 50
             # health
             self.HP -= player.ATK
             if self.HP <= 0:

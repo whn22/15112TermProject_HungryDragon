@@ -11,13 +11,13 @@ from NightFuryClass import NightFury
 from EnemyClass import Enemy, FlyEnemy, WalkEnemy
 from SpritesClass import NightFurySprites
 from GenerateLevel import Level
+from FoodClass import Food
 
 def appStarted(app):
     # initialize
-    level = Level(7, 3)
-    menu = Menu('Left', 'Right', 'x', 'z', 'c')
-    level.createTerrain(app)
-    level.createEnemies(app)
+    level = Level(7, 3, 1)
+    menu = Menu('Left', 'Right', 'x', 'z', 'c', 'Space')
+    level.generateLevel(app)
     menuButton = Button(app.width - 70, 10, 60, 20, 
                         'menuButton', 'aquamarine', 'menu', 10)
     refreshButton = Button(app.width - 140, 10, 60, 20, 
@@ -136,11 +136,11 @@ def keyPressed(app, event):
         elif app.nightFury.direction == 'Right':
             app.nightFury.dashR()
     # attack
-    if event.key == 'c':
+    if event.key == app.menu.slash:
         app.nightFury.slash()
     
     # move blocks
-    if event.key == 'Space':
+    if event.key == app.menu.hold:
         for block in app.terrain:
             if type(block) == MovBlock and block.isObjectTouch(app.nightFury):
                 if app.nightFury.hold == False:
@@ -156,7 +156,7 @@ def keyReleased(app, event):
     elif event.key == app.menu.right:
         app.nfGoRight = False
 
-    if event.key == 'Space':
+    if event.key == app.menu.hold:
         app.nightFury.hold = False
         for block in app.terrain:
             if type(block) == MovBlock:
@@ -173,6 +173,7 @@ def redrawAll(app,canvas):
     app.level.drawDoors(canvas)
     Block.drawBlockSet(app.terrain, canvas)
     Enemy.drawEnemySet(app.enemies, canvas)
+    Food.drawFoodSet(app.level.food, canvas)
     Display.display(app, canvas)
     app.nfSprites.drawSprites(app, app.nightFury, canvas)
     # app.nightFury.drawNightFury(canvas)  # player collision box

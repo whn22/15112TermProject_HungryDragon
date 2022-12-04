@@ -2,13 +2,15 @@ import random
 import copy
 from BlockClass import Block, MovBlock, Platform
 from EnemyClass import FlyEnemy, WalkEnemy
+from FoodClass import Food
 
 class Level():
-    def __init__(self, blockNum, enemyNum):
+    def __init__(self, blockNum, enemyNum, foodNum):
         # set number
-        self.backupNum = blockNum, enemyNum
+        self.backupNum = blockNum, enemyNum, foodNum
         self.blockNum = blockNum
         self.enemyNum = enemyNum
+        self.foodNum = foodNum
         # default settings
         self.base = set()
         self.blocks = set()
@@ -17,19 +19,28 @@ class Level():
         self.exit = None
         self.enemies = set()
         self.platforms = set()
+        self.food = set()
         # pass level
         self.win = False
         self.levelOrd = 1
     
     # general methods
+    # generate level
+    def generateLevel(self, app):
+        self.initSets()
+        self.createTerrain(app)
+        self.createEnemies(app)
+        self.createFood()
+
     def refreshLevel(self, app):
         self.initSets()
         self.createTerrain(app)
         self.createEnemies(app)
+        self.createFood()
         app.nightFury.resetLocation(self.enter.getLocation())
 
     def reStart(self, app):
-        self.blockNum, self.enemyNum = self.backupNum
+        self.blockNum, self.enemyNum, self.foodNum = self.backupNum
         self.enter = None
         self.exit = None
         self.win = False
@@ -40,8 +51,9 @@ class Level():
         # self.blockNum, self.enemyNum = self.backupNum
         self.blocks = set()
         self.terrain = set()
-        self.enemies = set()
         self.platforms = set()
+        self.enemies = set()
+        self.food = set()
 
     def passLevel(self, player, enemies):
         # print(len(enemies), player.isObjectCollide(self.exit))
@@ -90,23 +102,6 @@ class Level():
         self.base.add(rightWall)
         self.base.add(celling)
 
-    # def createBlocks(self, app):
-    #     color = 'grey' # WARNING: hard code color
-    #     lastY = app.height - 100
-    #     for i in range(self.blockNum):
-    #         tw = random.randint(20, int(app.width/self.blockNum))
-    #         th = random.randint(10, 100)
-    #         tx = int(app.width/self.blockNum) * i
-    #         if lastY < 100:
-    #             ty = random.randint(100, app.height - 200)
-    #         elif lastY > app.height - 150:
-    #             ty = random.randint(lastY - 70, app.height - 150)
-    #         else:
-    #             ty = random.randint(lastY - 70, lastY + 70)
-    #         lastY = ty
-    #         block = Block(tx, ty, tw, th, color)
-    #         self.blocks.add(block)
-
     def createBlocks(self, app):
         color = 'grey' # WARNING: hard code color
         lastY = app.height - 100
@@ -141,11 +136,6 @@ class Level():
         self.createBlocks(app)
         # self.terrain = self.blocks.union(self.base)
         self.terrain = self.base.union(self.platforms, self.blocks)
-    
-    def generateLevel(self, app):
-        self.initSets()
-        self.createTerrain(app)
-        self.createEnemies(app)
 
     # create enemies
     # this is a test function which only creates fly enemies
@@ -164,6 +154,22 @@ class Level():
                     ey = random.randint(100, app.height - 100)
                     enemy = FlyEnemy(ex, ey, ew, eh, color, 0.5, 20, 20, 50)
             self.enemies.add(enemy)
+
+    # create food 
+    def createFood(self):
+        for i in range(self.foodNum):
+            food = self.createFoodHelper()
+            self.food.add(food)
+    
+    def createFoodHelper(self):
+        color = 'red'
+        fx = random.randint(200, 800)
+        fy = random.randint(100, 400)
+        food = Food(fx, fy, 10, 10, color)
+        for block in self.terrain:
+            if block.isObjectCollide(food):
+                return self.createFoodHelper()
+        return food
 
     # draw function
     def drawPassLevel(self, app, canvas):

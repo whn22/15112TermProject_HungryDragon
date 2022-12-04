@@ -101,16 +101,21 @@
 
 # runApp(width = 1000, height = 600)
 
-import random
+# import random
 
-def createActivePathHelper():
-    dx = random.choice([10, -10])
-    dy = random.choice([10, -10])
-    if dx < dy:
-        print('here', dx, dy)
-        return dx, dy
-    else:
-        return createActivePathHelper()
+# def createActivePathHelper():
+#     dx = random.choice([10, -10])
+#     dy = random.choice([10, -10])
+#     if dx < dy:
+#         print('here', dx, dy)
+#         return dx, dy
+#     else:
+#         return createActivePathHelper()
 
-a, b = createActivePathHelper()
-print(a, b)
+# a, b = createActivePathHelper()
+# print(a, b)
+
+from NightFuryClass import NightFury
+
+nightFury1 = NightFury(100, 100, 20, 50, 'white', 5, 13, 0.7, 20, 10, 
+                    100, 100, 100)
