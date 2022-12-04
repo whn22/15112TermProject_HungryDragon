@@ -26,6 +26,7 @@ class Level():
         self.initSets()
         self.createTerrain(app)
         self.createEnemies(app)
+        app.nightFury.resetLocation(self.enter.getLocation())
 
     def reStart(self, app):
         self.blockNum, self.enemyNum = self.backupNum

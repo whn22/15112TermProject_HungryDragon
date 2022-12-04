@@ -86,6 +86,7 @@ class Enemy(GameObject):
         temp = copy.copy(app.enemies)
         for enemy in temp:
             # backupPosition = enemy.getLocation()
+            enemy.generalAI(app.nightFury)
             if enemy.isDead == True:
                 app.enemies.remove(enemy)
             if type(enemy) == FlyEnemy:
@@ -117,17 +118,21 @@ class FlyEnemy(Enemy):
     def __init__(self, x, y, w, h, color, speed, DMG, knockBack, health):
         super().__init__(x, y, w, h, color, speed, DMG, knockBack, health)
         self.idlePath = []
+        self.activePath = []
 
     def resetDefaultMove(self):
         self.idlePath = []
+        self.activePath = []
     
     def createIdlePath(self):
-        chooseX = random.choice([self.speed, -self.speed])
-        chooseY = random.choice([self.speed, -self.speed])
+        dx = random.choice([self.speed, -self.speed])
+        dy = random.choice([self.speed, -self.speed])
         for i in range(30):
-            self.idlePath.append((chooseX, chooseY))
+            self.idlePath.append((dx, dy))
 
     def flyIdle(self, app):
+        if self.isActive:
+            return
         backupPosition = self.x, self.y
         if self.idlePath == []:
             self.createIdlePath()
@@ -135,23 +140,55 @@ class FlyEnemy(Enemy):
         self.x += dx
         self.y += dy
         for block in app.terrain:
-            if self.isObjectCollide(block) == False:
-                pass
-            else:
-                self.idlePath = []
-                break
-        for block in app.terrain:
             if self.isObjectCollide(block) == False \
                 and self.withinReasonableRange(app):
                 pass
             else:
-                # print('here')
-                self.resetDefaultMove()
+                self.idlePath = []
                 self.resetLocation(backupPosition)
                 break
+        # for block in app.terrain:
+        #     if self.isObjectCollide(block) == False \
+        #         and self.withinReasonableRange(app):
+        #         pass
+        #     else:
+        #         # print('here')
+        #         self.resetDefaultMove()
+        #         self.resetLocation(backupPosition)
+        #         break
     
+    def createActivePathHelper(self, px, py):
+        dx = random.choice([self.speed * 3, -self.speed * 3])
+        dy = random.choice([self.speed * 3, -self.speed * 3])
+        old = GameObject.testFindDistance(px, py, self.x, self.y)
+        now = GameObject.testFindDistance(px, py, self.x + dx, self.y + dy)
+        if now < old:
+            return dx, dy
+        else:
+            return self.createActivePathHelper(px, py)
+
+    def createActivePath(self, app):
+        px, py = app.nightFury.getLocation()
+        dx, dy = self.createActivePathHelper(px, py)
+        for i in range(20):
+            self.activePath.append((dx, dy))
+
     def flyActive(self, app):
-        pass
+        if self.isActive == False:
+            return
+        backupPosition = self.x, self.y
+        if self.activePath == []:
+            self.createActivePath(app)
+        dx, dy = self.activePath.pop(0)
+        self.x += dx
+        self.y += dy
+        for block in app.terrain:
+            if self.isObjectCollide(block) == False:
+                pass
+            else:
+                self.activePath = []
+                self.resetLocation(backupPosition)
+                break
 
     # def flyAI(self, app):
     #     if self.isActive == False:
@@ -233,3 +270,7 @@ class WalkEnemy(Enemy):
             self.walkIdle(app)
         else:
             self.walkActive(app)
+
+class Boss(Enemy):
+    def __init__(self, x, y, w, h, color, speed, DMG, knockBack, health):
+        super().__init__(x, y, w, h, color, speed, DMG, knockBack, health)

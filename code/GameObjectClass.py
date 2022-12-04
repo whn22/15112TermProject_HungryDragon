@@ -31,7 +31,24 @@ class GameObject():
             return True
         return False
 
-    # this function hasn't been used
+    # def isYCollide(self, other): # inputs two gameObjects
+    #     x1, y1 = self.x, self.y
+    #     w1, h1 = self.w, self.h
+    #     x2, y2 = other.getLocation()
+    #     w2, h2 = other.getSize()
+    #     if y1 + h1 > y2 and y1 < y2 + h2:
+    #         return True
+    #     return False
+
+    # def isXCollide(self, other): # inputs two gameObjects
+    #     x1, y1 = self.x, self.y
+    #     w1, h1 = self.w, self.h
+    #     x2, y2 = other.getLocation()
+    #     w2, h2 = other.getSize()
+    #     if x1 + w1 > x2 and x1 < x2 + w2:
+    #         return True
+    #     return False
+
     def isObjectTouch(self, other): # inputs two gameObjects
         x1, y1 = self.x, self.y
         w1, h1 = self.w, self.h
@@ -88,6 +105,9 @@ class GameObject():
         cx1, cy1 = (x1 + w1)/2, (y1 + h1)/2
         cx2, cy2 = (x2 + w2)/2, (y2 + h2)/2
         return (((cx1 - cx2)**2 + (cy1 - cy2)**2)**0.5)
+
+    def testFindDistance(x1, y1, x2, y2):
+        return (((x1 - x2)**2 + (y1 - y2)**2)**0.5)
 
     # app methods
     def withinCanvasRange(self, app):

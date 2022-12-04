@@ -101,5 +101,16 @@
 
 # runApp(width = 1000, height = 600)
 
-l = list(range(1, 101))
-print(l)
+import random
+
+def createActivePathHelper():
+    dx = random.choice([10, -10])
+    dy = random.choice([10, -10])
+    if dx < dy:
+        print('here', dx, dy)
+        return dx, dy
+    else:
+        return createActivePathHelper()
+
+a, b = createActivePathHelper()
+print(a, b)

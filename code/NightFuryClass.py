@@ -1,5 +1,6 @@
 from GameObjectClass import GameObject
 from AttackBoxClass import AttackBox
+from BlockClass import Block, MovBlock, Platform
 
 class NightFury(GameObject):
     def __init__(self, x, y, w, h, color, speed, jumpHeight, gravity, ATK, DEF,
@@ -76,7 +77,11 @@ class NightFury(GameObject):
     # control methods
     def goLeft(self, terrain):
         self.x -= self.speed
+        # if self.hold == True:
+        #     return
         for block in terrain:
+            if type(block) == MovBlock and self.hold == True and block.hold == True:
+                return
             test = self.isObjectCollide(block)
             if test == False:
                 pass
@@ -87,7 +92,11 @@ class NightFury(GameObject):
 
     def goRight(self, terrain):
         self.x += self.speed
+        # if self.hold == True:
+        #     return
         for block in terrain:
+            if type(block) == MovBlock and self.hold == True and block.hold == True:
+                return
             test = self.isObjectCollide(block)
             if test == False:
                 pass
@@ -245,6 +254,7 @@ class NightFury(GameObject):
         if self.hold == True:
             self.PS -= 1
             if self.PS <= 0:
+                self.PS = 0
                 self.hold = False
 
     def regainPS(self): 
@@ -257,6 +267,8 @@ class NightFury(GameObject):
             jumpY = self.jumpYs.pop(0)
             self.y = jumpY
             for block in terrain:
+                # if type(block) == MovBlock and self.hold == True and block.hold == True:
+                #     return
                 if self.isObjectCollide(block):
                     self.jumpYs = []
                     tx, ty = block.getLocation()
@@ -277,6 +289,8 @@ class NightFury(GameObject):
                 u += g
             self.fallYs.append(y)
             for block in terrain:
+                # if type(block) == MovBlock and self.hold == True and block.hold == True:
+                #     return
                 if block.testCollide(self.x, y, self.w, self.h):
                     self.fallYs.pop()
                     tx, ty = block.getLocation()
@@ -379,6 +393,8 @@ class NightFury(GameObject):
         self.doRightDash(app.terrain)
         # check legal
         for block in app.terrain:
+            # if type(block) == MovBlock and self.hold == True and block.hold == True:
+            #     return
             if block.isObjectCollide(self) == False \
                 and self.withinCanvasRange(app):
                 pass
@@ -396,6 +412,8 @@ class NightFury(GameObject):
         self.doJump(app.terrain) #()
         # check legal
         for block in app.terrain:
+            # if type(block) == MovBlock and self.hold == True and block.hold == True:
+            #     return
             if block.isObjectCollide(self) == False \
                 and self.withinCanvasRange(app):
                 pass
@@ -407,6 +425,13 @@ class NightFury(GameObject):
 
     def nightFuryTimerFired(self, app):
         self.nightFuryHorizontal(app)
+        # do block move here to avoid vertical return illegal
+        for block in app.terrain:
+            if type(block) == MovBlock:
+                # print(app.nightFury.hold, block.hold)
+                if self.hold == True and block.hold == True:
+                # and block.isObjectTouch(app.nightFury):
+                    block.move(app)
         self.nightFuryVertical(app)
         # test default
         self.refreshSlashLocation()

@@ -29,6 +29,8 @@ def appStarted(app):
     startX, startY = app.level.enter.getLocation()
     # nightFury
     nfSprites = NightFurySprites()
+    # def __init__(self, x, y, w, h, color, speed, jumpHeight, gravity, ATK, DEF,
+    #           health, magic, physicalStrength):
     nightFury1 = NightFury(startX, startY, 20, 50, 'white', 5, 13, 0.7, 20, 10, 
                         100, 100, 100)
     # print (nightFury1)
@@ -77,12 +79,12 @@ def timerFired(app):
     # sprites timerFired
     app.nfSprites.nfSpritesTimer()
     # hold
-    for block in app.terrain:
-        if type(block) == MovBlock:
-            print(app.nightFury.hold, block.hold)
-            if app.nightFury.hold == True and block.hold == True:
-            # and block.isObjectTouch(app.nightFury):
-                block.move(app)
+    # for block in app.terrain:
+    #     if type(block) == MovBlock:
+    #         # print(app.nightFury.hold, block.hold)
+    #         if app.nightFury.hold == True and block.hold == True:
+    #         # and block.isObjectTouch(app.nightFury):
+    #             block.move(app)
 
 # helper functions for control
 def mouseMoved(app, event):
