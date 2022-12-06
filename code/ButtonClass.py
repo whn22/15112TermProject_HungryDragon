@@ -34,7 +34,7 @@ class Button(GameObject):
         x, y = self.getLocation()
         w, h = self.getSize()
         c = self.color
-        if self.isMouseOn == False:
+        if self.isMouseOn == False or self.isClicked == True:
             canvas.create_rectangle(x, y, x + w, y + h, 
                                     fill = None, outline = c)
             canvas.create_text(x + w/2, y + h/2, text = self.text,

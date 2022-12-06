@@ -22,11 +22,11 @@ class NightFury(GameObject):
         self.MP = magic
         self.PS = physicalStrength
         # default data
-        self.immune = list(range(1, 15))
+        self.immune = list(range(1, 30))
         self.isDead = False
         self.hold = False
         self.direction = 'Right'
-        self.eaten = []
+        # self.eaten = []
         self.jumpYs = []
         self.lenJ = 0
         self.fallYs = []
@@ -34,6 +34,8 @@ class NightFury(GameObject):
         self.dashLXs = []
         self.dashRXs = []
         # attack collision box
+        self.nfGoLeft = False
+        self.nfGoRight = False
         self.slashFramesL = [] # how long the attack will last: 15
         self.slashFramesR = [] 
         self.slashFrame = -1
@@ -41,11 +43,11 @@ class NightFury(GameObject):
         self.aiming = False
         self.shooting = False
         self.shot = None
-        self.refS = -1
-        self.refE = -1
+        self.refS = (-1, -1) # this is aiming reference line Start and End point
+        self.refE = (-1, -1)
         self.attackBox = AttackBox(self.x, self.y, self.w, self.h, 'aquamarine')
     
-    def __str__(self):
+    def __repr__(self):
         return f'NightFury:\n\
                 x = {self.x}\n\
                 y = {self.y}\n\
@@ -74,7 +76,7 @@ class NightFury(GameObject):
         self.fallYs = []
 
     def resetImmune(self):
-        self.immune = list(range(1, 15))
+        self.immune = list(range(1, 30))
 
     # control methods
     def goLeft(self, terrain):
@@ -245,7 +247,7 @@ class NightFury(GameObject):
 
     def holdBlock(self):
         if self.hold == True:
-            self.PS -= 1
+            self.PS -= 2
             if self.PS <= 0:
                 self.PS = 0
                 self.hold = False
@@ -253,7 +255,7 @@ class NightFury(GameObject):
     def regainPS(self): 
         # max PS is 100, regain 0.5 per period
         if self.PS < 100:
-            self.PS += 0.5
+            self.PS += 0.2
 
     def doJump(self, terrain): # apply jumping coordinates, test legal
         if self.jumpYs:
@@ -349,7 +351,7 @@ class NightFury(GameObject):
         if self.immune == []:
             for enemy in enemies:
                 if self.isObjectCollide(enemy):
-                    self.HP -= enemy.DMG
+                    self.HP -= enemy.ATK
                     self.resetImmune()
                     if self.HP < 0:
                         self.isDead = True
@@ -381,12 +383,12 @@ class NightFury(GameObject):
     def nightFuryHorizontal(self, app):
         backupX = self.x
         # keypressed
-        if app.nfGoLeft == True:
+        if self.nfGoLeft == True:
             self.direction = 'Left'
             self.goLeft(app.terrain)
             if not self.withinCanvasRange(app):
                 self.goRight(app.terrain)
-        elif app.nfGoRight == True:
+        elif self.nfGoRight == True:
             self.direction = 'Right'
             self.goRight(app.terrain)
             if not self.withinCanvasRange(app):
@@ -438,9 +440,9 @@ class NightFury(GameObject):
         # test default
         self.refreshSlashLocation()
         self.isKilled()
+        self.loseHealth(app.enemies)
         self.holdBlock()
         self.regainPS()
-        self.loseHealth(app.enemies)
         self.eat(app)
         self.unImmune()
         # keypressed
@@ -497,3 +499,11 @@ class NightFury(GameObject):
         canvas.create_text(app.width/2, app.height/2,
             text = 'You die, press r to respawn',
             font = 'Arial 20', fill = 'turquoise')
+
+# class Boss(NightFury):
+#     def __init__(self, x, y, w, h, color, speed, 
+#                         jumpHeight, gravity, ATK, DEF, health):
+#         super.__init__(self, x, y, w, h, color, speed, 
+#                         jumpHeight, gravity, ATK, DEF, health)
+    
+    

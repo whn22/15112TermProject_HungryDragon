@@ -115,7 +115,7 @@
 # a, b = createActivePathHelper()
 # print(a, b)
 
-from NightFuryClass import NightFury
+# from NightFuryClass import NightFury
 
-nightFury1 = NightFury(100, 100, 20, 50, 'white', 5, 13, 0.7, 20, 10, 
-                    100, 100, 100)
+# nightFury1 = NightFury(100, 100, 20, 50, 'white', 5, 13, 0.7, 20, 10, 
+#                     100, 100, 100)

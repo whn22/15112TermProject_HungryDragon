@@ -142,12 +142,12 @@ class NightFurySprites():
                                 image=ImageTk.PhotoImage(sprite))
 
     def drawRun(self, player, app, canvas):
-        if app.nfGoLeft == True:
+        if app.nightFury.nfGoLeft == True:
             sprite = self.runLeft[self.runCount]
             canvas.create_image(player.x + player.w * 0.6, player.y + player.h * 1.2, 
                                 image=ImageTk.PhotoImage(sprite))
             return True
-        elif app.nfGoRight == True:
+        elif app.nightFury.nfGoRight == True:
             sprite = self.runRight[self.runCount]
             canvas.create_image(player.x + player.w * 0.6, player.y + player.h * 1.2, 
                                 image=ImageTk.PhotoImage(sprite))
@@ -230,4 +230,3 @@ class EnemySprites():
 class TerrainSprites():
     def __init__(app):
         app.block = []
-

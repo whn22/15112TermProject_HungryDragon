@@ -7,6 +7,14 @@ class GameObject():
         self.h = h
         self.color = color
     
+    def __repr__(self):
+        return f'GameObject:\n\
+                x = {self.x}\n\
+                y = {self.y}\n\
+                width = {self.w}\n\
+                height = {self.h}\n\
+                color = {self.color}\n'
+
     # set methods
     def resetLocation(self, tuple):
         self.x, self.y = tuple

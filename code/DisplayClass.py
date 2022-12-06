@@ -4,7 +4,7 @@ class Display():
         canvas.create_text(40, 50,
                         text = 'Stamina',
                         font = 'Arial 10', fill = 'white')
-        canvas.create_rectangle(20, 60, 10 + ps/100 * 200, 63,
+        canvas.create_rectangle(20, 60, 20 + ps/100 * 200, 63,
                                 fill = 'cyan', outline = 'cyan')
 
     def drawHPbar(app, canvas):
@@ -12,7 +12,7 @@ class Display():
         canvas.create_text(40, 72,
                         text = 'Health  ',
                         font = 'Arial 10', fill = 'white')
-        canvas.create_rectangle(20, 80, 10 + hp/100 * 200, 83, 
+        canvas.create_rectangle(20, 80, 20 + hp/100 * 200, 83, 
                                 fill = 'turquoise', outline = 'turquoise')
     
     def drawLevelNum(app, canvas):

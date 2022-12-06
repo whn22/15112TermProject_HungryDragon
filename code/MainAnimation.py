@@ -35,8 +35,6 @@ def appStarted(app):
                         100, 100, 100)
     # print (nightFury1)
     app.nightFury = nightFury1
-    app.nfGoLeft = False
-    app.nfGoRight = False
     # timerDelay
     app.timerDelay = 10
     # buttons
@@ -52,30 +50,27 @@ def appStarted(app):
     app.nfSprites.initializeAll(app)
 
 # helper functions for timerFired
-def buttonTimerFired(app):
-    app.refreshButton.checkMouseOn(app.mouseX, app.mouseY)
-    if app.menu.menuOn == False:
-        app.menuButton.checkMouseOn(app.mouseX, app.mouseY)
-    else:
-        for button in app.menu.menuButtons:
-            button.checkMouseOn(app.mouseX, app.mouseY)
-
 def timerFired(app):
     # level timerFired
-    if app.level.win == True:
+    if app.menu.menuOn == True:
+        for button in app.menu.menuButtons:
+            button.checkMouseOn(app.mouseX, app.mouseY)
+        return
+    # button timerFired
+    app.menuButton.checkMouseOn(app.mouseX, app.mouseY)
+    app.refreshButton.checkMouseOn(app.mouseX, app.mouseY)
+    if app.level.levelPass == True:
         app.level.generateLevel(app)
         app.terrain = app.level.terrain
         app.enemies = app.level.enemies
         app.nightFury.resetLocation(app.level.enter.getLocation())
-        app.level.win = False
+        app.level.levelPass = False
     app.level.passLevel(app.nightFury, app.enemies)
     # nightFury timerFired
     app.nightFury.nightFuryTimerFired(app)
     # enemies timerFired
     app.enemies = app.level.enemies
     Enemy.enemiesTimerFired(app)
-    # button timerFired
-    buttonTimerFired(app)
     # sprites timerFired
     app.nfSprites.nfSpritesTimer()
     # hold
@@ -123,9 +118,9 @@ def keyPressed(app, event):
         app.menu.menuOn = False
     # move
     if event.key == app.menu.left:
-        app.nfGoLeft = True
+        app.nightFury.nfGoLeft = True
     elif event.key == app.menu.right:
-        app.nfGoRight = True
+        app.nightFury.nfGoRight = True
     # jump
     if event.key == app.menu.jump:
         app.nightFury.jump()
@@ -152,9 +147,9 @@ def keyPressed(app, event):
 def keyReleased(app, event):
     # move
     if event.key == app.menu.left:
-        app.nfGoLeft = False
+        app.nightFury.nfGoLeft = False
     elif event.key == app.menu.right:
-        app.nfGoRight = False
+        app.nightFury.nfGoRight = False
 
     if event.key == app.menu.hold:
         app.nightFury.hold = False
@@ -182,7 +177,7 @@ def redrawAll(app,canvas):
     app.refreshButton.drawButton(canvas)
     app.menuButton.drawButton(canvas)
     if app.level.win == True:
-        app.level.drawPassLevel(app, canvas)
+        app.level.drawWin(app, canvas)
         # time.sleep(1)
         return
     if app.menu.menuOn == True:

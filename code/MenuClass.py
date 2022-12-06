@@ -55,13 +55,13 @@ class Menu():
     def drawMenu(self, app, canvas):
         canvas.create_rectangle(0, 0, app.width, app.height, 
                                 fill = 'black', outline = None)
-        canvas.create_text(app.width/2, app.height/30,
+        canvas.create_text(app.width/2, app.height/30 + 20,
                         text = 'Press q to enter game',
                         font = 'Arial 10', fill = 'white')
-        canvas.create_text(app.width/2, app.height/30 + 10,
+        canvas.create_text(app.width/2, app.height/30 + 30,
                         text = 'Press a key and click to assign its function',
                         font = 'Arial 10', fill = 'white')
-        canvas.create_text(app.width/2, app.height/30 + 20,
+        canvas.create_text(app.width/2, app.height/30 + 40,
                         text = f'You pressed {app.inputKey}',
                         font = 'Arial 10', fill = 'white')
         canvas.create_text(app.width/2, app.height/10 * 9,
