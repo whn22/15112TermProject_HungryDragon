@@ -15,32 +15,18 @@ from GenerateLevel import Level
 from FoodClass import Food
 from SoundClass import Sound, BackGroundSound
 
+# Sound effects from HOLLOW KNIGHT (team cherry)
+# https://www.dropbox.com/sh/faqjj2ekftj1nb4/AADu5kD3mmbAJ-G-J84AmzBra?dl=0
+# background music: Philter - Dance Of The Fireflies
+# player sprites are hand-drawn by myself (reference is HOLLOW KNIGHT)
+
 pygame.mixer.init()
 slashSound = Sound("sword_1.wav")
 dashSound = Sound("hero_dash.wav")
 bgSound = BackGroundSound("Philter - Dance Of The Fireflies.mp3")
 
-# def __init__(self, x, y, w, h, color, speed, jumpHeight, gravity, ATK, DEF,
-#           health, magic, physicalStrength):
-
-def easy(app):
-    level = Level(7, 3, 3, 3)
-    level.generateLevel(app)
-    startX, startY = level.enter.getLocation()
-    nightFury1 = NightFury(startX, startY, 20, 50, 'white', 5, 13, 0.7, 20, 10, 
-                        100, 100, 100)
-    return level, nightFury1
-
 def normal(app):
     level = Level(7, 3, 2, 5)
-    level.generateLevel(app)
-    startX, startY = level.enter.getLocation()
-    nightFury1 = NightFury(startX, startY, 20, 50, 'white', 5, 13, 0.7, 20, 10, 
-                        100, 100, 100)
-    return level, nightFury1
-
-def difficult(app):
-    level = Level(7, 3, 1, 7)
     level.generateLevel(app)
     startX, startY = level.enter.getLocation()
     nightFury1 = NightFury(startX, startY, 20, 50, 'white', 5, 13, 0.7, 20, 10, 
