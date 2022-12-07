@@ -31,6 +31,8 @@ class NightFurySprites():
         # dash
         self.dashL = []
         self.dashR = []
+        # light
+        self.light = None
     
     # def initializeBackground(self, app):
     #     bg = 'Pixel Cities.gif'
@@ -38,6 +40,15 @@ class NightFurySprites():
 
     # def drawBG(self, player, canvas):
     #     canvas.create_image(0, 0, image=ImageTk.PhotoImage(self.background))
+
+    def initializeLight(self, app):
+        light = 'enemyIMG.png'
+        self.light = app.loadImage(light)
+        self.light = app.scaleImage(self.light, 1.5)
+
+    def drawLight(self, player, canvas):
+        canvas.create_image(player.x + player.w/2, player.y + player.h/2, 
+                            image=ImageTk.PhotoImage(self.light))
 
     def initializeIdle(self, app):
         NFidleLeft = '001_nf_Idle.png'
@@ -128,6 +139,7 @@ class NightFurySprites():
 
     def initializeAll(self, app):
         # self.initializeBackground(app)
+        # self.initializeLight(app)
         self.initializeIdle(app)
         self.initializeRun(app)
         self.initializeSlash(app)
@@ -218,6 +230,7 @@ class NightFurySprites():
             return True
 
     def drawSprites(self, app, player, canvas):
+        # self.drawLight(player, canvas)
         if self.drawSlash(player, canvas):
             return
         elif self.drawDash(player, canvas):

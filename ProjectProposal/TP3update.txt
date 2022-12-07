@@ -1,6 +1,6 @@
 1. random terrain generation can now be solved
-2. add drag block function
-3. add a boss with 3 skills: shoot, chase, summon
+2. the player can now drag grey blocks
+3. add a boss with 3 skills: shoot, fast move, summon
 4. add different difficulty modes
 5. add enemy AI
 6. the shooting method can now generate bullets in constant speed in all 
@@ -8,5 +8,5 @@
 7. add picture to enemies, add sound effects and background music
 8. add food which makes player regain health
 9. solve sprites fluency problem
-10. enemies and food won't spawn in terrain
-11. 
+10. make sure enemies and food won't spawn in terrain
+11. make sure it's possible to win the game

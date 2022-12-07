@@ -216,14 +216,14 @@ def redrawAll(app,canvas):
     Enemy.drawEnemySet(app.enemies, canvas)
     Food.drawFoodSet(app.level.food, canvas)
     Display.display(app, canvas)
-    app.nfSprites.drawSprites(app, app.nightFury, canvas)
-    for enemy in app.enemies:
-        app.enemySprites.drawIdle(enemy, canvas)
-    # app.nightFury.drawNightFury(canvas)  # player collision box
     app.nightFury.drawAim(canvas)
     app.nightFury.drawShoot(canvas)
     app.refreshButton.drawButton(canvas)
     app.menuButton.drawButton(canvas)
+    app.nfSprites.drawSprites(app, app.nightFury, canvas)
+    for enemy in app.enemies:
+        app.enemySprites.drawIdle(enemy, canvas)
+    # app.nightFury.drawNightFury(canvas)  # player collision box
     if app.level.win == True:
         app.level.drawWin(app, canvas)
         # time.sleep(1)

@@ -31,8 +31,10 @@ class Level():
     # select mode
     # def __init__(self, x, y, w, h, color, speed, jumpHeight, gravity, ATK, DEF
     #           health, magic, physicalStrength):
+
+    # change data here to test
     def easy(app):
-        level = Level(7, 3, 3, 3)
+        level = Level(7, 3, 3, 2)
         level.generateLevel(app)
         startX, startY = level.enter.getLocation()
         nightFury1 = NightFury(startX, startY, 20, 50, 'white', 5, 13, 0.7, 60, 
@@ -264,6 +266,10 @@ class Level():
         self.createFood()
 
     def createBossBlocks(self, app):
+        color = 'white' # WARNING: hard code color
+        # lastX = app.width - 100
+        platform1 = Platform(self.exit.x - 10, 120, 50, 20, color)
+        self.blocks.add(platform1)
         color = 'grey' # WARNING: hard code color
         for i in range(5):
             tw = random.randint(50, 100)

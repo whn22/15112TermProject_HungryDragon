@@ -265,7 +265,7 @@ class NightFury(GameObject):
     def regainPS(self): 
         # max PS is 100, regain 0.5 per period
         if self.PS < self.maxPS:
-            self.PS += 0.2
+            self.PS += 0.3
 
     def doJump(self, terrain): # apply jumping coordinates, test legal
         if self.jumpYs:
@@ -383,7 +383,7 @@ class NightFury(GameObject):
         
     def respawn(self):
         if self.isDead == True:
-            self.HP = 100
+            self.HP = self.maxHP
             self.isDead = False
             self.resetInitLocation()
             self.resetDefaultMoveX()

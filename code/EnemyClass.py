@@ -165,7 +165,7 @@ class FlyEnemy(Enemy):
         dy = random.choice([self.speed * 3, -self.speed * 3])
         old = GameObject.testFindDistance(px, py, self.x, self.y)
         now = GameObject.testFindDistance(px, py, self.x + dx, self.y + dy)
-        if now < old:
+        if now <= old:
             return dx, dy
         else:
             return self.createActivePathHelper(px, py)
@@ -393,24 +393,26 @@ class Boss(FlyEnemy):
     def skill4TimerFired(self, app):
         if self.interval == []:
             self.summonEnemies(app)
-            self.resetinterval()
+            self.interval = list(range(0, 10))
             self.count += 1
         else:
             self.interval.pop()
 
     def bossTimerFired(self, app):
-        if self.count <= 10:
+        if self.count <= 5:
             self.skill1TimerFired(app)
-        elif self.count <= 15:
+        elif self.count <= 10:
             # self.isActive = True
+            self.skill3TimerFired(app)
+        elif self.count <= 15:
+            self.speed = self.speed*15
+            self.skill2TimerFired(app)
+            self.speed = self.speed/15
+        elif self.count <= 20:
             self.skill3TimerFired(app)
         elif self.count <= 25:
             self.skill2TimerFired(app)
         elif self.count <= 30:
-            self.skill3TimerFired(app)
-        elif self.count <= 40:
-            self.skill2TimerFired(app)
-        elif self.count <= 43:
             self.skill4TimerFired(app)
         else:
             self.count = 0
