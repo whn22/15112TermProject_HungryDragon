@@ -42,39 +42,3 @@ class BackGroundSound(object):
     # Stops the current sound from playing
     def stop(self):
         pygame.mixer.music.stop()
-
-
-# def appStarted(app):
-#     pygame.mixer.init()
-#     app.sound = Sound("sword_1.wav")
-
-# def appStopped(app):
-#     app.sound.stop()
-
-# def keyPressed(app, event):
-#     if (event.key == 's'):
-#         if app.sound.isPlaying(): app.sound.stop()
-#         else: app.sound.start()
-#     elif (event.key == 'l'):
-#         app.sound.start(loops=-1)
-#     elif event.key.isdigit():
-#         app.sound.start(loops=int(event.key))
-
-# def timerFired(app):
-#     pass
-
-# def redrawAll(app, canvas):
-#     canvas.create_text(app.width/2, app.height/2-60,
-#                        text=f'{app.sound.path} (loops = {app.sound.loops})',
-#                        font='Arial 30 bold', fill='black')
-#     canvas.create_text(app.width/2, app.height/2-20,
-#                        text=f'sound is playing = {app.sound.isPlaying()}',
-#                        font='Arial 30 bold', fill='black')
-#     canvas.create_text(app.width/2, app.height/2+20,
-#                        text='Press s to start/stop sound',
-#                        font='Arial 30 bold', fill='black')
-#     canvas.create_text(app.width/2, app.height/2+60,
-#                        text='Press l to loop sound',
-#                        font='Arial 30 bold', fill='black')
-
-# runApp(width=600, height=200)
