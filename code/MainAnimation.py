@@ -2,6 +2,7 @@ from cmu_112_graphics import *
 import time # sleep()
 import copy
 import math
+import pygame
 
 from MenuClass import Menu
 from DisplayClass import Display
@@ -9,14 +10,32 @@ from ButtonClass import Button
 from BlockClass import Block, MovBlock
 from NightFuryClass import NightFury
 from EnemyClass import Enemy, FlyEnemy, WalkEnemy
-from SpritesClass import NightFurySprites
+from SpritesClass import NightFurySprites, EnemySprites
 from GenerateLevel import Level
 from FoodClass import Food
+from SoundClass import Sound, BackGroundSound
+
+pygame.mixer.init()
+slashSound = Sound("sword_1.wav")
+dashSound = Sound("hero_dash.wav")
+bgSound = BackGroundSound("Philter - Dance Of The Fireflies.mp3")
+
+def easy():
+    level = Level(7, 3, 3, 3)
+    return level
+
+def normal():
+    level = Level(7, 3, 2, 5)
+    return level
+
+def difficult():
+    level = Level(7, 3, 1, 7)
+    return level
 
 def appStarted(app):
     # initialize
-    level = Level(7, 3, 1)
     menu = Menu('Left', 'Right', 'x', 'z', 'c', 'Space')
+    level = normal()
     level.generateLevel(app)
     menuButton = Button(app.width - 70, 10, 60, 20, 
                         'menuButton', 'aquamarine', 'menu', 10)
@@ -29,6 +48,7 @@ def appStarted(app):
     startX, startY = app.level.enter.getLocation()
     # nightFury
     nfSprites = NightFurySprites()
+    enemySprites = EnemySprites()
     # def __init__(self, x, y, w, h, color, speed, jumpHeight, gravity, ATK, DEF,
     #           health, magic, physicalStrength):
     nightFury1 = NightFury(startX, startY, 20, 50, 'white', 5, 13, 0.7, 20, 10, 
@@ -45,9 +65,21 @@ def appStarted(app):
     app.inputKey = None
     app.mouseX, app.mouseY = (-1, -1)
     app.menu.createMenu(app)
-    #sprites
+    # background # if implement bg, the animation will be extremely slow
+    # bg = 'Pixel Cities.gif'
+    # app.background = app.loadImage(bg)
+    # app.background = app.scaleImage(app.background, 1.5)
+    # sprites
     app.nfSprites = nfSprites
     app.nfSprites.initializeAll(app)
+    app.enemySprites = enemySprites
+    app.enemySprites.initializeIdle(app)
+    # sound
+    app.slashSound = slashSound
+    app.dashSound = dashSound
+    app.bgMusic = bgSound
+    # app.runSound = Sound("hero_run.wav")
+    # app.jumpSound = Sound("hero_jump.wav")
 
 # helper functions for timerFired
 def timerFired(app):
@@ -59,13 +91,17 @@ def timerFired(app):
     # button timerFired
     app.menuButton.checkMouseOn(app.mouseX, app.mouseY)
     app.refreshButton.checkMouseOn(app.mouseX, app.mouseY)
+    # level timerFired
+    app.level.winGame(app.nightFury)
+    if app.level.win == True:
+        return
+    app.level.passLevel(app.nightFury)
     if app.level.levelPass == True:
-        app.level.generateLevel(app)
+        app.level.refreshLevel(app)
         app.terrain = app.level.terrain
         app.enemies = app.level.enemies
         app.nightFury.resetLocation(app.level.enter.getLocation())
         app.level.levelPass = False
-    app.level.passLevel(app.nightFury, app.enemies)
     # nightFury timerFired
     app.nightFury.nightFuryTimerFired(app)
     # enemies timerFired
@@ -73,13 +109,6 @@ def timerFired(app):
     Enemy.enemiesTimerFired(app)
     # sprites timerFired
     app.nfSprites.nfSpritesTimer()
-    # hold
-    # for block in app.terrain:
-    #     if type(block) == MovBlock:
-    #         # print(app.nightFury.hold, block.hold)
-    #         if app.nightFury.hold == True and block.hold == True:
-    #         # and block.isObjectTouch(app.nightFury):
-    #             block.move(app)
 
 # helper functions for control
 def mouseMoved(app, event):
@@ -110,29 +139,44 @@ def mouseReleased(app, event):
 
 def keyPressed(app, event):
     # let the players set the keys
+    if event.key == 'p':
+        if app.bgMusic.isPlaying(): app.bgMusic.stop()
+        else: app.bgMusic.start(loops=-1)
     if app.nightFury.isDead == True and event.key == 'r':
         app.level.reStart(app)
+        app.terrain = app.level.terrain
         app.nightFury.respawn()
     app.inputKey = event.key
     if app.inputKey == 'q':
         app.menu.menuOn = False
     # move
     if event.key == app.menu.left:
+        # print('left', app.nightFury.nfGoLeft)
+        # if app.nightFury.nfGoLeft == False:
+        #     app.runSound.start(loops=-1)
         app.nightFury.nfGoLeft = True
     elif event.key == app.menu.right:
+        # print('right', app.nightFury.nfGoRight)
+        # if app.nightFury.nfGoRight == False:
+        #     app.runSound.start(loops=-1)
         app.nightFury.nfGoRight = True
     # jump
     if event.key == app.menu.jump:
         app.nightFury.jump()
     # dash
     if event.key == app.menu.dash:
+        if app.nightFury.PS >= 30:
+            app.dashSound.play()
         if app.nightFury.direction == 'Left':
             app.nightFury.dashL()
         elif app.nightFury.direction == 'Right':
             app.nightFury.dashR()
     # attack
     if event.key == app.menu.slash:
+        if app.nightFury.slashFramesL == [] and app.nightFury.slashFramesR ==[]:
+            app.slashSound.play()
         app.nightFury.slash()
+
     
     # move blocks
     if event.key == app.menu.hold:
@@ -147,8 +191,12 @@ def keyPressed(app, event):
 def keyReleased(app, event):
     # move
     if event.key == app.menu.left:
+        # print('left release')
+        # if app.runSound.isPlaying(): app.runSound.stop()
         app.nightFury.nfGoLeft = False
     elif event.key == app.menu.right:
+        # print('right release')
+        # if app.runSound.isPlaying(): app.runSound.stop()
         app.nightFury.nfGoRight = False
 
     if event.key == app.menu.hold:
@@ -165,12 +213,15 @@ def redrawAll(app,canvas):
     # draw background
     canvas.create_rectangle(0, 0, app.width, app.height, 
                             fill = 'black', outline = None)
+    # canvas.create_image(app.width/2, app.height/2, image=ImageTk.PhotoImage(app.background))
     app.level.drawDoors(canvas)
     Block.drawBlockSet(app.terrain, canvas)
     Enemy.drawEnemySet(app.enemies, canvas)
     Food.drawFoodSet(app.level.food, canvas)
     Display.display(app, canvas)
     app.nfSprites.drawSprites(app, app.nightFury, canvas)
+    for enemy in app.enemies:
+        app.enemySprites.drawIdle(enemy, canvas)
     # app.nightFury.drawNightFury(canvas)  # player collision box
     app.nightFury.drawAim(canvas)
     app.nightFury.drawShoot(canvas)

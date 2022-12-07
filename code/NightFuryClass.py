@@ -154,7 +154,7 @@ class NightFury(GameObject):
     def slash(self):
         if self.slashFramesL == [] and self.direction == 'Left':
             self.slashFramesL = list(range(0, 15))
-        if self.slashFramesR == [] and self.direction == 'Right':
+        elif self.slashFramesR == [] and self.direction == 'Right':
             self.slashFramesR = list(range(0, 15))
 
     # mousePressed, True, mouseReleased, False
@@ -328,7 +328,7 @@ class NightFury(GameObject):
         self.attackBox.createLongAtkBox()
     
     def doLeftSlash(self, app):
-        if self.slashFramesL and self.direction == 'Left':
+        if self.slashFramesL:
             self.slashFrame = self.slashFramesL.pop(0)
             if self.slashFrame == 2:
                 for enemy in app.enemies:
@@ -338,7 +338,7 @@ class NightFury(GameObject):
                             break
 
     def doRightSlash(self, app):
-        if self.slashFramesR and self.direction == 'Right':
+        if self.slashFramesR:
             self.slashFrame = self.slashFramesR.pop(0)
             if self.slashFrame == 2:
                 for enemy in app.enemies:
@@ -505,5 +505,3 @@ class NightFury(GameObject):
 #                         jumpHeight, gravity, ATK, DEF, health):
 #         super.__init__(self, x, y, w, h, color, speed, 
 #                         jumpHeight, gravity, ATK, DEF, health)
-    
-    
