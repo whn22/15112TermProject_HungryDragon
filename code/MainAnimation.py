@@ -20,23 +20,37 @@ slashSound = Sound("sword_1.wav")
 dashSound = Sound("hero_dash.wav")
 bgSound = BackGroundSound("Philter - Dance Of The Fireflies.mp3")
 
-def easy():
+# def __init__(self, x, y, w, h, color, speed, jumpHeight, gravity, ATK, DEF,
+#           health, magic, physicalStrength):
+
+def easy(app):
     level = Level(7, 3, 3, 3)
-    return level
+    level.generateLevel(app)
+    startX, startY = level.enter.getLocation()
+    nightFury1 = NightFury(startX, startY, 20, 50, 'white', 5, 13, 0.7, 20, 10, 
+                        100, 100, 100)
+    return level, nightFury1
 
-def normal():
+def normal(app):
     level = Level(7, 3, 2, 5)
-    return level
+    level.generateLevel(app)
+    startX, startY = level.enter.getLocation()
+    nightFury1 = NightFury(startX, startY, 20, 50, 'white', 5, 13, 0.7, 20, 10, 
+                        100, 100, 100)
+    return level, nightFury1
 
-def difficult():
+def difficult(app):
     level = Level(7, 3, 1, 7)
-    return level
+    level.generateLevel(app)
+    startX, startY = level.enter.getLocation()
+    nightFury1 = NightFury(startX, startY, 20, 50, 'white', 5, 13, 0.7, 20, 10, 
+                        100, 100, 100)
+    return level, nightFury1
 
 def appStarted(app):
     # initialize
     menu = Menu('Left', 'Right', 'x', 'z', 'c', 'Space')
-    level = normal()
-    level.generateLevel(app)
+    level, nightFury1 = normal(app)
     menuButton = Button(app.width - 70, 10, 60, 20, 
                         'menuButton', 'aquamarine', 'menu', 10)
     refreshButton = Button(app.width - 140, 10, 60, 20, 
@@ -45,14 +59,7 @@ def appStarted(app):
     app.level = level
     app.terrain = level.terrain
     app.enemies = level.enemies
-    startX, startY = app.level.enter.getLocation()
-    # nightFury
-    nfSprites = NightFurySprites()
-    enemySprites = EnemySprites()
-    # def __init__(self, x, y, w, h, color, speed, jumpHeight, gravity, ATK, DEF,
-    #           health, magic, physicalStrength):
-    nightFury1 = NightFury(startX, startY, 20, 50, 'white', 5, 13, 0.7, 20, 10, 
-                        100, 100, 100)
+    # nightFury (player)
     # print (nightFury1)
     app.nightFury = nightFury1
     # timerDelay
@@ -65,11 +72,14 @@ def appStarted(app):
     app.inputKey = None
     app.mouseX, app.mouseY = (-1, -1)
     app.menu.createMenu(app)
-    # background # if implement bg, the animation will be extremely slow
+    # WARNING: if implement bg, the animation will be extremely slow
+    # background 
     # bg = 'Pixel Cities.gif'
     # app.background = app.loadImage(bg)
     # app.background = app.scaleImage(app.background, 1.5)
     # sprites
+    nfSprites = NightFurySprites()
+    enemySprites = EnemySprites()
     app.nfSprites = nfSprites
     app.nfSprites.initializeAll(app)
     app.enemySprites = enemySprites
@@ -121,7 +131,7 @@ def mousePressed(app, event):
     else:
         for button in app.menu.menuButtons:
             button.mouseClicked(event.x, event.y, 
-                                app.menu.resetKey, (app.inputKey, button))
+                                app.menu.doFunction,(app.inputKey, button, app))
     app.refreshButton.mouseClicked(event.x, event.y, 
                                 app.level.refreshLevel, app)
     app.terrain = app.level.terrain
@@ -142,7 +152,8 @@ def keyPressed(app, event):
     if event.key == 'p':
         if app.bgMusic.isPlaying(): app.bgMusic.stop()
         else: app.bgMusic.start(loops=-1)
-    if app.nightFury.isDead == True and event.key == 'r':
+    if (app.nightFury.isDead == True or app.level.win == True)\
+                                                        and event.key == 'r':
         app.level.reStart(app)
         app.terrain = app.level.terrain
         app.nightFury.respawn()
@@ -230,7 +241,6 @@ def redrawAll(app,canvas):
     if app.level.win == True:
         app.level.drawWin(app, canvas)
         # time.sleep(1)
-        return
     if app.menu.menuOn == True:
         app.menu.drawMenu(app, canvas)
     # draw sprites

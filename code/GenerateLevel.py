@@ -1,5 +1,6 @@
 import random
 import copy
+from NightFuryClass import NightFury
 from BlockClass import Block, MovBlock, Platform
 from EnemyClass import FlyEnemy, WalkEnemy, Boss
 from FoodClass import Food
@@ -26,7 +27,34 @@ class Level():
         self.win = False
         self.levelOrd = 1
         self.bossAwaken = False
-    
+
+    # select mode
+    # def __init__(self, x, y, w, h, color, speed, jumpHeight, gravity, ATK, DEF
+    #           health, magic, physicalStrength):
+    def easy(app):
+        level = Level(7, 3, 3, 3)
+        level.generateLevel(app)
+        startX, startY = level.enter.getLocation()
+        nightFury1 = NightFury(startX, startY, 20, 50, 'white', 5, 13, 0.7, 60, 
+                            10, 120, 100, 200)
+        return level, nightFury1
+
+    def normal(app):
+        level = Level(7, 3, 2, 5)
+        level.generateLevel(app)
+        startX, startY = level.enter.getLocation()
+        nightFury1 = NightFury(startX, startY, 20, 50, 'white', 5, 13, 0.7, 40, 
+                            10, 100, 100, 150)
+        return level, nightFury1
+
+    def difficult(app):
+        level = Level(7, 3, 1, 7)
+        level.generateLevel(app)
+        startX, startY = level.enter.getLocation()
+        nightFury1 = NightFury(startX, startY, 20, 50, 'white', 5, 13, 0.7, 20, 
+                            10, 80, 100, 100)
+        return level, nightFury1
+
     # general methods
     # generate level
     def generateLevel(self, app):
@@ -50,6 +78,7 @@ class Level():
             app.nightFury.resetLocation(self.enter.getLocation())
 
     def reStart(self, app):
+        self.win = False
         self.levelOrd = 1
         self.bossAwaken = False
         self.blockNum, self.enemyNum, self.foodNum = self.backupNum
@@ -195,9 +224,11 @@ class Level():
 
     # draw function
     def drawWin(self, app, canvas):
+        canvas.create_rectangle(0, 0, app.width, app.height, 
+                                fill = 'black', outline = None)
         canvas.create_text(app.width/2, app.height/2,
-                text = 'You win!!!',
-                font = 'Arial 20', fill = 'white')
+                text = 'You win!!! Press r to restart',
+                font = 'Arial 20', fill = 'turquoise')
     
     def drawEnter(self, canvas):
         x1 = self.enter.x
@@ -237,7 +268,7 @@ class Level():
         for i in range(5):
             tw = random.randint(50, 100)
             th = random.randint(10, 20)
-            ty = int(app.height/6) * (i + 1)
+            ty = int(app.height/6) * (i + 2)
             tx = random.randint(150, app.width - 150)
             platform = MovBlock(tx, ty, tw, th, color)
             self.blocks.add(platform)
@@ -249,7 +280,7 @@ class Level():
         ey = random.randint(100, app.height - 100)
         # __init__(self, x, y, w, h, color, speed, DMG, knockBack, health, 
         #           bulletnum)
-        boss = Boss(ex, ey, ew, eh, color, 0.5, 20, 20, 500, 7)
+        boss = Boss(ex, ey, ew, eh, color, 0.5, 20, 10, 1000, 7)
         for block in self.terrain:
             while boss.isObjectCollide(block):
                 ey = random.randint(100, app.height - 100)

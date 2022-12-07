@@ -15,11 +15,12 @@ class NightFury(GameObject):
         self.gravity = gravity
         self.ATK = ATK
         self.DEF = DEF
-        # changable data
+        # changable data (MP not used)
         self.maxHP = health
         self.HP = health
         self.maxMP = magic
         self.MP = magic
+        self.maxPS = physicalStrength
         self.PS = physicalStrength
         # default data
         self.immune = list(range(1, 30))
@@ -74,6 +75,15 @@ class NightFury(GameObject):
     def resetDefaultMoveY(self):
         self.jumpYs = []
         self.fallYs = []
+
+    def resetDefaultValues(self):
+        self.HP = self.maxHP
+        self.MP = self.maxMP
+        self.PS = self.maxPS
+        self.immune = list(range(1, 30))
+        self.isDead = False
+        self.hold = False
+        self.direction = 'Right'
 
     def resetImmune(self):
         self.immune = list(range(1, 30))
@@ -254,7 +264,7 @@ class NightFury(GameObject):
 
     def regainPS(self): 
         # max PS is 100, regain 0.5 per period
-        if self.PS < 100:
+        if self.PS < self.maxPS:
             self.PS += 0.2
 
     def doJump(self, terrain): # apply jumping coordinates, test legal
@@ -463,7 +473,7 @@ class NightFury(GameObject):
     def drawPSbar(self, canvas):
         ps = self.PS
         nfX, nfY = self.getLocation()
-        canvas.create_rectangle(nfX - 5, nfY - 10, nfX + ps/100 * 30 - 5, 
+        canvas.create_rectangle(nfX - 5, nfY - 10, nfX + ps/self.maxPS * 30 - 5, 
                                 nfY - 9, fill = 'cyan', outline = 'cyan')
 
     def drawHPbar(self, canvas):

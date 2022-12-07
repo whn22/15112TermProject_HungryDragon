@@ -51,6 +51,7 @@ class Enemy(GameObject):
 
     # interact with player:
     def beAttacked(self, player, app):
+        backup = self.x, self.y
         if self.isDead == False:
             # location
             d = player.direction
@@ -63,7 +64,7 @@ class Enemy(GameObject):
                 if self.isActive == False:
                     test2 = self.withinReasonableRange(app)
                     if test2 == False:
-                        self.x = 50
+                        self.x, self.y = backup
             elif d == 'Right':
                 self.x += self.knockBack
                 test1 = self.isSetCollide(app.terrain)
@@ -72,7 +73,7 @@ class Enemy(GameObject):
                 if self.isActive == False:
                     test2 = self.withinReasonableRange(app)
                     if test2 == False:
-                        self.x = app.width - 50
+                        self.x, self.y = backup
             # health
             self.HP -= player.ATK
             if self.HP <= 0:
