@@ -5,12 +5,13 @@ from EnemyClass import FlyEnemy, WalkEnemy, Boss
 from FoodClass import Food
 
 class Level():
-    def __init__(self, blockNum, enemyNum, foodNum):
+    def __init__(self, blockNum, enemyNum, foodNum, bossLevel):
         # set number
         self.backupNum = blockNum, enemyNum, foodNum
         self.blockNum = blockNum
         self.enemyNum = enemyNum
         self.foodNum = foodNum
+        self.bossLevel = bossLevel
         # default settings
         self.base = set()
         self.blocks = set()
@@ -31,29 +32,30 @@ class Level():
     def generateLevel(self, app):
         if self.bossAwaken:
             self.generateBossLevel(app)
-            return
-        self.initSets()
-        self.createTerrain(app)
-        self.createEnemies(app)
-        self.createFood()
+        else:
+            self.initSets()
+            self.createTerrain(app)
+            self.createEnemies(app)
+            self.createFood()
 
     def refreshLevel(self, app):
         if self.bossAwaken:
             self.generateBossLevel(app)
             app.nightFury.resetLocation(self.enter.getLocation())
-            return
-        self.initSets()
-        self.createTerrain(app)
-        self.createEnemies(app)
-        self.createFood()
-        app.nightFury.resetLocation(self.enter.getLocation())
+        else:
+            self.initSets()
+            self.createTerrain(app)
+            self.createEnemies(app)
+            self.createFood()
+            app.nightFury.resetLocation(self.enter.getLocation())
 
     def reStart(self, app):
+        self.levelOrd = 1
+        self.bossAwaken = False
         self.blockNum, self.enemyNum, self.foodNum = self.backupNum
         self.enter = None
         self.exit = None
         self.levelPass = False
-        self.levelOrd = 1
         self.refreshLevel(app)
 
     def initSets(self):
@@ -64,17 +66,23 @@ class Level():
         self.enemies = set()
         self.food = set()
 
-    def passLevel(self, player, enemies):
+    def passLevel(self, player):
         # print(len(enemies), player.isObjectCollide(self.exit))
-        if enemies == set() and player.isObjectCollide(self.exit):
+        if self.enemies == set() and player.isObjectCollide(self.exit):
             self.levelOrd += 1
             self.enemyNum += 1
             self.levelPass = True
-            if self.levelOrd == 7:
+            if self.levelOrd == self.bossLevel:
                 self.bossAwaken = True
                 # bug here!!! print win when the boss is still alive
-                if self.enemies == set():
-                    self.win = True
+            # else:
+            #     self.bossAwaken = False
+    
+    def winGame(self, player):
+        # print(self.levelOrd == 8, self.enemies, player.isObjectCollide(self.exit))
+        if self.bossAwaken == True and \
+            self.enemies == set() and player.isObjectCollide(self.exit):
+            self.win = True
 
     # create terrain
     def createEnter(self, app):
@@ -100,7 +108,7 @@ class Level():
         for i in range(5):
             tw = random.randint(50, 100)
             th = random.randint(10, 20)
-            ty = int(app.height/6) * (i + 1)
+            ty = int(app.height/6) * (i + 2)
             tx = random.randint(150, app.width - 150)
             platform = Platform(tx, ty, tw, th, color)
             self.platforms.add(platform)
@@ -120,7 +128,7 @@ class Level():
         color = 'grey' # WARNING: hard code color
         lastY = app.height - 100
         for i in range(self.blockNum):
-            tw = random.randint(20, 200)
+            tw = random.randint(70, 150)
             th = random.randint(10, 100)
             tx = int(app.width/self.blockNum) * i
             if lastY < 100:
@@ -176,7 +184,7 @@ class Level():
             self.food.add(food)
     
     def createFoodHelper(self):
-        color = 'red'
+        color = 'turquoise'
         fx = random.randint(200, 800)
         fy = random.randint(100, 400)
         food = Food(fx, fy, 10, 10, color)
@@ -213,16 +221,6 @@ class Level():
 
 ################################################################################
     # generate boss level
-    def createBossBlocks(self, app):
-        color = 'grey' # WARNING: hard code color
-        for i in range(5):
-            tw = random.randint(50, 100)
-            th = random.randint(10, 20)
-            ty = int(app.height/6) * (i + 1)
-            tx = random.randint(150, app.width - 150)
-            platform = MovBlock(tx, ty, tw, th, color)
-            self.blocks.add(platform)
-
     def generateBossLevel(self, app):
         self.initSets()
         self.createEnter(app)
@@ -234,12 +232,23 @@ class Level():
         self.createBoss(app)
         self.createFood()
 
+    def createBossBlocks(self, app):
+        color = 'grey' # WARNING: hard code color
+        for i in range(5):
+            tw = random.randint(50, 100)
+            th = random.randint(10, 20)
+            ty = int(app.height/6) * (i + 1)
+            tx = random.randint(150, app.width - 150)
+            platform = MovBlock(tx, ty, tw, th, color)
+            self.blocks.add(platform)
+
     def createBoss(self, app):
         color = 'white' # WARNING: hard code color
         ew, eh = 50, 50 # width, height = 10, 10
         ex = app.width/2
         ey = random.randint(100, app.height - 100)
-        # __init__(self, x, y, w, h, color, speed, DMG, knockBack, health)
+        # __init__(self, x, y, w, h, color, speed, DMG, knockBack, health, 
+        #           bulletnum)
         boss = Boss(ex, ey, ew, eh, color, 0.5, 20, 20, 500, 7)
         for block in self.terrain:
             while boss.isObjectCollide(block):

@@ -32,6 +32,13 @@ class NightFurySprites():
         self.dashL = []
         self.dashR = []
     
+    # def initializeBackground(self, app):
+    #     bg = 'Pixel Cities.gif'
+    #     self.background = app.loadImage(bg)
+
+    # def drawBG(self, player, canvas):
+    #     canvas.create_image(0, 0, image=ImageTk.PhotoImage(self.background))
+
     def initializeIdle(self, app):
         NFidleLeft = '001_nf_Idle.png'
         idleL = app.loadImage(NFidleLeft)
@@ -120,6 +127,7 @@ class NightFurySprites():
                 self.dashR.append(sprite)
 
     def initializeAll(self, app):
+        # self.initializeBackground(app)
         self.initializeIdle(app)
         self.initializeRun(app)
         self.initializeSlash(app)
@@ -130,7 +138,7 @@ class NightFurySprites():
     def nfSpritesTimer(self):
         self.idleCount = (1 + self.idleCount) % len(self.idleLeft)
         self.runCount = (1 + self.runCount) % len(self.runLeft)
-    
+
     def drawIdle(self, player, canvas):
         if player.direction == 'Left':
             sprite = self.idleLeft[self.idleCount]
@@ -224,8 +232,17 @@ class NightFurySprites():
             self.drawIdle(player, canvas)
 
 class EnemySprites():
-    def __init__(app):
-        app.idle = []
+    def __init__(self):
+        self.idle = None
+
+    def initializeIdle(self, app):
+        enemyIdle = 'enemyIMG.png'
+        self.idle = app.loadImage(enemyIdle)
+        # self.idle = app.scaleImage(self.idle, 1)
+
+    def drawIdle(self, enemy, canvas):
+        canvas.create_image(enemy.x + enemy.w/2, enemy.y + enemy.h/2, 
+                            image=ImageTk.PhotoImage(self.idle ))
 
 class TerrainSprites():
     def __init__(app):

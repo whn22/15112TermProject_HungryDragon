@@ -11,7 +11,7 @@ class Food(GameObject):
         w = self.w
         h = self.h
         canvas.create_rectangle(x, y, x + w, y + h, 
-                                fill = None, outline = self.color)
+                                fill = self.color, outline = self.color)
                             
     def drawFoodSet(allFood, canvas):
         for food in allFood:

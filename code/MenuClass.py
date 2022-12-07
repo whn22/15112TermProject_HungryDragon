@@ -7,7 +7,7 @@ class Menu():
         self.jump = jump
         self.dash = dash
         self.slash = slash
-        self.hold  = hold
+        self.hold = hold
         self.menuButtons = {}
         self.menuOn = True
     
@@ -47,9 +47,9 @@ class Menu():
         dashB = Button(app.width/2 - 300, app.height/10 * 5, 200, 40, 
                             'dash', 'aquamarine', 'set dash', 20)
         slashB = Button(app.width/2 - 300, app.height/10 * 6, 200, 40, 
-                            'dash', 'aquamarine', 'set slash', 20)
+                            'slash', 'aquamarine', 'set slash', 20)
         holdB = Button(app.width/2 - 300, app.height/10 * 7, 200, 40, 
-                            'dash', 'aquamarine', 'set hold', 20)
+                            'hold', 'aquamarine', 'set hold', 20)
         self.menuButtons = {leftB, rightB, jumpB, dashB, slashB, holdB}
 
     def drawMenu(self, app, canvas):
@@ -74,7 +74,7 @@ class Menu():
                                 hold = {self.hold}\n',
                                 font = 'Arial 10', fill = 'white')
         canvas.create_text(app.width/2 + 170, app.height/2 - 70,
-                        text = f'Hungry Dargon',
+                        text = f'Hungry Dragon',
                                 font = 'Arial 50', fill = 'aquamarine')
         canvas.create_text(app.width/2 + 170, app.height/2 + 20,
                         text = f'Instructions:\n\
